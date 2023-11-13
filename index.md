@@ -2,106 +2,69 @@
 layout: default
 ---
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
+Hi there! I'm Patrick. Welcome to my personal website and [blog](./blog.html).
 
-[Link to another page](./another-page.html).
+I'm a machine learning researcher, and currently lead the research and engineering function of a computer vision startup I co-founded in early 2023. 
 
-There should be whitespace between paragraphs.
+Previously, I worked at [Improbable](https://www.improbable.io/) where I focussed on simulation-based inference methods (like [normalising flows](https://proceedings.neurips.cc/paper_files/paper/2022/hash/db0eac6747e3631eb91095cd76065611-Abstract-Conference.html)) for calibrating complex scientific simulators, for example agent-based models.
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
+I have a PhD in statistics from the University of Bristol, where I worked on Markov chain Monte Carlo techniques for inference in coalescent population genetic models, supervised by [Christophe Andrieu](https://scholar.google.co.uk/citations?hl=en&user=kcsbLrAAAAAJ&view_op=list_works) and [Mark Beaumont](https://scholar.google.co.uk/citations?hl=en&user=2K3F0MMAAAAJ).
 
-# Header 1
+Broadly, my interests lie in probabilistic machine learning and its use in solving important technological and scientific challenges. Informed by a statistical Weltanschauung, I'm most interested in using the tools of uncertainty quantification to improve our understanding of black-box algorithms, like deep learning, and to thereby improve the conforming of these algorithms to human preferences. In paricular, I take an interest in
 
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
-
-## Header 2
-
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
-
-### Header 3
-
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
-}
-```
-
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
-```
-
-#### Header 4
-
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-
-##### Header 5
-
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-###### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
+🌱 &nbsp; Robust deep learning  
+🌱 &nbsp; Algorithmic trustworthiness  
+🌱 &nbsp; Alignment
 
 * * *
 
-### Here is an unordered list:
+## Publications
+For a full list, please see my google scholar page.
 
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
+[Robust Neural Posterior Estimation and Statistical Model Criticism](https://nips.cc/Conferences/2022/Schedule?showEvent=52936)  
+Daniel Ward, Patrick Cannon, Mark Beaumont, Matteo Fasiolo, Sebastian Schmon  
+**NeurIPS**, 2022
 
-### And an ordered list:
+[Investigating the Impact of Model Misspecification in Simulation-Based Inference](https://arxiv.org/abs/2209.01845)  
+Patrick Cannon, Daniel Ward, Sebastian Schmon   
+arXiv preprint, 2022
 
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
+[Amortised Inference for Expensive Time-Series Simulators with Signatured Ratio Estimation](https://proceedings.mlr.press/v151/dyer22a.html)  
+Joel Dyer, Patrick Cannon, Sebastian Schmon  
+**AISTATS**, 2022
 
-### And a nested list:
+[Calibrating Agent-Based Models to Microdata with Graph Neural Networks](https://arxiv.org/abs/2206.07570)  
+Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon  
+**ICML**, AI4ABM Workshop, 2022. <span style="color: #0DBF81;">Spotlight</span>.
 
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
+[High Performance Simulation for Scalable Multi-Agent Reinforcement Learning](https://arxiv.org/abs/2207.03945)  
+Jordan Langham-Lopez, Patrick Cannon, Sebastian Schmon  
+**ICML**, AI4ABM Workshop, 2022. <span style="color: #0DBF81;">Spotlight</span>.
 
-### Small image
+[Generalized Posteriors in Approximate Bayesian Computation](https://arxiv.org/abs/2011.08644)  
+Sebastian Schmon*, Patrick Cannon*, Jeremias Knoblauch  
+**AABI** (Symposium on Advances in Approximate Bayesian Inference), 2021
+
+[Approximate Bayesian Computation with Path Signatures](https://arxiv.org/abs/2106.12555)  
+Joel Dyer, Patrick Cannon, Sebastian Schmon  
+arXiv preprint, 2021
+
+[Deep Signature Statistics for Likelihood-free Time-series Models](https://openreview.net/forum?id=OOlxsoRPyFL)  
+Joel Dyer, Patrick Cannon, Sebastian Schmon  
+**ICML**, INNF+ Workshop, 2021
+
+* * *
+
+<!-- ### Small image
 
 ![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
 
 ### Large image
 
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
+![Branching](https://guides.github.com/activities/hello-world/branching.png) -->
 
 
-### Definition lists can be used with HTML syntax.
+<!-- ### Definition lists can be used with HTML syntax.
 
 <dl>
 <dt>Name</dt>
@@ -120,4 +83,4 @@ Long, single-line code blocks should not wrap. They should horizontally scroll i
 
 ```
 The final element.
-```
+``` -->
