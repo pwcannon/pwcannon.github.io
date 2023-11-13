@@ -6,7 +6,7 @@ Hi there! I'm Patrick. Welcome to my personal website and [blog](./blog.html).
 
 I'm a machine learning researcher, and currently lead the research and engineering function of a computer vision startup I co-founded in early 2023. 
 
-Previously, I worked at [Improbable](https://www.improbable.io/) where I focussed on simulation-based inference methods (like [normalising flows](https://proceedings.neurips.cc/paper_files/paper/2022/hash/db0eac6747e3631eb91095cd76065611-Abstract-Conference.html)) for calibrating complex scientific simulators, for example agent-based models.
+Previously, I worked at [Improbable](https://www.improbable.io/) where I focused on simulation-based inference methods (like [normalising flows](https://proceedings.neurips.cc/paper_files/paper/2022/hash/db0eac6747e3631eb91095cd76065611-Abstract-Conference.html)) for calibrating complex scientific simulators, for example agent-based models.
 
 I have a PhD in statistics from the University of Bristol, where I worked on Markov chain Monte Carlo techniques for inference in coalescent population genetic models, supervised by [Christophe Andrieu](https://scholar.google.co.uk/citations?hl=en&user=kcsbLrAAAAAJ&view_op=list_works) and [Mark Beaumont](https://scholar.google.co.uk/citations?hl=en&user=2K3F0MMAAAAJ).
 
