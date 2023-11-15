@@ -35,11 +35,11 @@ arXiv preprint, 2022
 Joel Dyer, Patrick Cannon, Sebastian Schmon  
 **AISTATS**, 2022
 
-[Calibrating Agent-Based Models to Microdata with Graph Neural Networks](https://arxiv.org/abs/2206.07570)
+[Calibrating Agent-Based Models to Microdata with Graph Neural Networks](https://arxiv.org/abs/2206.07570)  
 Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon  
 **ICML**, AI4ABM Workshop, 2022. <span style="color: #CC5500;">Spotlight</span>.
 
-[High Performance Simulation for Scalable Multi-Agent Reinforcement Learning](https://arxiv.org/abs/2207.03945)
+[High Performance Simulation for Scalable Multi-Agent Reinforcement Learning](https://arxiv.org/abs/2207.03945)  
 Jordan Langham-Lopez, Patrick Cannon, Sebastian Schmon  
 **ICML**, AI4ABM Workshop, 2022. <span style="color: #CC5500;">Spotlight</span>.
 
