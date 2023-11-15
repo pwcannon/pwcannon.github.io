@@ -30,7 +30,7 @@
     <div class="wrapper">
       <header>
         <!-- <h1><a href="{{ "/" | absolute_url }}">{{ site.title | default: site.github.repository_name }}</a></h1> -->
-        <h1>{{ site.title | default: site.github.repository_name }}</h1>
+        <!-- <h1>{{ site.title | default: site.github.repository_name }}</h1> -->
 
         <img src="{{ '../assets/img/IMG_8070.jpg' | relative_url }}" alt="Logo" />
 
@@ -44,7 +44,14 @@
         <p class="view"><a href="{{ site.github.owner_url }}">View My GitHub Profile</a></p>
         {% endif %} -->
 
-        <a href="https://scholar.google.com/citations?user=drP5-oIAAAAJ&hl">Scholar</a>  &nbsp;&nbsp;&nbsp;  <a href="https://github.com/pwcannon">GitHub</a>  &nbsp;&nbsp;&nbsp;  <a href="https://www.linkedin.com/in/patrick-cannon/">LinkedIn</a> &nbsp;&nbsp;&nbsp; <a href="https://twitter.com/pw_cannon">Twitter</a>
+        <!-- <a href="https://scholar.google.com/citations?user=drP5-oIAAAAJ&hl">Scholar</a>  &nbsp;&nbsp;&nbsp;  <a href="https://github.com/pwcannon">GitHub</a>  &nbsp;&nbsp;&nbsp;  <a href="https://www.linkedin.com/in/patrick-cannon/">LinkedIn</a> &nbsp;&nbsp;&nbsp; <a href="https://twitter.com/pw_cannon">Twitter</a> -->
+
+
+        <!-- <a href="https://scholar.google.com/citations?user=drP5-oIAAAAJ&hl" style="color: rgb(190, 184, 191);">Scholar</a> &nbsp;&nbsp;&nbsp;
+        <a href="https://github.com/pwcannon" style="color: rgb(190, 184, 191);">GitHub</a> &nbsp;&nbsp;&nbsp;
+        <a href="https://www.linkedin.com/in/patrick-cannon/" style="color: rgb(190, 184, 191);">LinkedIn</a> &nbsp;&nbsp;&nbsp;
+        <a href="https://twitter.com/pw_cannon" style="color: rgb(190, 184, 191);">Twitter</a> -->
+
 
         <!-- {% if site.show_downloads %}
         <ul class="downloads">
@@ -54,21 +61,22 @@
         </ul>
         {% endif %} -->
 
-        <span style="display: block; margin-top: 20px;"></span>
 
-        <div class="link-container">
-          <a href="../index.html" style = "color: rgb(142, 63, 151);">
-              <img src="./assets/img/computer_explorer_cool-0.png" alt="95PC" width="40" style="position: relative; top: 10px;">
-              <span class="link-text">&nbsp;&nbsp;&nbsp; Back to home page</span>
-          </a>
-      </div>
 
 
       </header>
       <section>
+      <!-- <span style="display: block; margin-top: 20px;"></span> -->
 
       {{ content }}
 
+      <div class="link-container">
+        <a href="../index.html" style = "color: rgb(142, 63, 151);">
+            <img src="./assets/img/computer_explorer_cool-0.png" alt="95PC" width="40" style="position: relative; top: 10px;">
+            <span class="link-text">&nbsp;&nbsp;&nbsp; Back to home page</span>
+        </a>
+    </div>
+    
       </section>
       <footer>
         <!-- {% if site.github.is_project_page %}
