@@ -23,7 +23,7 @@ I believe these are some of the most pressing challenges in artificial intellige
 ## Publications
 For a full list, please see my google scholar page.
 
-[Robust Neural Posterior Estimation and Statistical Model Criticism](https://nips.cc/Conferences/2022/Schedule?showEvent=52936)  
+[Robust Neural Posterior Estimation and Statistical Model Criticism](https://arxiv.org/abs/2210.06564)  
 Daniel Ward, Patrick Cannon, Mark Beaumont, Matteo Fasiolo, Sebastian Schmon  
 **NeurIPS**, 2022
 
