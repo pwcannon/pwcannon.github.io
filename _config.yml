@@ -5,3 +5,6 @@ show_downloads: true
 google_analytics: true
 theme: jekyll-theme-minimal
 permalink: pretty
+# Eclude CV from navigation
+exclude:
+  - cv.md

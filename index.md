@@ -2,15 +2,15 @@
 layout: default
 ---
 
-Hi there! I'm Patrick. Welcome to my personal website.
+Hi there! I'm Patrick.
 
-I'm a machine learning researcher, and currently lead the research and engineering function of a computer vision startup I co-founded in early 2023. 
+I'm a machine learning researcher and engineer, currently working as the Generative AI Lead at [Hadean](https://hadean.com/).
 
-Previously, I worked at [Improbable](https://www.improbable.io/) where I focused on simulation-based inference methods (like normalising flows) for calibrating complex scientific simulators, including agent-based models.
+Previously, I co-founded a computer vision startup where I had fun working with NeRFs and Gaussian splats. I also worked at [Improbable](https://www.improbable.io/) where I focused on simulation-based inference methods (like normalising flows) for calibrating complex scientific simulators, including agent-based models.
 
-I have a PhD in statistics from the University of Bristol, where I worked on Markov chain Monte Carlo techniques for inference in coalescent population genetic models, supervised by [Christophe Andrieu](https://scholar.google.co.uk/citations?hl=en&user=kcsbLrAAAAAJ&view_op=list_works) and [Mark Beaumont](https://scholar.google.co.uk/citations?hl=en&user=2K3F0MMAAAAJ).
+I have a PhD in statistics from the University of Bristol which focussed on Markov chain Monte Carlo techniques for inference in coalescent population genetic models, supervised by [Christophe Andrieu](https://scholar.google.co.uk/citations?hl=en&user=kcsbLrAAAAAJ&view_op=list_works) and [Mark Beaumont](https://scholar.google.co.uk/citations?hl=en&user=2K3F0MMAAAAJ).
 
-Broadly, my interests lie in probabilistic machine learning and its use in solving important technological and scientific challenges. Guided by a statistical worldview, I try to leverage the tools of uncertainty quantification to improve our understanding of black-box algorithms, particularly deep learning. I'm mostly concerned with:
+Broadly, my interests lie in probabilistic machine learning and their uses in solving important technological and scientific challenges. Guided by a statistical worldview, I try to leverage the tools of uncertainty quantification to improve our understanding of black-box algorithms, particularly deep learning. I'm mostly concerned with:
 
 🔘 &nbsp; Robust deep learning  
 🔘 &nbsp; Algorithmic trustworthiness  
@@ -22,6 +22,14 @@ I believe these are some of the most pressing challenges in artificial intellige
 
 ## Publications
 For a full list, please see my google scholar page.
+
+[Approximate Bayesian Computation with Path Signatures](https://arxiv.org/abs/2106.12555)  
+Joel Dyer, Patrick Cannon, Sebastian Schmon  
+**UAI**, 2024. <span style="color: #CC5500;">Spotlight</span>.
+
+[Black-box Bayesian inference for agent-based models](https://www.sciencedirect.com/science/article/pii/S0165188924000198)\\
+Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon\\
+**Journal of Economic Dynamics and Control**, 2024
 
 [Robust Neural Posterior Estimation and Statistical Model Criticism](https://arxiv.org/abs/2210.06564)  
 Daniel Ward, Patrick Cannon, Mark Beaumont, Matteo Fasiolo, Sebastian Schmon  
@@ -46,10 +54,6 @@ Jordan Langham-Lopez, Patrick Cannon, Sebastian Schmon
 [Generalized Posteriors in Approximate Bayesian Computation](https://arxiv.org/abs/2011.08644)  
 Sebastian Schmon<sup>*</sup>, Patrick Cannon<sup>*</sup>, Jeremias Knoblauch  
 **AABI** (Symposium on Advances in Approximate Bayesian Inference), 2021
-
-[Approximate Bayesian Computation with Path Signatures](https://arxiv.org/abs/2106.12555)  
-Joel Dyer, Patrick Cannon, Sebastian Schmon  
-arXiv preprint, 2021
 
 [Deep Signature Statistics for Likelihood-free Time-series Models](https://openreview.net/forum?id=OOlxsoRPyFL)  
 Joel Dyer, Patrick Cannon, Sebastian Schmon  
