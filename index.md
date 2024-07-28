@@ -4,19 +4,19 @@ layout: default
 
 Hi there! I'm Patrick.
 
-I'm a machine learning researcher and engineer, currently working as the Generative AI Lead at [Hadean](https://hadean.com/).
+I'm a machine learning researcher and engineer.
 
-Previously, I co-founded a computer vision startup where I had fun working with NeRFs and Gaussian splats. I also worked at [Improbable](https://www.improbable.io/) where I focused on simulation-based inference methods (like normalising flows) for calibrating complex scientific simulators, including agent-based models.
+Previously, I co-founded a computer vision startup where I had fun working with NeRFs and Gaussian splats. I also worked at [Improbable](https://www.improbable.io/) where I developed simulation-based inference methods (like normalising flows) for calibrating complex scientific simulators, including agent-based models.
 
-I have a PhD in statistics from the University of Bristol which focussed on Markov chain Monte Carlo techniques for inference in coalescent population genetic models, supervised by [Christophe Andrieu](https://scholar.google.co.uk/citations?hl=en&user=kcsbLrAAAAAJ&view_op=list_works) and [Mark Beaumont](https://scholar.google.co.uk/citations?hl=en&user=2K3F0MMAAAAJ).
+I have a PhD in statistics from the University of Bristol which focused on Markov chain Monte Carlo techniques for inference in coalescent population genetic models, supervised by [Christophe Andrieu](https://scholar.google.co.uk/citations?hl=en&user=kcsbLrAAAAAJ&view_op=list_works) and [Mark Beaumont](https://scholar.google.co.uk/citations?hl=en&user=2K3F0MMAAAAJ).
 
-Broadly, my interests lie in probabilistic machine learning and their uses in solving important technological and scientific challenges. Guided by a statistical worldview, I try to leverage the tools of uncertainty quantification to improve our understanding of black-box algorithms, particularly deep learning. I'm mostly concerned with:
+Broadly, my interests lie in probabilistic machine learning and its use in solving technological and scientific challenges. In most of my work I've tried to leverage the tools of uncertainty quantification to improve our understanding of black-box algorithms, particularly deep learning. I'm particularly excited by:
 
 🔘 &nbsp; Robust deep learning  
 🔘 &nbsp; Algorithmic trustworthiness  
 🔘 &nbsp; Alignment  
 
-I believe these are some of the most pressing challenges in artificial intelligence and, as a result, are not only technically interesting but highly consequential for humanity.
+I believe these are some of the most pressing challenges in AI and it's important we get them right.
 
 * * *
 
@@ -25,7 +25,7 @@ For a full list, please see my google scholar page.
 
 [Approximate Bayesian Computation with Path Signatures](https://arxiv.org/abs/2106.12555)  
 Joel Dyer, Patrick Cannon, Sebastian Schmon  
-**UAI**, 2024. <span style="color: #CC5500;">Spotlight</span>.
+**UAI**, 2024. <span style="color: #4CAF50;">Spotlight and winner of the Outstanding Paper Award</span>.
 
 [Black-box Bayesian inference for agent-based models](https://www.sciencedirect.com/science/article/pii/S0165188924000198)\\
 Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon\\
@@ -45,11 +45,11 @@ Joel Dyer, Patrick Cannon, Sebastian Schmon
 
 [Calibrating Agent-Based Models to Microdata with Graph Neural Networks](https://arxiv.org/abs/2206.07570)  
 Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon  
-**ICML**, AI4ABM Workshop, 2022. <span style="color: #CC5500;">Spotlight</span>.
+**ICML**, AI4ABM Workshop, 2022. <span style="color: #4CAF50;">Spotlight</span>.
 
 [High Performance Simulation for Scalable Multi-Agent Reinforcement Learning](https://arxiv.org/abs/2207.03945)  
 Jordan Langham-Lopez, Patrick Cannon, Sebastian Schmon  
-**ICML**, AI4ABM Workshop, 2022. <span style="color: #CC5500;">Spotlight</span>.
+**ICML**, AI4ABM Workshop, 2022. <span style="color: #4CAF50;">Spotlight</span>.
 
 [Generalized Posteriors in Approximate Bayesian Computation](https://arxiv.org/abs/2011.08644)  
 Sebastian Schmon<sup>*</sup>, Patrick Cannon<sup>*</sup>, Jeremias Knoblauch  
