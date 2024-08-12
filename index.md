@@ -4,7 +4,7 @@ layout: default
 
 Hi there! I'm Patrick.
 
-I'm a machine learning researcher and engineer.
+I'm a machine learning researcher currently working on multimodal speech generation at Amazon.
 
 Previously, I co-founded a computer vision startup where I had fun working with NeRFs and Gaussian splats. I also worked at [Improbable](https://www.improbable.io/) where I developed simulation-based inference methods (like normalising flows) for calibrating complex scientific simulators, including agent-based models.
 
