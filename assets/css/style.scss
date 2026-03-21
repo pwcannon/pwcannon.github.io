@@ -17,7 +17,7 @@
   --teal-light:  #e6f4f4;
   --navy:        #1a1a4e;
   --charcoal:    #2d2d2d;
-  --grey-warm:   #ecedef;
+  --grey-warm:   #f4f5f6;
   --grey-mid:    #cdd0d4;
   --grey-dark:   #646972;
   --white:       #f8f9fa;
@@ -43,7 +43,7 @@
 body {
   font-family: var(--font-body);
   color: var(--charcoal);
-  background-color: var(--grey-warm);
+  background-color: #ffffff;
   line-height: 1.7;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
