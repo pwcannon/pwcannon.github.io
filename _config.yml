@@ -5,7 +5,8 @@ show_downloads: true
 google_analytics: true
 theme: jekyll-theme-minimal
 permalink: pretty
-kramdown: math_engine: null
-# Eclude CV from navigation
+kramdown:
+  math_engine: null
+# Exclude CV from navigation
 # exclude:
 #   - cv.md
