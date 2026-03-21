@@ -1,14 +1,71 @@
----
-layout: blog
----
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<small>{{ page.date | date: "%-d %B %Y" }}</small>
-<h1>{{ page.title }}</h1>
+    <!-- MathJax Configuration -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        svg: {
+          fontCache: 'global'
+        },
+        options: {
+          renderActions: {
+            addMenu: []
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-<!-- <p class="view">by {{ page.author | default: site.author }}</p> -->
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
-{{content}}
+    {% seo %}
+    <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+    {% include head-custom.html %}
+  </head>
+  <body class="post-page">
+    <nav class="post-nav top-nav">
+      <div class="nav-inner">
+        <a href="{{ "/" | absolute_url }}" class="nav-link">{{ site.title | default: "Home" }}</a>
+        <span class="nav-sep">/</span>
+        <a href="{{ "/blog" | absolute_url }}" class="nav-link">Blog</a>
+      </div>
+    </nav>
 
-{% if page.tags %}
-  <small>tags: <em>{{ page.tags | join: "</em> - <em>" }}</em></small>
-{% endif %}
+    <article class="post-article">
+      <header class="post-header">
+        <h1 class="post-title">{{ page.title }}</h1>
+        {% if page.date %}
+        <time class="post-date" datetime="{{ page.date | date_to_xmlschema }}">
+          {{ page.date | date: "%B %-d, %Y" }}
+        </time>
+        {% endif %}
+      </header>
+
+      <div class="post-content">
+        {{ content }}
+      </div>
+    </article>
+
+    <footer class="post-footer">
+      <div class="footer-inner">
+        <a href="{{ "/blog" | absolute_url }}" class="back-link">&larr; Back to blog</a>
+        <span class="footer-sep">·</span>
+        <a href="{{ "/" | absolute_url }}" class="back-link">Home</a>
+      </div>
+    </footer>
+
+    <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+  </body>
+</html>
