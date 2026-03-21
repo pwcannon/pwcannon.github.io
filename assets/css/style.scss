@@ -174,6 +174,24 @@ body.post-page {
   padding: 0;
 }
 
+/* Reset all base theme positioning on post pages */
+body.post-page nav,
+body.post-page article,
+body.post-page header,
+body.post-page footer,
+body.post-page section,
+body.post-page div {
+  float: none;
+  position: static;
+  width: auto;
+}
+
+/* Prevent MathJax in titles from blowing out layout */
+.post-title mjx-container {
+  display: inline !important;
+  font-size: 0.75em;
+}
+
 /* Top navigation */
 .post-nav {
   padding: 1.25rem 2rem;
