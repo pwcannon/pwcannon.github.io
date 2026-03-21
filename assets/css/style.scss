@@ -172,6 +172,14 @@ body.post-page {
   background-color: var(--grey-warm);
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body.post-page .post-article,
+body.post-page .blog-index {
+  flex: 1;
 }
 
 /* Reset all base theme positioning on post pages */
@@ -492,6 +500,7 @@ body.post-page div {
   color: var(--link-hover);
   text-decoration: underline;
 }
+
 
 
 /* ==========================================================================
