@@ -13,15 +13,15 @@
 
 :root {
   /* Core palette */
-  --teal:        #007a7a;       /* softened from #008080 — less neon, more refined */
-  --teal-light:  #e6f4f4;       /* teal wash for hover/accent backgrounds */
-  --navy:        #1a1a4e;       /* deep navy for headings */
-  --charcoal:    #2d2d2d;       /* body text */
-  --grey-warm:   #f3f2ef;       /* page background — warm, not clinical */
-  --grey-mid:    #d4d1cc;       /* borders, rules */
-  --grey-dark:   #6b6966;       /* secondary text, dates, captions */
-  --white:       #fafaf8;       /* content surface — not pure white */
-  --code-bg:     #f0efeb;       /* code block background */
+  --teal:        #007a7a;
+  --teal-light:  #e6f4f4;
+  --navy:        #1a1a4e;
+  --charcoal:    #2d2d2d;
+  --grey-warm:   #ecedef;
+  --grey-mid:    #cdd0d4;
+  --grey-dark:   #646972;
+  --white:       #f8f9fa;
+  --code-bg:     #ebedf0;
   --link:        var(--teal);
   --link-hover:  #005858;
 
