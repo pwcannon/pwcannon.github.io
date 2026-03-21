@@ -1,5 +1,5 @@
 ---
-layout: default_2
+layout: blog
 ---
 
 ## You've reached The Blog.

@@ -11,7 +11,11 @@
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
           displayMath: [['$$', '$$'], ['\\[', '\\]']],
-          processEscapes: true
+          processEscapes: true,
+          packages: {'[+]': ['ams', 'noerrors']}
+        },
+        loader: {
+          load: ['[tex]/ams', '[tex]/noerrors']
         },
         svg: {
           fontCache: 'global'
