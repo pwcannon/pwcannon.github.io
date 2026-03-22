@@ -12,9 +12,9 @@ I have a PhD in statistics from the University of Bristol which focused on Marko
 
 Broadly, my interests lie in probabilistic machine learning and its use in solving technological and scientific challenges. In most of my work I've tried to leverage the tools of uncertainty quantification to improve our understanding of black-box algorithms, particularly deep learning. I'm particularly excited by:
 
-🔘 &nbsp; Robust deep learning  
-🔘 &nbsp; Algorithmic trustworthiness  
-🔘 &nbsp; Alignment  
+<span style="color: #007a7a;">■</span> &nbsp; Robust deep learning<br>
+<span style="color: #007a7a;">■</span> &nbsp; Algorithmic trustworthiness<br>
+<span style="color: #007a7a;">■</span> &nbsp; Alignment
 
 I believe these are some of the most pressing challenges in AI and it's important we get them right.
 
@@ -24,39 +24,39 @@ I believe these are some of the most pressing challenges in AI and it's importan
 For a full list, please see my google scholar page.
 
 [Approximate Bayesian Computation with Path Signatures](https://arxiv.org/abs/2106.12555)  
-Joel Dyer, Patrick Cannon, Sebastian Schmon  
-**UAI**, 2024. <span style="color: #4CAF50;">Spotlight and winner of the Outstanding Paper Award</span>.
+<span style="color: #646972; font-size: 0.9em;">Joel Dyer, Patrick Cannon, Sebastian Schmon</span><br>
+**UAI**, 2024. <span style="background: #e6f4f4; color: #007a7a; padding: 1px 6px; border-radius: 3px; font-size: 0.85em;">Spotlight</span> <span style="background: #e6f4f4; color: #007a7a; padding: 1px 6px; border-radius: 3px; font-size: 0.85em;">Outstanding Paper Award</span>
 
 [Black-box Bayesian inference for agent-based models](https://www.sciencedirect.com/science/article/pii/S0165188924000198)\\
-Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon\\
+<span style="color: #646972; font-size: 0.9em;">Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon</span>\\
 **Journal of Economic Dynamics and Control**, 2024
 
-[Robust Neural Posterior Estimation and Statistical Model Criticism](https://arxiv.org/abs/2210.06564)  
-Daniel Ward, Patrick Cannon, Mark Beaumont, Matteo Fasiolo, Sebastian Schmon  
+[Robust Neural Posterior Estimation and Statistical Model Criticism](https://arxiv.org/abs/2210.06564)
+<span style="color: #646972; font-size: 0.9em;">Daniel Ward, Patrick Cannon, Mark Beaumont, Matteo Fasiolo, Sebastian Schmon</span><br>
 **NeurIPS**, 2022
 
-[Investigating the Impact of Model Misspecification in Simulation-Based Inference](https://arxiv.org/abs/2209.01845)  
-Patrick Cannon, Daniel Ward, Sebastian Schmon   
+[Investigating the Impact of Model Misspecification in Simulation-Based Inference](https://arxiv.org/abs/2209.01845)<br>
+<span style="color: #646972; font-size: 0.9em;">Patrick Cannon, Daniel Ward, Sebastian Schmon</span><br>
 arXiv preprint, 2022
 
-[Amortised Inference for Expensive Time-Series Simulators with Signatured Ratio Estimation](https://proceedings.mlr.press/v151/dyer22a.html)  
-Joel Dyer, Patrick Cannon, Sebastian Schmon  
+[Amortised Inference for Expensive Time-Series Simulators with Signatured Ratio Estimation](https://proceedings.mlr.press/v151/dyer22a.html)<br>
+<span style="color: #646972; font-size: 0.9em;">Joel Dyer, Patrick Cannon, Sebastian Schmon</span><br>
 **AISTATS**, 2022
 
-[Calibrating Agent-Based Models to Microdata with Graph Neural Networks](https://arxiv.org/abs/2206.07570)  
-Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon  
-**ICML**, AI4ABM Workshop, 2022. <span style="color: #4CAF50;">Spotlight</span>.
+[Calibrating Agent-Based Models to Microdata with Graph Neural Networks](https://arxiv.org/abs/2206.07570)<br>
+<span style="color: #646972; font-size: 0.9em;">Joel Dyer, Patrick Cannon, J. Doyne Farmer, Sebastian Schmon</span><br>
+**ICML**, AI4ABM Workshop, 2022. <span style="background: #e6f4f4; color: #007a7a; padding: 1px 6px; border-radius: 3px; font-size: 0.85em;">Spotlight</span>
 
-[High Performance Simulation for Scalable Multi-Agent Reinforcement Learning](https://arxiv.org/abs/2207.03945)  
-Jordan Langham-Lopez, Patrick Cannon, Sebastian Schmon  
-**ICML**, AI4ABM Workshop, 2022. <span style="color: #4CAF50;">Spotlight</span>.
+[High Performance Simulation for Scalable Multi-Agent Reinforcement Learning](https://arxiv.org/abs/2207.03945)<br>
+<span style="color: #646972; font-size: 0.9em;">Jordan Langham-Lopez, Patrick Cannon, Sebastian Schmon</span><br>
+**ICML**, AI4ABM Workshop, 2022. <span style="background: #e6f4f4; color: #007a7a; padding: 1px 6px; border-radius: 3px; font-size: 0.85em;">Spotlight</span>
 
-[Generalized Posteriors in Approximate Bayesian Computation](https://arxiv.org/abs/2011.08644)  
-Sebastian Schmon<sup>*</sup>, Patrick Cannon<sup>*</sup>, Jeremias Knoblauch  
+[Generalized Posteriors in Approximate Bayesian Computation](https://arxiv.org/abs/2011.08644)<br>
+<span style="color: #646972; font-size: 0.9em;">Sebastian Schmon<sup>*</sup>, Patrick Cannon<sup>*</sup>, Jeremias Knoblauch</span><br>
 **AABI** (Symposium on Advances in Approximate Bayesian Inference), 2021
 
-[Deep Signature Statistics for Likelihood-free Time-series Models](https://openreview.net/forum?id=OOlxsoRPyFL)  
-Joel Dyer, Patrick Cannon, Sebastian Schmon  
+[Deep Signature Statistics for Likelihood-free Time-series Models](https://openreview.net/forum?id=OOlxsoRPyFL)<br>
+<span style="color: #646972; font-size: 0.9em;">Joel Dyer, Patrick Cannon, Sebastian Schmon</span><br>
 **ICML**, INNF+ Workshop, 2021
 
 * * *
