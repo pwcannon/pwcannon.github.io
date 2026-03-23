@@ -4,7 +4,7 @@
    ========================================================================== */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+html, body { height: 100%; overflow-x: hidden; }
 a { cursor: pointer; text-decoration: none; color: var(--link); }
 a:hover { color: var(--link-hover); }
 
@@ -85,17 +85,17 @@ body::after {
 /* -- Page wrapper -- */
 .page-wrapper {
   position: relative;
-  max-width: 1200px;
+  max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* -- Contour orb -- */
 .contour-orb {
   position: absolute;
-  top: -200px;
-  right: -300px;
+  top: -260px;
+  right: -250px;
   width: 900px;
   height: 800px;
   pointer-events: none;
