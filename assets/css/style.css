@@ -520,17 +520,18 @@ footer span {
     text-align: center;
   }
 
-  /* Smaller photo */
+  /* Profile photo */
   .photo-wrapper {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     margin-bottom: 24px;
   }
 
-  /* Centered icons */
+  /* Centered icons with spacing */
   .social-icons {
     justify-content: center;
-    width: 150px;
+    width: auto;
+    gap: 24px;
     margin-bottom: 24px;
   }
 
@@ -550,8 +551,18 @@ footer span {
 
   /* Scale down lead text */
   p.lead {
-    font-size: 1.3rem;
-    line-height: 1.55;
+    font-size: 1.15rem;
+    line-height: 1.4;
+  }
+
+  /* Hide noise grain on mobile */
+  .noise-overlay {
+    display: none;
+  }
+
+  /* Disable blob animations on mobile */
+  .blob {
+    animation: none !important;
   }
 
   /* Hide right panel and orb */
@@ -562,5 +573,12 @@ footer span {
   footer {
     padding: 16px 24px;
     text-align: center;
+  }
+}
+
+/* -- Accessibility: reduced motion -- */
+@media (prefers-reduced-motion: reduce) {
+  .blob {
+    animation: none !important;
   }
 }
