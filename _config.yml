@@ -1,12 +1,9 @@
 title: Patrick Cannon
-logo: /assets/img/IMG_9480_small.jpeg
+logo: /assets/img/Patrick_BW_square.png
 description: ""
-show_downloads: true
-google_analytics: true
-theme: jekyll-theme-minimal
 permalink: pretty
 kramdown:
   math_engine: null
-# Exclude CV from navigation
-# exclude:
-#   - cv.md
+exclude:
+  - CLAUDE.md
+  - _design
