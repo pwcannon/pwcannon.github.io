@@ -6,7 +6,7 @@ layout: default
 
 <p class="body">I have a PhD in statistics from the University of Bristol where I worked on particle MCMC for population genetics with <a href="https://scholar.google.co.uk/citations?hl=en&user=kcsbLrAAAAAJ&view_op=list_works">Christophe Andrieu</a> and <a href="https://scholar.google.co.uk/citations?hl=en&user=2K3F0MMAAAAJ">Mark Beaumont</a>. This time could be summarised as 3 years of finding tricks to sample from distributions that strongly preferred the idea of being left undisturbed.</p>
 
-<p class="body">From there I tackled simulation-based inference and normalising flows at <a href="https://www.improbable.io/">Improbable</a>, then co-founded a computer vision startup where I tried to push NeRFs and Gaussian splats to their limits. Now I'm at Amazon AGI, working on post-training for large multimodal models.</p>
+<p class="body">From there I tackled simulation-based inference and normalising flows at <a href="https://www.improbable.io/">Improbable</a>, then co-founded a computer vision startup where I tried to push NeRFs and Gaussian splats to their limits. Now I'm at <a href="https://amazon.jobs/content/en-gb/teams/agi">Amazon AGI</a>, working on post-training for large multimodal models.</p>
 
 <a class="cta-link cta-link-1" href="/contact">get in touch →</a>
 
