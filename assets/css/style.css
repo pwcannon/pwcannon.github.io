@@ -82,13 +82,22 @@ body::after {
   100% { opacity: 0.33; }
 }
 
+/* -- Page wrapper -- */
+.page-wrapper {
+  position: relative;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
 /* -- Contour orb -- */
 .contour-orb {
-  position: fixed;
-  top: -32vh;
-  right: -26vw;
-  width: 80vw;
-  height: 100vh;
+  position: absolute;
+  top: -200px;
+  right: -300px;
+  width: 900px;
+  height: 800px;
   pointer-events: none;
   z-index: 0;
   opacity: 0.85;
@@ -496,9 +505,10 @@ footer span {
     gap: 16px;
   }
   .contour-orb {
-    top: -20vh;
-    right: -40vw;
-    width: 100vw;
+    top: -100px;
+    right: -200px;
+    width: 600px;
+    height: 500px;
     opacity: 0.5;
   }
 }
