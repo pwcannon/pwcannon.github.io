@@ -65,6 +65,12 @@ body::after {
   border-radius: 50%;
   filter: blur(80px);
   opacity: 0.35;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-perspective: 1000;
+  will-change: transform, opacity;
 }
 .blob:nth-child(1)  { animation: breathe 22s ease-in-out infinite; }
 .blob:nth-child(2)  { animation: breathe 28s ease-in-out infinite 3s; }
@@ -235,7 +241,7 @@ hr.section-break { border: none; border-top: 1px solid var(--border); margin: 36
 .award {
   display: inline-block; background: var(--award-bg); color: var(--award-color);
   padding: 2px 8px; border-radius: 4px; font-size: 13px;
-  border: none; margin-left: 6px; vertical-align: middle;
+  border: 1px solid rgba(255, 255, 255, 0.9); margin-left: 6px; vertical-align: middle;
 }
 .award.spotlight {
   background: #E6F4FF; color: #1A6AAA;
