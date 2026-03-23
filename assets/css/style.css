@@ -565,6 +565,14 @@ footer span {
     animation: none !important;
   }
 
+  /* Darken social icons and muted text for contrast */
+  .social-icons a {
+    color: #4A5568;
+  }
+  .paper-meta {
+    color: #4A5568;
+  }
+
   /* Hide right panel and orb */
   .right-panel { display: none; }
   .contour-orb { display: none; }
