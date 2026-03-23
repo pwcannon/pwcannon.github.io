@@ -149,6 +149,8 @@ nav a:hover { color: var(--nav-active); }
   border-right: 1px solid var(--border);
   padding: 48px 36px 44px 52px;
   display: flex; flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 .photo-wrapper {
   width: 220px; height: 220px;
@@ -191,6 +193,8 @@ nav a:hover { color: var(--nav-active); }
   padding: 48px 60px;
   border-right: 1px solid var(--border);
   border-left: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
 }
 .right-panel {}
 
@@ -451,11 +455,169 @@ footer span {
 }
 
 /* ==========================================================================
+   Margin rectangles — blog/post decorative effect
+   ========================================================================== */
+
+.margin-rects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.mrect {
+  pointer-events: auto;
+  cursor: default;
+  transition: all 1.5s ease;
+}
+.mrect {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 1;
+  backdrop-filter: brightness(1.02) contrast(1.01);
+  -webkit-backdrop-filter: brightness(1.02) contrast(1.01);
+}
+
+/* Left — back rectangle, tall, diffuse */
+.mrect-2 {
+  width: 150px; height: 250px;
+  top: 65%; left: 80px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: brightness(1.015) contrast(1.01) blur(2px);
+  -webkit-backdrop-filter: brightness(1.015) contrast(1.01) blur(2px);
+}
+.mrect-2:hover {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: brightness(1.04) contrast(1.03) blur(2px) hue-rotate(8deg);
+  -webkit-backdrop-filter: brightness(1.04) contrast(1.03) blur(2px) hue-rotate(8deg);
+  transition: all 0.3s ease;
+}
+/* Left — front rectangle, with sparse grid */
+.mrect-1 {
+  width: 252px; height: 180px;
+  top: calc(65% - 40px); left: 110px;
+  background:
+    linear-gradient(0deg, transparent calc(25% - 0.25px), rgba(80, 110, 140, 0.08) 25%, transparent calc(25% + 0.25px)),
+    linear-gradient(0deg, transparent calc(50% - 0.25px), rgba(80, 110, 140, 0.08) 50%, transparent calc(50% + 0.25px)),
+    linear-gradient(0deg, transparent calc(75% - 0.25px), rgba(80, 110, 140, 0.08) 75%, transparent calc(75% + 0.25px)),
+    linear-gradient(90deg, transparent calc(33.3% - 0.25px), rgba(80, 110, 140, 0.08) 33.3%, transparent calc(33.3% + 0.25px)),
+    linear-gradient(90deg, transparent calc(66.6% - 0.25px), rgba(80, 110, 140, 0.08) 66.6%, transparent calc(66.6% + 0.25px)),
+    rgba(255, 255, 255, 0.03);
+  backdrop-filter: brightness(1.02) contrast(1.01);
+  -webkit-backdrop-filter: brightness(1.02) contrast(1.01);
+}
+.mrect-1:hover {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: brightness(1.05) contrast(1.04) saturate(1.15);
+  -webkit-backdrop-filter: brightness(1.05) contrast(1.04) saturate(1.15);
+  transition: all 0.3s ease;
+}
+
+/* Right — overlapping orb */
+.mrect-3 {
+  width: 209px; height: 209px;
+  top: 10%; right: 10px;
+  opacity: 0.7;
+}
+.mrect-3::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent calc(30px - 0.5px),
+      rgba(255, 255, 255, 0.25) calc(30px - 0.5px),
+      rgba(255, 255, 255, 0.25) 30px,
+      transparent 30px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent calc(30px - 0.5px),
+      rgba(255, 255, 255, 0.25) calc(30px - 0.5px),
+      rgba(255, 255, 255, 0.25) 30px,
+      transparent 30px
+    );
+}
+.margin-rects:not(.post-rects) .mrect-3:hover::after {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+.margin-rects:not(.post-rects) .mrect-3:hover {
+  backdrop-filter: brightness(1.03) contrast(1.08) saturate(1.15);
+  -webkit-backdrop-filter: brightness(1.03) contrast(1.08) saturate(1.15);
+}
+/* Right — small linking element */
+.mrect-4 {
+  width: 55px; height: 39px;
+  top: 50%; right: 260px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: brightness(1.02) contrast(1.01);
+  -webkit-backdrop-filter: brightness(1.02) contrast(1.01);
+  transition: all 2s ease;
+}
+.mrect-4:hover {
+  background: rgba(180, 120, 145, 0.32);
+  box-shadow: 0 0 15px 5px rgba(180, 120, 145, 0.28);
+  transition: all 5s ease;
+}
+
+.post-rects .mrect { pointer-events: none; }
+
+/* -- Post page pink rectangle — negative space halo -- */
+.prect-1 {
+  width: 150px; height: 250px;
+  top: 65%; left: 80px;
+  background: rgba(180, 120, 145, 0.55);
+  box-shadow:
+    /* inset fuzzy edges — subtle, not too much darker than centre */
+    inset 0 0 30px 10px rgba(180, 120, 145, 0.12),
+    inset 0 0 50px 20px rgba(180, 120, 145, 0.06),
+    inset -10px 8px 35px 15px rgba(180, 120, 145, 0.1),
+    /* glow biased leftward */
+    -20px 0 30px 15px rgba(180, 120, 145, 0.32),
+    -40px 10px 50px 20px rgba(180, 120, 145, 0.2),
+    -60px -10px 70px 30px rgba(180, 120, 145, 0.1),
+    0 0 20px 8px rgba(180, 120, 145, 0.24),
+    5px 0 30px 10px rgba(180, 120, 145, 0.08);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 0.5px solid rgba(255, 255, 255, 0.4);
+}
+.prect-1::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  filter: blur(1.5px);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent calc(25px - 0.5px),
+      rgba(255, 255, 255, 0.45) calc(25px - 0.5px),
+      rgba(255, 255, 255, 0.45) 25px,
+      transparent 25px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent calc(25px - 0.5px),
+      rgba(255, 255, 255, 0.45) calc(25px - 0.5px),
+      rgba(255, 255, 255, 0.45) 25px,
+      transparent 25px
+    );
+}
+
+/* ==========================================================================
    Mobile responsive
    ========================================================================== */
 
 /* -- Tablet landscape (1024px) -- */
 @media (max-width: 1024px) {
+  .margin-rects { display: none; }
   header {
     grid-template-columns: auto 1fr;
   }
@@ -592,7 +754,7 @@ footer span {
 
 /* -- Accessibility: reduced motion -- */
 @media (prefers-reduced-motion: reduce) {
-  .blob {
+  .blob, .mrect {
     animation: none !important;
   }
 }
