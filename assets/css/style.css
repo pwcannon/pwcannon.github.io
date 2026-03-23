@@ -448,6 +448,7 @@ footer span {
    Mobile responsive
    ========================================================================== */
 
+/* -- Tablet landscape (1024px) -- */
 @media (max-width: 1024px) {
   header {
     grid-template-columns: auto 1fr;
@@ -464,24 +465,53 @@ footer span {
   .main {
     border-right: none;
   }
+  .contour-orb {
+    top: -320px;
+    right: -350px;
+    width: 800px;
+    height: 700px;
+    opacity: 0.6;
+  }
 }
 
+/* -- Phone / small tablet (768px) -- */
 @media (max-width: 768px) {
+  /* Nav */
   header {
     grid-template-columns: 1fr;
     text-align: center;
+    border-bottom: 1px solid var(--border);
   }
   .name {
-    padding: 20px 20px 8px;
+    padding: 20px 24px 8px;
+    font-size: 22px;
   }
   nav {
     justify-content: center;
-    padding: 0 20px 0;
+    padding: 0 24px 0;
     gap: 20px;
   }
+  nav a {
+    color: var(--body-text);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+  }
+  nav a.active {
+    color: var(--lead);
+    border-bottom-color: var(--meta-strong);
+  }
+  nav a:hover {
+    color: var(--lead);
+  }
+
+  /* Grid → single column */
   .layout {
     grid-template-columns: 1fr;
   }
+
+  /* Sidebar stacks above main */
   .sidebar {
     border-right: none;
     border-bottom: 1px solid var(--border);
@@ -489,26 +519,48 @@ footer span {
     align-items: center;
     text-align: center;
   }
+
+  /* Smaller photo */
+  .photo-wrapper {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 24px;
+  }
+
+  /* Centered icons */
   .social-icons {
     justify-content: center;
+    width: 150px;
+    margin-bottom: 24px;
   }
+
+  /* Hide news/recent section */
+  .sidebar-news-divider,
+  .sidebar-news-label,
+  .sidebar-news {
+    display: none;
+  }
+
+  /* Main content */
   .main {
     padding: 28px 24px;
     border-left: none;
     border-right: none;
   }
+
+  /* Scale down lead text */
+  p.lead {
+    font-size: 1.3rem;
+    line-height: 1.55;
+  }
+
+  /* Hide right panel and orb */
   .right-panel { display: none; }
+  .contour-orb { display: none; }
+
+  /* Footer */
   footer {
     padding: 16px 24px;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  .contour-orb {
-    top: -100px;
-    right: -200px;
-    width: 600px;
-    height: 500px;
-    opacity: 0.5;
+    text-align: center;
   }
 }
