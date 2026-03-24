@@ -87,6 +87,12 @@
   </div>
 
   <div class="right-panel"></div>
+
+  {% if page.sidebar_notes %}
+  {% for note in page.sidebar_notes %}
+  <div class="margin-note {% cycle 'margin-note-left', 'margin-note-right' %}" data-anchor="{{ note.at }}">{{ note.text }}</div>
+  {% endfor %}
+  {% endif %}
 </div>
 
 <footer>
@@ -95,5 +101,31 @@
 
 </div><!-- .page-wrapper -->
 
+<script>
+(function() {
+  var notes = document.querySelectorAll('.margin-note[data-anchor]');
+  var layout = document.querySelector('.layout');
+  if (!notes.length || !layout) return;
+  var layoutTop = layout.getBoundingClientRect().top + window.scrollY;
+
+  function positionNotes() {
+    notes.forEach(function(note) {
+      var anchorId = note.getAttribute('data-anchor');
+      var anchor = document.getElementById(anchorId);
+      if (!anchor) return;
+      var anchorTop = anchor.getBoundingClientRect().top + window.scrollY;
+      note.style.top = (anchorTop - layoutTop) + 'px';
+    });
+  }
+
+  // Position after page load and MathJax rendering
+  positionNotes();
+  window.addEventListener('load', positionNotes);
+  // Re-position after MathJax finishes
+  if (window.MathJax && MathJax.startup) {
+    MathJax.startup.promise.then(positionNotes);
+  }
+})();
+</script>
 </body>
 </html>
