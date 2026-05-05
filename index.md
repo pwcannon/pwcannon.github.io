@@ -15,7 +15,9 @@ layout: default
 
 <p class="body">In domains with verifiable rewards like mathematics, code, games, and formal reasoning, we're seeing clear progress. Here, sampling and inference have an obvious target. We can generate candidates, search over them, allocate more compute at test time, and use verification to decide what survives. I expect this recipe to matter deeply for scientific discovery, but only if the verification process is itself reliable.</p>
 
-<p class="body">I'm most interested in the cases where this recipe breaks. Many of the questions we ask intelligent systems don't permit any kind of straightforward verifier. They involve judgment, context, preference, uncertainty, and disagreement. Current approaches often average away such complications. While that can be useful, it leaves us with systems that are confident even when the target is underspecified. I want to build systems that can track that underspecification explicitly: systems that know when to search further, when to ask, when to defer, and when to preserve disagreement rather than resolve it prematurely. My current work addresses the mathematical foundations of systems that can act under uncertainty without collapsing it.</p>
+<p class="body">I'm most interested in the cases where this recipe breaks. Many of the questions we ask intelligent systems don't have a straightforward verifier. They involve judgment, context, preference, uncertainty, and disagreement. Current approaches often average away such complications. While that can be useful, it leaves us with systems that are confident even when the target is underspecified — a central difficulty for alignment.</p>
+
+<p class="body">I want to build systems that can track that underspecification explicitly: systems that know when to search further, when to ask, when to defer, and when to preserve disagreement rather than resolve it prematurely. My current work addresses the mathematical foundations of systems that can act under uncertainty without collapsing it.</p>
 
 
 
