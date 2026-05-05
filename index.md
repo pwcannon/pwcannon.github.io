@@ -2,20 +2,22 @@
 layout: default
 ---
 
-<p class="lead">I'm a machine learning researcher with a background in Monte Carlo methods. I think the hardest remaining problems in building AI systems we can trust are fundamentally problems of sampling and inference: how to search, when to stop, and how to know what you don't know.</p>
+<p class="lead">I'm a machine learning researcher with a background in Monte Carlo methods. I think the hardest remaining problems in building effective AI systems we can trust are fundamentally problems of sampling and inference: how to search, when to stop, and how to know what you don't know.</p>
 
 <p class="body">I have a PhD in statistics from the University of Bristol where I worked on particle MCMC for population genetics with <a href="https://scholar.google.co.uk/citations?hl=en&user=kcsbLrAAAAAJ&view_op=list_works">Christophe Andrieu</a> and <a href="https://scholar.google.co.uk/citations?hl=en&user=2K3F0MMAAAAJ">Mark Beaumont</a>. This time could be summarised as 3 years of finding tricks to sample from distributions that strongly preferred the idea of being left undisturbed.</p>
 
-<p class="body">From there I spent three years at <a href="https://www.improbable.io/">Improbable</a> building methods for calibrating complex simulators against real-world data. This worked beautifully right up until we asked what happens when the simulator is <em>wrong</em> which, for anything interesting, it invariably is. That question turned into papers at NeurIPS, UAI, and AISTATS and inspired a growing line of work on robust simulation-based inference — understanding when and why learned models fail, which has become a central question in AI safety. I then co-founded a computer vision startup pushing NeRFs and Gaussian splats to their limits, and most recently at <a href="https://amazon.jobs/content/en-gb/teams/agi">Amazon AGI</a>, I worked on post-training for large multimodal models.</p>
+<p class="body">From there I spent three years at <a href="https://www.improbable.io/">Improbable</a> building methods for calibrating complex simulators against real-world data. This worked beautifully right up until we asked what happens when the simulator is <em>wrong</em> which, for anything interesting, it invariably is. That question turned into papers at NeurIPS, UAI, and AISTATS and inspired a growing line of work on robust simulation-based inference. I then co-founded a computer vision startup pushing NeRFs and Gaussian splats to their limits, and most recently at <a href="https://amazon.jobs/content/en-gb/teams/agi">Amazon AGI</a>, I worked on post-training for large multimodal models.</p>
 
 <a class="cta-link cta-link-1" href="/contact">get in touch →</a>
 
 <hr class="section-break">
 <p class="section-label">Direction</p>
 
-<p class="body">In domains with verifiable rewards — mathematics, code, and formal reasoning — we are witnessing extraordinary progress. Here, sampling and inference have clear traction. The potential to accelerate scientific discovery is imminent, provided we continue to scale inference-time compute, search, and our ability to ensure the verification process itself is reliable.</p>
+<p class="body">In domains with verifiable rewards like mathematics, code, games, and formal reasoning, we're seeing clear progress. Here, sampling and inference have an obvious target. We can generate candidates, search over them, allocate more compute at test time, and use verification to decide what survives. I expect this recipe to matter deeply for scientific discovery, but only if the verification process is itself reliable.</p>
 
-<p class="body">But I'm also motivated by a longer term conviction. Current AI captures a kind of consensus, a melange, a blob - the natural consequence of the output that least offends. In some domains that's been fantastically useful, particularly where there are clear correctness criteria. Yet the richest aspects of human judgment are not well preserved under aggregation: taste, context-sensitivity, and irreducible perspective. These are not noise around a mean; they are a structured landscape of meaning. I believe this space is tractable and that calibrated uncertainty will be crucial to building it. That's where I'm focusing my research — developing the mathematical foundations for AI systems that know what they don't know.</p>
+<p class="body">I'm most interested in the cases where this recipe breaks. Many of the questions we ask intelligent systems don't permit any kind of straightforward verifier. They involve judgment, context, preference, uncertainty, and disagreement. Current approaches often average away such complications. While that can be useful, it leaves us with systems that are confident even when the target is underspecified. I want to build systems that can track that underspecification explicitly: systems that know when to search further, when to ask, when to defer, and when to preserve disagreement rather than resolve it prematurely. My current work addresses the mathematical foundations of systems that can act under uncertainty without collapsing it.</p>
+
+
 
 <a class="cta-link cta-link-2" href="/blog">read the blog →</a>
 
