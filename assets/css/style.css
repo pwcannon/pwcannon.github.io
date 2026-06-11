@@ -720,6 +720,14 @@ footer span {
   }
 }
 
+/* ── EXPERIMENT: ink nav (pairs with the light powder orb — dark menu text
+   on a pale field). Delete this block to restore the bright-on-dark nav. ── */
+body {
+  --nav-inactive: #3A6080;
+  --nav-active: #0A1E2E;
+  --nav-underline: rgba(200, 140, 170, 0.85);
+}
+
 /* -- Accessibility: reduced motion -- */
 @media (prefers-reduced-motion: reduce) {
   .blob, .mrect {
