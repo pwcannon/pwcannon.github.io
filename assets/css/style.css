@@ -256,7 +256,7 @@ hr.section-break { border: none; border-top: 1px solid var(--border); margin: 36
   transition: color 0.2s ease;
 }
 .paper-title:hover { color: var(--link-hover); }
-.paper-meta { font-size: 14px; color: var(--meta); line-height: 1.5; }
+.paper-meta { font-size: 14px; color: var(--body-text); line-height: 1.5; }
 .paper-meta strong { color: var(--meta-strong); font-weight: 600; font-size: 15px; }
 .award {
   display: inline-block; background: var(--award-bg); color: var(--award-color);
@@ -701,11 +701,8 @@ footer span {
     animation: none !important;
   }
 
-  /* Darken social icons and muted text for contrast */
+  /* Darken social icons for contrast */
   .social-icons a {
-    color: #4A5568;
-  }
-  .paper-meta {
     color: #4A5568;
   }
 
