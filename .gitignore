@@ -4,3 +4,5 @@ Gemfile.lock
 *.gem
 .jekyll-cache
 *.DS_Store
+.claude/
+__pycache__/
