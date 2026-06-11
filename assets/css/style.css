@@ -162,7 +162,8 @@ nav a:hover { color: var(--nav-active); }
 }
 .photo-wrapper {
   width: 220px; height: 220px;
-  background: var(--photo-bg); border-radius: 4px;
+  background: #4E6C92; /* duotone tint: photo takes this hue via blend; lighter = paler tint */
+  border-radius: 4px;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; color: var(--photo-color);
   margin-bottom: 36px;
@@ -171,6 +172,8 @@ nav a:hover { color: var(--nav-active); }
 }
 .photo-wrapper img {
   width: 100%; height: 100%; object-fit: cover;
+  mix-blend-mode: luminosity;
+  filter: contrast(0.92) brightness(1.06);
 }
 .social-icons { display: flex; justify-content: space-between; width: 180px; margin: 0 auto 36px; align-self: center; }
 .social-icons a {
