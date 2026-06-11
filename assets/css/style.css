@@ -114,6 +114,8 @@ body::after {
   width: 100%;
   height: 100%;
 }
+/* Orb treatment modifiers (EXPERIMENT scaffolding — delete unused at cleanup) */
+.contour-orb--lines { filter: none; opacity: 1; }
 
 /* -- Header -- */
 header {
@@ -711,6 +713,14 @@ footer span {
     padding: 16px 24px;
     text-align: center;
   }
+}
+
+/* ── EXPERIMENT: ink nav (pairs with the line orb, which provides no dark
+   backing). Delete this whole block to restore the bright-on-dark nav. ── */
+body {
+  --nav-inactive: #3A6080;
+  --nav-active: #0A1E2E;
+  --nav-underline: rgba(200, 140, 170, 0.85);
 }
 
 /* -- Accessibility: reduced motion -- */

@@ -6,7 +6,7 @@
   Finalize: inline the winning include here and delete the losing orb_*.html
   files plus any unused CSS blocks marked EXPERIMENT in style.css.
 {% endcomment %}
-{% assign orb_style = "crisp" %}
+{% assign orb_style = "lines" %}
 {% if orb_style == "lines" %}{% include orb_lines.html %}
 {% elsif orb_style == "crisp" %}{% include orb_crisp.html %}
 {% else %}{% include orb_bands.html %}{% endif %}
