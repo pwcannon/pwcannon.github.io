@@ -17,7 +17,7 @@ body {
   --nav-active: #E8F4FF;
   --nav-underline: #60B0E0;
   --lead: #0A1E2E;
-  --body-text: #3A6080;
+  --body-text: #2E4A66;
   --link: #1565C0;
   --link-hover: #0D47A1;
   --label: #8AAAC8;
@@ -34,11 +34,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* -- Noise grain overlay -- */
+/* -- Noise grain overlay (beneath content: textures bg + blobs, text stays crisp) -- */
 .noise-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 0;
   pointer-events: none;
   opacity: 0.30;
   mix-blend-mode: overlay;
