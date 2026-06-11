@@ -43,14 +43,6 @@
   <div class="blob" style="width:280px;height:200px;background:#6C90B0;top:8%;left:36%;"></div>
 </div>
 
-<!-- Inline SVG noise grain (after blobs, beneath content) -->
-<svg class="noise-overlay" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-  <filter id="grain">
-    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" stitchTiles="stitch" />
-  </filter>
-  <rect width="100%" height="100%" filter="url(#grain)" />
-</svg>
-
 <div class="page-wrapper">
 
 <!-- Contour orb -->
@@ -100,6 +92,14 @@
 </footer>
 
 </div><!-- .page-wrapper -->
+
+<!-- Inline SVG noise grain (after page content in DOM: paints over blobs and orb, beneath z-indexed content) -->
+<svg class="noise-overlay" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" stitchTiles="stitch" />
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain)" />
+</svg>
 
 <script>
 (function() {
