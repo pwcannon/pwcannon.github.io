@@ -108,6 +108,7 @@ body::after {
   z-index: 0;
   opacity: 0.85;
   filter: blur(1.5px);
+  transform: rotate(0deg); /* orb orientation — adjust here */
 }
 .contour-orb svg {
   width: 100%;
