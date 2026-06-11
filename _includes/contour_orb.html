@@ -3,10 +3,12 @@
     lines  - fine isolines (needs ink-nav CSS block; nav has no dark backing)
     crisp  - cel-shaded flat layers
     bands  - original smooth banded fill (works with bright-on-dark nav)
+    inkwash - banded fill with organic edge displacement (bright-on-dark nav)
   Finalize: inline the winning include here and delete the losing orb_*.html
   files plus any unused CSS blocks marked EXPERIMENT in style.css.
 {% endcomment %}
-{% assign orb_style = "lines" %}
+{% assign orb_style = "inkwash" %}
 {% if orb_style == "lines" %}{% include orb_lines.html %}
+{% elsif orb_style == "inkwash" %}{% include orb_inkwash.html %}
 {% elsif orb_style == "crisp" %}{% include orb_crisp.html %}
 {% else %}{% include orb_bands.html %}{% endif %}
