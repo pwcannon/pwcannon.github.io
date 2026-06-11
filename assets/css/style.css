@@ -100,7 +100,7 @@ body::after {
 /* -- Contour orb -- */
 .contour-orb {
   position: absolute;
-  top: -260px;
+  top: -230px;
   right: -250px;
   width: 900px;
   height: 800px;
@@ -108,7 +108,7 @@ body::after {
   z-index: 0;
   opacity: 0.85;
   filter: blur(1.5px);
-  transform: rotate(0deg); /* orb orientation — adjust here */
+  transform: rotate(15deg); /* orb orientation — adjust here */
 }
 .contour-orb svg {
   width: 100%;
