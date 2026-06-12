@@ -292,9 +292,11 @@ def make_card(polys, root):
     # Orb: right side at 1.05x, nearly full contour visible so the heart
     # silhouette reads and rhymes with the favicon (V1 framing, 12 Jun 2026;
     # 1.25x bleed framing rejected — favicon match beats site-crop match
-    # on first-contact surfaces). Site rotation (15deg CW).
+    # on first-contact surfaces). NATIVE orientation (0°): the site's 15° CSS
+    # rotation exists to seat the orb behind the nav; brand marks keep the
+    # original, more charming tilt (Patrick, 12 Jun 2026).
     orb = draw_orb_stacked((w, h), polys, center=(w * 0.76, h * 0.40),
-                           scale=1.05 * SS, angle_deg=15, skip=SKIP_BANDS,
+                           scale=1.05 * SS, angle_deg=0, skip=SKIP_BANDS,
                            ramp=ORB_RAMP_DARK, global_a=0.77)
     img = Image.alpha_composite(img, orb)
     img = add_grain(img, np.random.default_rng(SEED))
@@ -329,15 +331,14 @@ BLOB_BRIGHT = '#A8C8E0'       # dark-mode mark (--nav-inactive)
 
 
 def blob_polys(frac):
-    """Flat silhouette: level set of the UNPERTURBED mixture, site rotation."""
+    """Flat silhouette: level set of the UNPERTURBED mixture, NATIVE
+    orientation (0° — matches the card; the site's 15° tilt is CSS-only)."""
     px, py, PZ = gc.evaluate_mixture(MIXTURE, gc.GRID_SIZE, gc.VIEWBOX_W, gc.VIEWBOX_H)
-    th = np.deg2rad(15)
-    R = np.array([[np.cos(th), -np.sin(th)], [np.sin(th), np.cos(th)]])
     out = []
     for cc in find_contours(PZ, frac * PZ.max()):
         P = np.column_stack([np.interp(cc[:, 1], np.arange(len(px)), px),
                              np.interp(cc[:, 0], np.arange(len(py)), py)])
-        out.append(P @ R.T)
+        out.append(P)
     return out
 
 
