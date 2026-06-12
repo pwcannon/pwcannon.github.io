@@ -52,7 +52,11 @@ from make_orb_inkwash import MIXTURE, N_BANDS, bezier_d
 
 gc = load_orb_module()
 
-SEED = 29
+SEED = 29       # site orb / grain determinism
+CARD_SEED = 2   # card orb resample — deliberately a different posterior draw
+                # from the site's (decided 12 Jun 2026: the motif's identity
+                # is the mixture + band grammar, not a particular draw; each
+                # surface carrying its own resample IS the concept)
 
 # Card geometry (rendered at 2x, downsampled for crispness)
 CARD_W, CARD_H, SS = 1200, 630, 2
@@ -88,12 +92,12 @@ SKIP_BANDS = {10, 11, 13}  # 0-indexed
 BAND_ALPHAS = np.linspace(0.03, 0.58, 14)
 
 
-def band_polys():
-    """Posterior-draws bands, exactly as make_orb_inkwash.main() computes them.
+def band_polys(seed=SEED):
+    """Posterior-draws bands, exactly as make_orb_inkwash computes them.
 
     Returns a list of (polygon_points, rgba) in orb space (800x700, y down).
     """
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(seed)
 
     def perturbed(comps):
         c2 = copy.deepcopy(comps)
@@ -401,7 +405,7 @@ def make_favicons(root):
 
 def main():
     root = HERE.parent
-    make_card(band_polys(), root)
+    make_card(band_polys(CARD_SEED), root)
     make_favicons(root)
 
 
