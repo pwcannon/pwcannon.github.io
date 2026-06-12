@@ -101,7 +101,7 @@ body::after {
 .contour-orb {
   position: absolute;
   top: -215px; /* nudged down 15px, 12 Jun 2026 */
-  right: -280px;
+  right: -285px; /* a hair right (5px), 12 Jun 2026 */
   width: 900px;
   height: 800px;
   pointer-events: none;
