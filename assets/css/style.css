@@ -100,11 +100,13 @@ body::after {
 /* -- Contour orb -- */
 .contour-orb {
   position: absolute;
-  /* position/orientation settled by eye, 12 Jun 2026 — adjust here */
-  top: -215px;
-  right: -293px;
-  width: 900px;
-  height: 800px;
+  /* position/orientation settled by eye, 12 Jun 2026 — adjust here.
+     Box 900x800 -> 810x720 (-10%), offsets compensated by half the
+     shrink so the orb scales in place rather than drifting up-right. */
+  top: -175px;
+  right: -248px;
+  width: 810px;
+  height: 720px;
   pointer-events: none;
   z-index: 0;
   opacity: 0.85;
