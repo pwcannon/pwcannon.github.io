@@ -5,6 +5,8 @@ glyphs fill different fractions of their 24-unit viewBoxes, so equal CSS
 sizes render unequal optical sizes. Measured 12 Jun 2026:
   scholar 23.8x24.0 of 24 | github 24.0x23.4 | linkedin 17.1x17.2 | twitter 18.8x15.6
 -> normalized sizes 20/20/26/24 px (blend of bbox- and ink-weight-equalization).
+SUPERSEDED same day by the roundel set (make_social_roundels.py): uniform
+discs need no per-icon sizes. Kept for the measurement methodology.
 
 Implementation (no SVG renderer needed):
 mini path parser (M/L/H/V/C/S/A/Z + relatives), arcs via endpoint

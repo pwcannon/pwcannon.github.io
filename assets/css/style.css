@@ -173,15 +173,11 @@ nav a:hover { color: var(--nav-active); }
   transition: color 0.2s ease;
 }
 .social-icons a:hover { color: #C88CAA; } /* rose accent (200,140,170) — site's single accent hue, cf. .cta-link:hover */
-.social-icons svg { fill: currentColor; }
-/* Optical size normalization (12 Jun 2026; _design/measure_social_icons.py):
-   the glyphs fill different fractions of their 24-unit viewBoxes — scholar
-   and github bleed the full box, linkedin spans 17/24, twitter 19/24.
-   Per-icon sizes below equalize RENDERED optical size, not nominal size. */
-.social-icons a:nth-child(1) svg { width: 20px; height: 20px; }
-.social-icons a:nth-child(2) svg { width: 20px; height: 20px; }
-.social-icons a:nth-child(3) svg { width: 26px; height: 26px; }
-.social-icons a:nth-child(4) svg { width: 24px; height: 24px; }
+/* Roundel icon set (12 Jun 2026): every mark is a glyph knocked out of a
+   24-unit disc — the github mark's grammar, extended to the others by
+   _design/make_social_roundels.py — so optical sizes are uniform by
+   construction and need no per-icon correction. */
+.social-icons svg { width: 20px; height: 20px; fill: currentColor; }
 
 /* -- Sidebar news -- */
 .sidebar-news { margin-top: 0; }
