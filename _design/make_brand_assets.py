@@ -52,6 +52,11 @@ from make_orb_inkwash import MIXTURE, N_BANDS, bezier_d
 
 gc = load_orb_module()
 
+# Card filename is VERSIONED because scrapers (LinkedIn/Slack/X) cache
+# og-images by URL for days: bump the version on any visible card change,
+# and update the matching `image:` default in _config.yml IN LOCKSTEP.
+CARD_ASSET = 'og_card_v2.png'
+
 SEED = 29       # site orb / grain determinism
 CARD_SEED = 2   # card orb resample — deliberately a different posterior draw
                 # from the site's (decided 12 Jun 2026: the motif's identity
@@ -325,7 +330,7 @@ def make_card(polys, root):
               'into _design/fonts/, re-run.')
 
     out = img.resize((CARD_W, CARD_H), Image.LANCZOS).convert('RGB')
-    dest = root / 'assets' / 'img' / 'og_card.png'
+    dest = root / 'assets' / 'img' / CARD_ASSET
     out.save(dest, optimize=True)
     print(f'{dest.relative_to(root)} written ({dest.stat().st_size // 1024} KB)')
 

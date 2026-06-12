@@ -8,11 +8,13 @@ twitter:
 permalink: pretty
 kramdown:
   math_engine: null
+# image: filename is versioned — bump together with CARD_ASSET in
+# _design/make_brand_assets.py (scrapers cache og-images by URL)
 defaults:
   - scope:
       path: ""
     values:
-      image: /assets/img/og_card.png
+      image: /assets/img/og_card_v2.png
 exclude:
   - CLAUDE.md
   - _design
