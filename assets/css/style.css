@@ -167,13 +167,21 @@ nav a:hover { color: var(--nav-active); }
 }
 .social-icons { display: flex; justify-content: space-between; width: 180px; margin: 0 auto 36px; align-self: center; }
 .social-icons a {
-  display: block; width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px;
   color: var(--label);
   transition: color 0.2s ease;
 }
-.social-icons a:hover { color: var(--link); }
-.social-icons svg { width: 20px; height: 20px; fill: currentColor; }
-.social-icons a:nth-child(3) svg { width: 22px; height: 22px; }
+.social-icons a:hover { color: #C88CAA; } /* rose accent (200,140,170) — site's single accent hue, cf. .cta-link:hover */
+.social-icons svg { fill: currentColor; }
+/* Optical size normalization (12 Jun 2026; _design/measure_social_icons.py):
+   the glyphs fill different fractions of their 24-unit viewBoxes — scholar
+   and github bleed the full box, linkedin spans 17/24, twitter 19/24.
+   Per-icon sizes below equalize RENDERED optical size, not nominal size. */
+.social-icons a:nth-child(1) svg { width: 20px; height: 20px; }
+.social-icons a:nth-child(2) svg { width: 20px; height: 20px; }
+.social-icons a:nth-child(3) svg { width: 26px; height: 26px; }
+.social-icons a:nth-child(4) svg { width: 24px; height: 24px; }
 
 /* -- Sidebar news -- */
 .sidebar-news { margin-top: 0; }
