@@ -101,7 +101,7 @@ body::after {
 .contour-orb {
   position: absolute;
   top: -230px;
-  right: -250px;
+  right: -280px;
   width: 900px;
   height: 800px;
   pointer-events: none;
