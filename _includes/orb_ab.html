@@ -18,6 +18,14 @@
       if (!svg) return;
       var el = document.querySelector('.contour-orb');
       if (el) el.innerHTML = svg;
+      // visible indicator so a sticky experiment can't masquerade as default
+      var badge = document.createElement('a');
+      badge.textContent = 'orb: seed ' + s + ' (click to reset)';
+      badge.href = '?orb=reset';
+      badge.style.cssText = 'position:fixed;bottom:10px;left:10px;z-index:99;' +
+        'font:11px monospace;color:#8AAAC8;background:rgba(10,30,46,0.85);' +
+        'padding:4px 8px;border-radius:4px;text-decoration:none;';
+      document.body.appendChild(badge);
     });
 })();
 </script>
