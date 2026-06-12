@@ -289,9 +289,12 @@ def make_card(polys, root):
     w, h = CARD_W * SS, CARD_H * SS
     img = dark_background(w, h)
 
-    # Orb: right side, bleeding off the top-right, site rotation (15deg CW)
-    orb = draw_orb_stacked((w, h), polys, center=(w * 0.80, h * 0.30),
-                           scale=1.25 * SS, angle_deg=15, skip=SKIP_BANDS,
+    # Orb: right side at 1.05x, nearly full contour visible so the heart
+    # silhouette reads and rhymes with the favicon (V1 framing, 12 Jun 2026;
+    # 1.25x bleed framing rejected — favicon match beats site-crop match
+    # on first-contact surfaces). Site rotation (15deg CW).
+    orb = draw_orb_stacked((w, h), polys, center=(w * 0.76, h * 0.40),
+                           scale=1.05 * SS, angle_deg=15, skip=SKIP_BANDS,
                            ramp=ORB_RAMP_DARK, global_a=0.77)
     img = Image.alpha_composite(img, orb)
     img = add_grain(img, np.random.default_rng(SEED))
