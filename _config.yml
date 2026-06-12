@@ -14,7 +14,7 @@ defaults:
   - scope:
       path: ""
     values:
-      image: /assets/img/og_card_v2.png
+      image: /assets/img/og_card_v3.png
 exclude:
   - CLAUDE.md
   - _design

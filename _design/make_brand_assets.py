@@ -55,10 +55,10 @@ gc = load_orb_module()
 # Card filename is VERSIONED because scrapers (LinkedIn/Slack/X) cache
 # og-images by URL for days: bump the version on any visible card change,
 # and update the matching `image:` default in _config.yml IN LOCKSTEP.
-CARD_ASSET = 'og_card_v2.png'
+CARD_ASSET = 'og_card_v3.png'
 
 SEED = 29       # site orb / grain determinism
-CARD_SEED = 2   # card orb resample — deliberately a different posterior draw
+CARD_SEED = 69  # card orb resample — deliberately a different posterior draw
                 # from the site's (decided 12 Jun 2026: the motif's identity
                 # is the mixture + band grammar, not a particular draw; each
                 # surface carrying its own resample IS the concept)
