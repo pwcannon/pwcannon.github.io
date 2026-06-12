@@ -108,7 +108,7 @@ body::after {
   z-index: 0;
   opacity: 0.85;
   filter: blur(1.5px);
-  transform: rotate(15deg); /* orb orientation — adjust here */
+  transform: rotate(7.5deg); /* orb orientation — adjust here (halved from 15deg, 12 Jun 2026) */
 }
 .contour-orb svg {
   width: 100%;
