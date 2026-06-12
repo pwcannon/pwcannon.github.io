@@ -90,8 +90,22 @@ def bezier_d(P, step=4):
     return ' '.join(parts)
 
 
+def mixture_mode():
+    """Argmax of the UNPERTURBED mixture density (the central estimate)."""
+    px, py, PZ = gc.evaluate_mixture(MIXTURE, 800, gc.VIEWBOX_W, gc.VIEWBOX_H)
+    iy, ix = np.unravel_index(PZ.argmax(), PZ.shape)
+    return px[ix], py[iy]
+
+
 def svg_body(seed=SEED):
-    """Full orb SVG for a given resample seed (band config/colours fixed)."""
+    """Full orb SVG for a given resample seed (band config/colours fixed).
+
+    Includes the posterior-mode marker (12 Jun 2026): a small rose plus at
+    the central mixture's mode — point estimate against the uncertainty
+    wash. Lives INSIDE the blur group so it reads as part of the wash;
+    the page grain overlay paints over it (grain include is after
+    .page-wrapper). Colour comes from CSS (.contour-orb .mode-marker,
+    rgba(var(--accent-rose),...)), keeping the accent single-sourced."""
     rng = np.random.default_rng(seed)
     L = ['<svg viewBox="-100 -100 1000 900" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">',
          '  <defs><filter id="iw"><feGaussianBlur stdDeviation="2"/></filter></defs>',
@@ -111,6 +125,10 @@ def svg_body(seed=SEED):
             d = bezier_d(P)
             if d:
                 L.append(f'    <path d="{d}" fill="rgba({int(r)},{int(g)},{int(b)},{a_:.3f})" stroke="none" />')
+    mx, my = mixture_mode()
+    arm = 10
+    L.append(f'    <path class="mode-marker" d="M{mx-arm:.1f} {my:.1f}L{mx+arm:.1f} {my:.1f}'
+             f'M{mx:.1f} {my-arm:.1f}L{mx:.1f} {my+arm:.1f}" fill="none" stroke-linecap="round" />')
     L.append('  </g>')
     L.append('</svg>')
     return '\n'.join(L)

@@ -118,6 +118,12 @@ body::after {
   width: 100%;
   height: 100%;
 }
+/* Posterior-mode marker: small rose plus at the central mixture's mode
+   (generated into the SVG; sits inside the blur group, beneath the grain). */
+.contour-orb .mode-marker {
+  stroke: rgba(var(--accent-rose), 0.9);
+  stroke-width: 3;
+}
 /* -- Header -- */
 header {
   position: relative; z-index: 1;
