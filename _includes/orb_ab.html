@@ -1,0 +1,23 @@
+<!-- A/B TEST scaffolding (12 Jun 2026): preview alternate orb resample seeds
+     in situ. Visit any page with ?orb=2 or ?orb=26 to swap the orb (persists
+     across pages via localStorage); ?orb=29 or ?orb=reset returns to default.
+     Normal visitors are unaffected: default render is the inline seed-29 orb.
+     Assets: /assets/img/orb/orb_seedN.svg (make_orb_inkwash.py --seed N --asset).
+     REMOVE this include (from default/blog/post layouts) after the decision. -->
+<script>
+(function () {
+  var allowed = ['2', '26'];
+  var p = new URLSearchParams(location.search).get('orb');
+  if (p === 'reset' || p === '29') { localStorage.removeItem('orbSeed'); return; }
+  if (p && allowed.indexOf(p) !== -1) localStorage.setItem('orbSeed', p);
+  var s = localStorage.getItem('orbSeed');
+  if (!s || allowed.indexOf(s) === -1) return;
+  fetch('/assets/img/orb/orb_seed' + s + '.svg')
+    .then(function (r) { return r.ok ? r.text() : null; })
+    .then(function (svg) {
+      if (!svg) return;
+      var el = document.querySelector('.contour-orb');
+      if (el) el.innerHTML = svg;
+    });
+})();
+</script>

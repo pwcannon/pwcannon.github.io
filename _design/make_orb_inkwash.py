@@ -47,11 +47,13 @@ N_BANDS = 14
 # original 14-band orb. Card generator mirrors this (make_brand_assets.py).
 SKIP_BANDS = {10, 11, 13}  # 0-indexed
 
-rng = np.random.default_rng(SEED)
+rng = np.random.default_rng(SEED)  # module default; seeded locally in svg_body
 
 
-def perturbed(comps):
+def perturbed(comps, rng=None):
     """One posterior-style resample of the mixture parameters."""
+    if rng is None:
+        rng = globals()['rng']
     c2 = copy.deepcopy(comps)
     w = []
     for comp in c2:
@@ -88,14 +90,16 @@ def bezier_d(P, step=4):
     return ' '.join(parts)
 
 
-def main():
+def svg_body(seed=SEED):
+    """Full orb SVG for a given resample seed (band config/colours fixed)."""
+    rng = np.random.default_rng(seed)
     L = ['<svg viewBox="-100 -100 1000 900" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">',
          '  <defs><filter id="iw"><feGaussianBlur stdDeviation="2"/></filter></defs>',
          '  <g filter="url(#iw)">']
     fracs = np.linspace(0.04, 0.92, N_BANDS)
     alphas = np.linspace(0.03, 0.58, N_BANDS)
     for bi, (fr, a_) in enumerate(zip(fracs, alphas)):
-        cset = perturbed(MIXTURE)  # must run even for skipped bands (rng sequence)
+        cset = perturbed(MIXTURE, rng)  # must run even for skipped bands (rng sequence)
         if bi in SKIP_BANDS:
             continue
         px, py, PZ = gc.evaluate_mixture(cset, gc.GRID_SIZE, gc.VIEWBOX_W, gc.VIEWBOX_H)
@@ -109,7 +113,24 @@ def main():
                 L.append(f'    <path d="{d}" fill="rgba({int(r)},{int(g)},{int(b)},{a_:.3f})" stroke="none" />')
     L.append('  </g>')
     L.append('</svg>')
-    svg = '\n'.join(L)
+    return '\n'.join(L)
+
+
+def main():
+    # --seed N: build an alternate resample; --asset: write to
+    # assets/img/orb/orb_seedN.svg (used by the A/B switcher, orb_ab.html)
+    seed = SEED
+    if '--seed' in sys.argv:
+        seed = int(sys.argv[sys.argv.index('--seed') + 1])
+    svg = svg_body(seed)
+
+    if '--asset' in sys.argv:
+        dest_dir = HERE.parent / 'assets' / 'img' / 'orb'
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        dest = dest_dir / f'orb_seed{seed}.svg'
+        dest.write_text(svg + '\n')
+        print(f'{dest} written ({len(svg) // 1024} KB)')
+        return
 
     (HERE / 'orb_inkwash.svg').write_text(svg)
     print(f'orb_inkwash.svg written ({len(svg) // 1024} KB)')
