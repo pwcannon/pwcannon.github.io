@@ -27,6 +27,7 @@ body {
   --award-bg: #E6F5EC; --award-color: #1A7A3A; --award-border: #A0D8B0;
   --photo-bg: #C8D8E8;
   --photo-color: #7A9AB8;
+  --accent-rose: 200, 140, 170; /* the site's single accent; use as rgba(var(--accent-rose), a) */
 
   background: var(--bg);
   font-family: 'DM Sans', sans-serif;
@@ -103,7 +104,7 @@ body::after {
   /* position/orientation settled by eye, 12 Jun 2026 — adjust here.
      Box 900x800 -> 810x720 (-10%), offsets compensated by half the
      shrink so the orb scales in place rather than drifting up-right. */
-  top: -175px;
+  top: -185px; /* raised 10px, 12 Jun 2026 */
   right: -248px;
   width: 810px;
   height: 720px;
@@ -176,7 +177,7 @@ nav a:hover { color: var(--nav-active); }
   color: var(--label);
   transition: color 0.2s ease;
 }
-.social-icons a:hover { color: #C88CAA; } /* rose accent (200,140,170) — site's single accent hue, cf. .cta-link:hover */
+.social-icons a:hover { color: rgba(var(--accent-rose), 1); }
 /* Roundel icon set (12 Jun 2026): every mark is a glyph knocked out of a
    24-unit disc — the github mark's grammar, extended to the others by
    _design/make_social_roundels.py — so optical sizes are uniform by
@@ -238,11 +239,11 @@ p.body {
 .cta-link:hover {
   transition: all 0.4s ease;
   color: #1A3A50;
-  border-color: rgba(200, 140, 170, 0.55);
-  background: rgba(200, 140, 170, 0.06);
+  border-color: rgba(var(--accent-rose), 0.55);
+  background: rgba(var(--accent-rose), 0.06);
   backdrop-filter: brightness(1.02) contrast(1.02);
   -webkit-backdrop-filter: brightness(1.02) contrast(1.02);
-  box-shadow: 0 0 18px 4px rgba(200, 140, 170, 0.15);
+  box-shadow: 0 0 18px 4px rgba(var(--accent-rose), 0.15);
 }
 hr.section-break { border: none; border-top: 1px solid var(--border); margin: 36px 0 28px; }
 .section-label {
@@ -499,7 +500,7 @@ body {
 .margin-note {
   position: absolute;
   width: 220px;
-  background: rgba(200, 140, 170, 0.35);
+  background: rgba(var(--accent-rose), 0.35);
   backdrop-filter: brightness(1.06) contrast(1.04) saturate(1.1);
   -webkit-backdrop-filter: brightness(1.06) contrast(1.04) saturate(1.1);
   padding: 14px 16px;
@@ -511,11 +512,11 @@ body {
 }
 .margin-note-left {
   left: 30px;
-  border-left: 2px solid rgba(200, 140, 170, 0.6);
+  border-left: 2px solid rgba(var(--accent-rose), 0.6);
 }
 .margin-note-right {
   right: 30px;
-  border-right: 2px solid rgba(200, 140, 170, 0.6);
+  border-right: 2px solid rgba(var(--accent-rose), 0.6);
   text-align: right;
 }
 
