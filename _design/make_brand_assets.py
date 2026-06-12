@@ -370,15 +370,25 @@ def make_favicons(root):
     """'Heart blob' mark: flat 0.30 level set. Chunkier 0.26 cut at 16px."""
     img_dir = root / 'assets' / 'img'
 
-    i32 = render_blob(32, 0.30, 1.06, BLOB_NAVY)
-    i16 = render_blob(16, 0.26, 1.02, BLOB_NAVY)
-    i32.save(img_dir / 'favicon-32.png')
-    i16.save(img_dir / 'favicon-16.png')
-    print('assets/img/favicon-32.png, favicon-16.png written')
+    # PNG/ICO fallbacks (Safari has no SVG-favicon support, so these must be
+    # legible on BOTH light and dark tab bars without scheme awareness):
+    # blob on a small paper tile, matching the apple-touch-icon treatment.
+    def tile_blob(size):
+        S = 512
+        img = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+        ImageDraw.Draw(img).rounded_rectangle(
+            [0, 0, S - 1, S - 1], radius=int(S * 0.22),
+            fill=PAPER_TOP + (255,))
+        blob = render_blob(int(S * 0.78), 0.26, 1.02, BLOB_NAVY)
+        img.alpha_composite(blob, (int(S * 0.11), int(S * 0.11)))
+        return img.resize((size, size), Image.LANCZOS)
 
-    master = render_blob(256, 0.30, 1.06, BLOB_NAVY)
-    master.save(root / 'favicon.ico', sizes=[(16, 16), (32, 32), (48, 48)])
-    print('favicon.ico written')
+    tile_blob(32).save(img_dir / 'favicon-32.png')
+    tile_blob(16).save(img_dir / 'favicon-16.png')
+    print('assets/img/favicon-32.png, favicon-16.png written (paper tile)')
+
+    tile_blob(256).save(root / 'favicon.ico', sizes=[(16, 16), (32, 32), (48, 48)])
+    print('favicon.ico written (paper tile)')
 
     # Apple touch icon: blob on paper tile (iOS composites transparency onto black)
     apple = paper_background(180, 180)
