@@ -6,3 +6,6 @@ Gemfile.lock
 *.DS_Store
 .claude/
 __pycache__/
+
+# Brand-asset fonts: not vendored (download DM Sans from Google Fonts)
+_design/fonts/
