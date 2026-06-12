@@ -100,15 +100,16 @@ body::after {
 /* -- Contour orb -- */
 .contour-orb {
   position: absolute;
-  top: -215px; /* nudged down 15px, 12 Jun 2026 */
-  right: -293px; /* +8px more right, 12 Jun 2026 */
+  /* position/orientation settled by eye, 12 Jun 2026 — adjust here */
+  top: -215px;
+  right: -293px;
   width: 900px;
   height: 800px;
   pointer-events: none;
   z-index: 0;
   opacity: 0.85;
   filter: blur(1.5px);
-  transform: rotate(7.5deg); /* orb orientation — adjust here (halved from 15deg, 12 Jun 2026) */
+  transform: rotate(7.5deg);
 }
 .contour-orb svg {
   width: 100%;
