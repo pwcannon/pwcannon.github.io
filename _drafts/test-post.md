@@ -2,6 +2,10 @@
 layout: post
 title: "Test Post: Some Results in Estimation Theory"
 date: 2026-03-23
+# description: shown in link previews (Slack/Discord/iMessage) and search
+# results. REQUIRED for every post — without it the raw first paragraph
+# (including LaTeX source) is used. Plain text, no math, ~150 chars.
+description: "Classical results on parameter estimation: the Cramér-Rao bound, Fisher information, and the Bernstein-von Mises connection between frequentist and Bayesian inference."
 sidebar_notes:
   - text: "The curvature of the log-likelihood controls how much the data tell us about the parameter. Recall: $I(\\theta) = -\\mathbb{E}[\\partial^2 \\ell / \\partial \\theta^2]$."
     at: "fisher-note"

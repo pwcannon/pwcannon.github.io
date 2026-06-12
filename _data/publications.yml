@@ -1,0 +1,64 @@
+# Single source for publications. Rendered by _includes/publications.html:
+#   {% include publications.html %}                → full list (research page)
+#   {% include publications.html selected=true %}  → selected subset (homepage)
+#
+# Fields: title, url, authors (display string), venue (bolded unless
+# venue_bold: false), venue_suffix (unbolded tail, e.g. workshop name),
+# badges ([spotlight, outstanding]), selected (homepage flag).
+
+- title: Approximate Bayesian Computation with Path Signatures
+  url: https://arxiv.org/abs/2106.12555
+  authors: Dyer, Cannon, Schmon
+  venue: UAI 2024
+  badges: [spotlight, outstanding]
+  selected: true
+
+- title: Black-box Bayesian inference for agent-based models
+  url: https://www.sciencedirect.com/science/article/pii/S0165188924000198
+  authors: Dyer, Cannon, Farmer, Schmon
+  venue: JEDC 2024
+  selected: true
+
+- title: Robust Neural Posterior Estimation and Statistical Model Criticism
+  url: https://arxiv.org/abs/2210.06564
+  authors: Ward, Cannon, Beaumont, Fasiolo, Schmon
+  venue: NeurIPS 2022
+  selected: true
+
+- title: Investigating the Impact of Model Misspecification in Simulation-Based Inference
+  url: https://arxiv.org/abs/2209.01845
+  authors: Cannon, Ward, Schmon
+  venue: arXiv 2022
+  venue_bold: false
+  selected: true
+
+- title: Amortised Inference for Expensive Time-Series Simulators with Signatured Ratio Estimation
+  url: https://proceedings.mlr.press/v151/dyer22a.html
+  authors: Dyer, Cannon, Schmon
+  venue: AISTATS 2022
+  selected: true
+
+- title: Calibrating Agent-Based Models to Microdata with Graph Neural Networks
+  url: https://arxiv.org/abs/2206.07570
+  authors: Dyer, Cannon, Farmer, Schmon
+  venue: ICML 2022
+  venue_suffix: AI4ABM Workshop
+  badges: [spotlight]
+
+- title: High Performance Simulation for Scalable Multi-Agent Reinforcement Learning
+  url: https://arxiv.org/abs/2207.03945
+  authors: Langham-Lopez, Cannon, Schmon
+  venue: ICML 2022
+  venue_suffix: AI4ABM Workshop
+  badges: [spotlight]
+
+- title: Generalized Posteriors in Approximate Bayesian Computation
+  url: https://arxiv.org/abs/2011.08644
+  authors: Schmon*, Cannon*, Knoblauch
+  venue: AABI 2021
+
+- title: Deep Signature Statistics for Likelihood-free Time-series Models
+  url: https://openreview.net/forum?id=OOlxsoRPyFL
+  authors: Dyer, Cannon, Schmon
+  venue: ICML 2021
+  venue_suffix: INNF+ Workshop

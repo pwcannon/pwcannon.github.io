@@ -1,9 +1,18 @@
 title: Patrick Cannon
+url: https://patrickcannon.cc
 logo: /assets/img/Patrick_BW_square.jpg
-description: ""
+description: "Machine learning researcher. Sampling, inference, and calibrated uncertainty for trustworthy AI."
+twitter:
+  username: pw_cannon
+  card: summary_large_image
 permalink: pretty
 kramdown:
   math_engine: null
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/img/og_card.png
 exclude:
   - CLAUDE.md
   - _design

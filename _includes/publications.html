@@ -1,0 +1,17 @@
+<!-- Publication list, single-sourced from _data/publications.yml.
+     selected=true renders the homepage subset + link to the full list. -->
+{% assign pubs = site.data.publications %}
+{% if include.selected %}{% assign pubs = pubs | where: "selected", true %}{% endif %}
+<div class="papers">
+  {% for p in pubs %}
+  <div>
+    <a class="paper-title" href="{{ p.url }}">{{ p.title }}</a>
+    <p class="paper-meta">{{ p.authors }} · {% if p.venue_bold == false %}{{ p.venue }}{% else %}<strong>{{ p.venue }}</strong>{% endif %}{% if p.venue_suffix %} {{ p.venue_suffix }}{% endif %}{% if p.badges contains 'spotlight' %} <span class="award spotlight">Spotlight</span>{% endif %}{% if p.badges contains 'outstanding' %} <span class="award">✦ Outstanding Paper Award</span>{% endif %}</p>
+  </div>
+  {% endfor %}
+  {% if include.selected %}
+  <a class="scholar-link" href="{{ '/research' | relative_url }}">all publications →</a>
+  {% else %}
+  <a class="scholar-link" href="https://scholar.google.com/citations?user=drP5-oIAAAAJ">Full list on Google Scholar →</a>
+  {% endif %}
+</div>
