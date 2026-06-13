@@ -41,6 +41,13 @@ MIXTURE = [
 SEED = 29
 N_BANDS = 14
 
+# Annotation drawn over the wash:
+#   'none'           -> blob only (shipped 13 Jun 2026; simplicity is class)
+#   'crosses'        -> mode crosses + sampler trajectory
+#   'fading_contour' -> a single fading level set of the TRUE mixture (invisible
+#                       up behind the nav, solid deep-ink around the lower mode).
+ANNOTATION = 'none'
+
 # Band ablation (12 Jun 2026, Patrick, leave-one-out eye test): bands 11, 12,
 # 14 (1-indexed) are not emitted. Their perturbation draws STILL RUN so the
 # rng sequence — and therefore every surviving band — is identical to the
@@ -213,6 +220,100 @@ def open_bezier_d(P):
     return ' '.join(parts)
 
 
+def mixture_density(res=700):
+    """Density of the UNPERTURBED mixture: the 'true' distribution that the
+    posterior-draw bands are all resamples of."""
+    return gc.evaluate_mixture(MIXTURE, res, gc.VIEWBOX_W, gc.VIEWBOX_H)
+
+
+def hdr_level(PZ, frac):
+    """Density threshold whose super-level set carries `frac` of the mass."""
+    v = np.sort(PZ.ravel())[::-1]
+    c = np.cumsum(v)
+    return float(v[min(int(np.searchsorted(c, frac * c[-1])), len(v) - 1)])
+
+
+# --- fading single contour (13 Jun 2026 experiment) ----------------------
+# ONE level set (the ~80% HDR) of the true mixture, drawn as a thread whose
+# colour and opacity vary with height: invisible up behind the nav (small y),
+# a white shimmer through the middle, resolving to solid deep ink around the
+# lower mode. Emitted as many short segments so colour/alpha can breathe along
+# the curve (a single gradient can't fade in and out). Deterministic.
+FADE_FRAC = 0.80
+FADE_Y0 = 280.0     # at/above this y (top, behind nav): invisible
+FADE_Y1 = 470.0     # at/below this y (lower mode): fully solid
+COL_Y0 = 320.0      # colour: white at/above here ...
+COL_Y1 = 470.0      # ... deep ink at/below here
+_WHITE = np.array([255, 255, 255])
+_DEEP = np.array([10, 30, 46])
+FADE_DASHED = True    # dashed (True) or continuous (False) contour
+DASH_LEN = 4.5        # dash length in orb units (echoes the old 4/5 dashing)
+DASH_GAP = 6.0        # gap between dashes
+
+
+def _smoothstep(t):
+    t = np.clip(t, 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
+
+
+def fading_contour_segments(seed=SEED):
+    px, py, PZ = mixture_density(700)
+    lv = hdr_level(PZ, FADE_FRAC)
+    cs = [c for c in find_contours(PZ, lv) if len(c) > 8]
+    cc = max(cs, key=len)                        # principal closed contour
+    X = np.interp(cc[:, 1], np.arange(len(px)), px)
+    Y = np.interp(cc[:, 0], np.arange(len(py)), py)
+    P = np.column_stack([X, Y])
+    s = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
+    Ltot = float(s[-1])
+    ph = float(np.random.default_rng(seed + 7).uniform(0, 2 * np.pi))
+
+    def stroke(ymid, smid):
+        """colour + alpha for a point at height ymid, arc-fraction smid."""
+        env = _smoothstep((ymid - FADE_Y0) / (FADE_Y1 - FADE_Y0))
+        shimmer = 1.0 - (1.0 - env) * 0.7 * (0.5 + 0.5 * np.sin(2 * np.pi * 3.0 * smid + ph))
+        alpha = float(np.clip(0.9 * env * shimmer, 0.0, 0.9))
+        tc = _smoothstep((ymid - COL_Y0) / (COL_Y1 - COL_Y0))
+        tc = float(np.clip(tc + 0.12 * np.sin(2 * np.pi * 2.0 * smid + ph), 0.0, 1.0))
+        col = (_WHITE * (1.0 - tc) + _DEEP * tc).astype(int)
+        return env, alpha, col
+
+    out = []
+    if FADE_DASHED:
+        # walk the curve by arc length, laying down an even dash every period;
+        # each dash takes the colour/alpha of its own position (so the dashes
+        # still fade and breathe along the line).
+        starts = np.arange(0.0, max(Ltot - DASH_LEN, 0.0), DASH_LEN + DASH_GAP)
+        x0 = np.interp(starts, s, P[:, 0]);             y0 = np.interp(starts, s, P[:, 1])
+        x1 = np.interp(starts + DASH_LEN, s, P[:, 0]);  y1 = np.interp(starts + DASH_LEN, s, P[:, 1])
+        for k in range(len(starts)):
+            ymid = 0.5 * (y0[k] + y1[k])
+            env, alpha, col = stroke(ymid, (starts[k] + 0.5 * DASH_LEN) / Ltot)
+            if env < 0.04 or alpha < 0.05:
+                continue
+            w = 1.3 + 0.9 * env
+            out.append(
+                f'    <path d="M{x0[k]:.1f} {y0[k]:.1f}L{x1[k]:.1f} {y1[k]:.1f}" '
+                f'stroke="rgba({col[0]},{col[1]},{col[2]},{alpha:.2f})" '
+                f'stroke-width="{w:.2f}" stroke-linecap="round" fill="none"/>')
+    else:
+        Pd = P[:: max(1, len(P) // 300)]
+        sd = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(Pd, axis=0), axis=1))])
+        sd = sd / sd[-1]
+        for i in range(len(Pd) - 1):
+            a, b = Pd[i], Pd[i + 1]
+            ymid = 0.5 * (a[1] + b[1])
+            env, alpha, col = stroke(ymid, 0.5 * (sd[i] + sd[i + 1]))
+            if env < 0.04:                       # top arc, behind the nav: omit
+                continue
+            w = 1.4 + 1.0 * env                  # materialises thicker at the base
+            out.append(
+                f'    <path d="M{a[0]:.1f} {a[1]:.1f}L{b[0]:.1f} {b[1]:.1f}" '
+                f'stroke="rgba({col[0]},{col[1]},{col[2]},{alpha:.2f})" '
+                f'stroke-width="{w:.2f}" stroke-linecap="round" fill="none"/>')
+    return out
+
+
 # Site rotation applied by CSS (.contour-orb transform) — the label group
 # counter-rotates by this so the mathematics reads level on the page.
 # KEEP IN SYNC with style.css.
@@ -300,11 +401,28 @@ def svg_body(seed=SEED):
             d = bezier_d(P)
             if d:
                 L.append(f'    <path d="{d}" fill="rgba({int(r)},{int(g)},{int(b)},{a_:.3f})" stroke="none" />')
+    if ANNOTATION == 'fading_contour':
+        # 13 Jun 2026 experiment: a single fading level set of the true mixture.
+        for seg in fading_contour_segments(seed):
+            L.append(seg)
+        L.append('  </g>')
+        L.append('</svg>')
+        return '\n'.join(L)
+
+    if ANNOTATION == 'none':
+        # blob only, no overlay (shipped).
+        L.append('  </g>')
+        L.append('</svg>')
+        return '\n'.join(L)
+
     px_, py_, avg = ensemble_avg_density(seed)
     (mx, my), (lx, ly) = ensemble_mode(seed), ensemble_mode_lower(seed)
     h1 = avg[np.argmin(np.abs(py_ - my)), np.argmin(np.abs(px_ - mx))]
     h2 = avg[np.argmin(np.abs(py_ - ly)), np.argmin(np.abs(px_ - lx))]
-    arm1, arm2 = 10.0, max(6.0, 10 * (h2 / h1) ** 0.5)  # smaller mode, smaller cross
+    # Both crosses the same size (Patrick, 12 Jun 2026): a real plot marks both
+    # modes identically, so ignore the height ratio (h1/h2 above) and use 8.3,
+    # the average of the original arms (10.0 and 6.6).
+    arm1 = arm2 = 8.3
 
     # trajectory gradient: white at the upper mode -> darkest theme ink at
     # the lower (the lower cross's colour). userSpaceOnUse along the chord.
