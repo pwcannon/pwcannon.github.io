@@ -177,11 +177,12 @@ def svg_body(seed=SEED):
     .page-wrapper). Colour comes from CSS (.contour-orb .mode-marker,
     rgba(var(--accent-rose),...)), keeping the accent single-sourced."""
     rng = np.random.default_rng(seed)
-    # stdDeviation 2.75 = the old 2.0 with the former CSS blur(1.5px)
-    # folded in (removed from .contour-orb 12 Jun 2026 so the mode-label
-    # outside this group renders truly crisp; band softness unchanged).
+    # THE one blur dial (12 Jun 2026): everything — bands, cross, label —
+    # sits in this single filter (the old element-level CSS blur is gone).
+    # Historic effective softness was equivalent to 2.75 here; current 2.3
+    # is Patrick's "dialled down a little". Revert point: 2.75.
     L = ['<svg viewBox="-100 -100 1000 900" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">',
-         '  <defs><filter id="iw"><feGaussianBlur stdDeviation="2.75"/></filter></defs>',
+         '  <defs><filter id="iw"><feGaussianBlur stdDeviation="2.3"/></filter></defs>',
          '  <g filter="url(#iw)">']
     fracs = np.linspace(0.04, 0.92, N_BANDS)
     alphas = np.linspace(0.03, 0.58, N_BANDS)
@@ -206,9 +207,8 @@ def svg_body(seed=SEED):
     L.append(f'      <path class="mode-marker" d="M{mx-arm:.1f} {my:.1f}L{mx+arm:.1f} {my:.1f}'
              f'M{mx:.1f} {my-arm:.1f}L{mx:.1f} {my+arm:.1f}" fill="none" stroke-linecap="round" />')
     L.append('    </g>')
-    L.append('  </g>')
-    # label OUTSIDE the blur group: crisp annotation against the soft wash,
-    # still beneath the page grain overlay. Anchored at the cross's
+    # label INSIDE the blur group (Patrick, 12 Jun 2026: one blur for
+    # everything), beneath the page grain overlay. Anchored at the cross's
     # bottom-right corner IN PAGE SPACE (both elements are counter-rotated,
     # so the desired page offset maps through the inverse CSS rotation).
     page_dx, page_dy = arm + 3, arm + LABEL_HEIGHT / 2 + 2
@@ -216,6 +216,7 @@ def svg_body(seed=SEED):
     ax = mx + page_dx * np.cos(th) - page_dy * np.sin(th)
     ay = my + page_dx * np.sin(th) + page_dy * np.cos(th)
     L.append(label_paths(ax, ay))
+    L.append('  </g>')
     L.append('</svg>')
     return '\n'.join(L)
 
