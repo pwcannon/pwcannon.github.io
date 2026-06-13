@@ -127,12 +127,14 @@ body::after {
    outlines (crisp, outside it). Both sit beneath the page grain. The
    label counter-rotates by the orb's CSS rotation — keep CSS_ROT_DEG in
    _design/make_orb_inkwash.py in sync with the transform above. */
+/* EXPERIMENT (12 Jun 2026): marker + label in white, not rose.
+   Rose original: stroke rgba(var(--accent-rose), 0.9) / fill 0.92. */
 .contour-orb .mode-marker {
-  stroke: rgba(var(--accent-rose), 0.9);
+  stroke: rgba(255, 255, 255, 0.9);
   stroke-width: 3;
 }
 .contour-orb .mode-label path {
-  fill: rgba(var(--accent-rose), 0.92);
+  fill: rgba(255, 255, 255, 0.92);
 }
 /* -- Header -- */
 header {
