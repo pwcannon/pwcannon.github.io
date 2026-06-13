@@ -41,9 +41,10 @@ body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  /* REVERT POINTS: 0.30 original (launch -> 12 Jun 2026), 0.26 first
-     reduction, 0.22 current (12 Jun 2026). */
-  opacity: 0.22;
+  /* REVERT POINTS: 0.30 original (launch -> 12 Jun 2026); 0.26, 0.22
+     micro-steps (imperceptible per Patrick); 0.15 calibration step —
+     pick the final rung by eye and update this comment. */
+  opacity: 0.15;
   mix-blend-mode: overlay;
 }
 
