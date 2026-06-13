@@ -97,22 +97,91 @@ def mixture_mode():
     return px[ix], py[iy]
 
 
-def ensemble_mode(seed=SEED):
-    """Argmax of the ensemble-average density over the SHOWN resamples.
-
-    The marker notation reads argmax of p-bar, so the cross sits at the
-    mode of the average of the 11 displayed densities — not the central
-    mixture's mode. Separate rng pass; does not disturb band generation."""
+def ensemble_avg_density(seed=SEED, res=600):
+    """Ensemble-average density over the SHOWN resamples (separate rng
+    pass with the same sequence; does not disturb band generation)."""
     rng2 = np.random.default_rng(seed)
     avg = None
     for bi in range(N_BANDS):
-        cset = perturbed(MIXTURE, rng2)   # same sequence as the bands
+        cset = perturbed(MIXTURE, rng2)
         if bi in SKIP_BANDS:
             continue
-        px, py, PZ = gc.evaluate_mixture(cset, 600, gc.VIEWBOX_W, gc.VIEWBOX_H)
+        px, py, PZ = gc.evaluate_mixture(cset, res, gc.VIEWBOX_W, gc.VIEWBOX_H)
         avg = PZ if avg is None else avg + PZ
+    return px, py, avg / (N_BANDS - len(SKIP_BANDS))
+
+
+def ensemble_mode(seed=SEED):
+    """Argmax of the ensemble-average density (the global, upper mode)."""
+    px, py, avg = ensemble_avg_density(seed)
     iy, ix = np.unravel_index(avg.argmax(), avg.shape)
     return px[ix], py[iy]
+
+
+def ensemble_mode_lower(seed=SEED):
+    """LOCAL mode of the ensemble average in the lower lobe (y > 410)."""
+    px, py, avg = ensemble_avg_density(seed)
+    mask = np.zeros_like(avg, bool)
+    mask[py > 410, :] = True
+    masked = np.where(mask, avg, -np.inf)
+    iy, ix = np.unravel_index(masked.argmax(), masked.shape)
+    return px[ix], py[iy]
+
+
+def sampler_path(seed=SEED, n=46):
+    """Smooth, gently wandering trajectory between the two modes.
+
+    Elastic-band relaxation: start from the straight chord, iteratively
+    nudge interior points uphill along the density gradient (perpendicular
+    component only, endpoints pinned, neighbour-smoothing each step) so the
+    path bows through the saddle — the mountain-pass route a Langevin-ish
+    sampler would drift along — then add a small seeded tapered wander."""
+    px, py, avg = ensemble_avg_density(seed)
+    logp = np.log(avg + avg.max() * 1e-6)
+    gy, gx = np.gradient(logp)         # row-grad (y), col-grad (x)
+    dx, dy = px[1] - px[0], py[1] - py[0]
+
+    def grad_at(p):
+        ix = np.clip(np.searchsorted(px, p[0]), 1, len(px) - 2)
+        iy = np.clip(np.searchsorted(py, p[1]), 1, len(py) - 2)
+        return np.array([gx[iy, ix] / dx, gy[iy, ix] / dy])
+
+    p1, p2 = np.array(ensemble_mode(seed)), np.array(ensemble_mode_lower(seed))
+    pts = np.linspace(p1, p2, n)
+    for _ in range(60):
+        tang = np.gradient(pts, axis=0)
+        tang /= np.linalg.norm(tang, axis=1, keepdims=True) + 1e-9
+        g = np.array([grad_at(p) for p in pts])
+        g_perp = g - (g * tang).sum(1, keepdims=True) * tang
+        norm = np.linalg.norm(g_perp, axis=1, keepdims=True) + 1e-9
+        step = g_perp / norm * np.clip(norm * 300, 0, 1.2)   # capped uphill step
+        step[0] = step[-1] = 0
+        pts = pts + step
+        pts[1:-1] = 0.25 * pts[:-2] + 0.5 * pts[1:-1] + 0.25 * pts[2:]  # smooth
+    # gentle seeded wander, zero at both ends
+    wrng = np.random.default_rng(seed + 1)
+    phase = wrng.uniform(0, 2 * np.pi)
+    t = np.linspace(0, 1, n)
+    tang = np.gradient(pts, axis=0)
+    tang /= np.linalg.norm(tang, axis=1, keepdims=True) + 1e-9
+    normal = np.column_stack([-tang[:, 1], tang[:, 0]])
+    wander = 4.0 * np.sin(t * np.pi * 2.5 + phase) * np.sin(t * np.pi)
+    return pts + normal * wander[:, None]
+
+
+def open_bezier_d(P):
+    """Open Catmull-Rom spline through P, as cubic Beziers."""
+    P = np.asarray(P, float)
+    n = len(P)
+    parts = [f'M {P[0][0]:.1f} {P[0][1]:.1f}']
+    for i in range(n - 1):
+        p0 = P[max(i - 1, 0)]
+        p1, p2 = P[i], P[i + 1]
+        p3 = P[min(i + 2, n - 1)]
+        c1 = p1 + (p2 - p0) / 6.0
+        c2 = p2 - (p3 - p1) / 6.0
+        parts.append(f'C {c1[0]:.1f} {c1[1]:.1f} {c2[0]:.1f} {c2[1]:.1f} {p2[0]:.1f} {p2[1]:.1f}')
+    return ' '.join(parts)
 
 
 # Site rotation applied by CSS (.contour-orb transform) — the label group
@@ -170,12 +239,14 @@ def label_paths(ax, ay):
 def svg_body(seed=SEED):
     """Full orb SVG for a given resample seed (band config/colours fixed).
 
-    Includes the posterior-mode marker (12 Jun 2026): a small rose plus at
-    the central mixture's mode — point estimate against the uncertainty
-    wash. Lives INSIDE the blur group so it reads as part of the wash;
-    the page grain overlay paints over it (grain include is after
-    .page-wrapper). Colour comes from CSS (.contour-orb .mode-marker,
-    rgba(var(--accent-rose),...)), keeping the accent single-sourced."""
+    Annotation layer (12 Jun 2026, evolved through the day): white crosses
+    at BOTH modes of the ensemble-average density (global upper + local
+    lower lobe, the lower cross smaller in proportion to its mode height),
+    joined by a thin densely-dashed sampler trajectory along the
+    conditional ridge (sampler_path). The earlier equation label was
+    retired in favour of this. Everything sits inside the single blur
+    group, beneath the page grain; colours/styling come from CSS
+    (.mode-marker / .mode-path)."""
     rng = np.random.default_rng(seed)
     # THE one blur dial (12 Jun 2026): everything — bands, cross, label —
     # sits in this single filter (the old element-level CSS blur is gone).
@@ -200,23 +271,23 @@ def svg_body(seed=SEED):
             d = bezier_d(P)
             if d:
                 L.append(f'    <path d="{d}" fill="rgba({int(r)},{int(g)},{int(b)},{a_:.3f})" stroke="none" />')
-    mx, my = ensemble_mode(seed)
-    arm = 10
-    # cross counter-rotates about its centre (stays in the blur group for
-    # the soft wash look, but reads level on the page like the label)
-    L.append(f'    <g transform="rotate({-CSS_ROT_DEG} {mx:.1f} {my:.1f})">')
-    L.append(f'      <path class="mode-marker" d="M{mx-arm:.1f} {my:.1f}L{mx+arm:.1f} {my:.1f}'
-             f'M{mx:.1f} {my-arm:.1f}L{mx:.1f} {my+arm:.1f}" fill="none" stroke-linecap="round" />')
-    L.append('    </g>')
-    # label INSIDE the blur group (Patrick, 12 Jun 2026: one blur for
-    # everything), beneath the page grain overlay. Anchored at the cross's
-    # bottom-right corner IN PAGE SPACE (both elements are counter-rotated,
-    # so the desired page offset maps through the inverse CSS rotation).
-    page_dx, page_dy = arm + 3, arm + LABEL_HEIGHT / 2 + 2
-    th = np.deg2rad(-CSS_ROT_DEG)
-    ax = mx + page_dx * np.cos(th) - page_dy * np.sin(th)
-    ay = my + page_dx * np.sin(th) + page_dy * np.cos(th)
-    L.append(label_paths(ax, ay))
+    # sampler trajectory FIRST (under the crosses), then both mode crosses.
+    # Crosses counter-rotate about their centres to read level on the page.
+    traj = sampler_path(seed)
+    L.append(f'    <path class="mode-path" d="{open_bezier_d(traj)}" />')
+
+    def cross(cx, cy, arm):
+        return (f'    <g transform="rotate({-CSS_ROT_DEG} {cx:.1f} {cy:.1f})">\n'
+                f'      <path class="mode-marker" d="M{cx-arm:.1f} {cy:.1f}L{cx+arm:.1f} {cy:.1f}'
+                f'M{cx:.1f} {cy-arm:.1f}L{cx:.1f} {cy+arm:.1f}" fill="none" stroke-linecap="round" />\n'
+                f'    </g>')
+
+    px_, py_, avg = ensemble_avg_density(seed)
+    (mx, my), (lx, ly) = ensemble_mode(seed), ensemble_mode_lower(seed)
+    h1 = avg[np.argmin(np.abs(py_ - my)), np.argmin(np.abs(px_ - mx))]
+    h2 = avg[np.argmin(np.abs(py_ - ly)), np.argmin(np.abs(px_ - lx))]
+    L.append(cross(mx, my, 10))
+    L.append(cross(lx, ly, max(6.0, 10 * (h2 / h1) ** 0.5)))  # smaller mode, smaller cross
     L.append('  </g>')
     L.append('</svg>')
     return '\n'.join(L)

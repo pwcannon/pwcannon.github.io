@@ -128,13 +128,18 @@ body::after {
    label counter-rotates by the orb's CSS rotation — keep CSS_ROT_DEG in
    _design/make_orb_inkwash.py in sync with the transform above. */
 /* SETTLED white (Patrick, 12 Jun 2026) — chalk-on-ink beat the rose
-   (rose values if ever wanted: rgba(var(--accent-rose), 0.9) / 0.92). */
+   (rose values if ever wanted: rgba(var(--accent-rose), 0.9) / 0.92).
+   EXPERIMENT (12 Jun 2026): equation label retired; two mode crosses
+   joined by a dashed sampler trajectory along the conditional ridge. */
 .contour-orb .mode-marker {
   stroke: rgba(255, 255, 255, 0.9);
   stroke-width: 3;
 }
-.contour-orb .mode-label path {
-  fill: rgba(255, 255, 255, 0.92);
+.contour-orb .mode-path {
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 1.6;
+  stroke-dasharray: 4 5;   /* many small dashes */
+  fill: none;
 }
 /* -- Header -- */
 header {
