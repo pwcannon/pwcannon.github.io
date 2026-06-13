@@ -179,11 +179,11 @@ def svg_body(seed=SEED):
     rng = np.random.default_rng(seed)
     # THE one blur dial (12 Jun 2026): everything — bands, cross, label —
     # sits in this single filter (the old element-level CSS blur is gone).
-    # Historic effective softness: 2.75-equivalent. Steps: 2.3, now 1.8
-    # (12 Jun 2026, still hunting). Live-tune in devtools:
+    # SETTLED at 1 by live eye test (Patrick, 12 Jun 2026). History:
+    # 2.75-equivalent (launch look), 2.3, 1.8 intermediate steps. Live-tune:
     # document.querySelector('#iw feGaussianBlur').setAttribute('stdDeviation', N)
     L = ['<svg viewBox="-100 -100 1000 900" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">',
-         '  <defs><filter id="iw"><feGaussianBlur stdDeviation="1.8"/></filter></defs>',
+         '  <defs><filter id="iw"><feGaussianBlur stdDeviation="1"/></filter></defs>',
          '  <g filter="url(#iw)">']
     fracs = np.linspace(0.04, 0.92, N_BANDS)
     alphas = np.linspace(0.03, 0.58, N_BANDS)
