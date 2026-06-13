@@ -197,8 +197,12 @@ def svg_body(seed=SEED):
                 L.append(f'    <path d="{d}" fill="rgba({int(r)},{int(g)},{int(b)},{a_:.3f})" stroke="none" />')
     mx, my = ensemble_mode(seed)
     arm = 10
-    L.append(f'    <path class="mode-marker" d="M{mx-arm:.1f} {my:.1f}L{mx+arm:.1f} {my:.1f}'
+    # cross counter-rotates about its centre (stays in the blur group for
+    # the soft wash look, but reads level on the page like the label)
+    L.append(f'    <g transform="rotate({-CSS_ROT_DEG} {mx:.1f} {my:.1f})">')
+    L.append(f'      <path class="mode-marker" d="M{mx-arm:.1f} {my:.1f}L{mx+arm:.1f} {my:.1f}'
              f'M{mx:.1f} {my-arm:.1f}L{mx:.1f} {my+arm:.1f}" fill="none" stroke-linecap="round" />')
+    L.append('    </g>')
     L.append('  </g>')
     # label OUTSIDE the blur group: crisp annotation against the soft wash,
     # still beneath the page grain overlay
