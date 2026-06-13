@@ -55,7 +55,7 @@ gc = load_orb_module()
 # Card filename is VERSIONED because scrapers (LinkedIn/Slack/X) cache
 # og-images by URL for days: bump the version on any visible card change,
 # and update the matching `image:` default in _config.yml IN LOCKSTEP.
-CARD_ASSET = 'og_card_v3.png'
+CARD_ASSET = 'og_card_v4.png'
 
 SEED = 29       # site orb / grain determinism
 CARD_SEED = 69  # card orb resample — deliberately a different posterior draw
@@ -306,9 +306,10 @@ def make_card(polys, root):
     # original, more charming tilt (Patrick, 12 Jun 2026).
     orb = draw_orb_stacked((w, h), polys, center=(w * 0.76, h * 0.40),
                            scale=1.05 * SS, angle_deg=0, skip=SKIP_BANDS,
-                           ramp=ORB_RAMP_DARK, global_a=0.77)
+                           ramp=ORB_RAMP_DARK, global_a=0.77, blur=2)
     img = Image.alpha_composite(img, orb)
-    img = add_grain(img, np.random.default_rng(SEED))
+    # Grain removed 13 Jun 2026 (Patrick): unify the card with the clean site
+    # orb (blur cut 6 -> 2, no baked grain). add_grain() kept for reference.
 
     # Hairline rule above the footer line, echoing the site's structural rules
     draw = ImageDraw.Draw(img, 'RGBA')
