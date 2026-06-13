@@ -177,8 +177,11 @@ def svg_body(seed=SEED):
     .page-wrapper). Colour comes from CSS (.contour-orb .mode-marker,
     rgba(var(--accent-rose),...)), keeping the accent single-sourced."""
     rng = np.random.default_rng(seed)
+    # stdDeviation 2.75 = the old 2.0 with the former CSS blur(1.5px)
+    # folded in (removed from .contour-orb 12 Jun 2026 so the mode-label
+    # outside this group renders truly crisp; band softness unchanged).
     L = ['<svg viewBox="-100 -100 1000 900" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">',
-         '  <defs><filter id="iw"><feGaussianBlur stdDeviation="2"/></filter></defs>',
+         '  <defs><filter id="iw"><feGaussianBlur stdDeviation="2.75"/></filter></defs>',
          '  <g filter="url(#iw)">']
     fracs = np.linspace(0.04, 0.92, N_BANDS)
     alphas = np.linspace(0.03, 0.58, N_BANDS)

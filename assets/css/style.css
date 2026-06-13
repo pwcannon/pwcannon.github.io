@@ -114,7 +114,8 @@ body::after {
   pointer-events: none;
   z-index: 0;
   opacity: 0.85;
-  filter: blur(1.5px);
+  /* element-level blur removed 12 Jun 2026: folded into the SVG's
+     feGaussianBlur (2.0 -> 2.75) so the mode annotation stays crisp */
   transform: rotate(7.5deg);
 }
 .contour-orb svg {
