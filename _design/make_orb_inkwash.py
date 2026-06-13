@@ -205,8 +205,14 @@ def svg_body(seed=SEED):
     L.append('    </g>')
     L.append('  </g>')
     # label OUTSIDE the blur group: crisp annotation against the soft wash,
-    # still beneath the page grain overlay
-    L.append(label_paths(mx + 20, my))
+    # still beneath the page grain overlay. Anchored at the cross's
+    # bottom-right corner IN PAGE SPACE (both elements are counter-rotated,
+    # so the desired page offset maps through the inverse CSS rotation).
+    page_dx, page_dy = arm + 3, arm + LABEL_HEIGHT / 2 + 2
+    th = np.deg2rad(-CSS_ROT_DEG)
+    ax = mx + page_dx * np.cos(th) - page_dy * np.sin(th)
+    ay = my + page_dx * np.sin(th) + page_dy * np.cos(th)
+    L.append(label_paths(ax, ay))
     L.append('</svg>')
     return '\n'.join(L)
 

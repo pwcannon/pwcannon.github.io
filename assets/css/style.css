@@ -41,7 +41,9 @@ body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.30;
+  /* REVERT POINT: 0.30 was the original grain level (launch -> 12 Jun 2026);
+     reduced a touch to 0.26 on Patrick's request. To restore, set 0.30. */
+  opacity: 0.26;
   mix-blend-mode: overlay;
 }
 
