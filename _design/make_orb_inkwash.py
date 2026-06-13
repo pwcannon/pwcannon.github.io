@@ -158,10 +158,16 @@ def sampler_path(seed=SEED, n=46):
         step[0] = step[-1] = 0
         pts = pts + step
         pts[1:-1] = 0.25 * pts[:-2] + 0.5 * pts[1:-1] + 0.25 * pts[2:]  # smooth
+    # rounder bow (Patrick, 12 Jun 2026, after the real-dynamics detour was
+    # judged too complicated for a simple graphic): amplify the path's
+    # deviation from the straight chord — endpoints pinned, arc fuller.
+    BOW = 1.35
+    t = np.linspace(0, 1, n)
+    chord_t = p1 + t[:, None] * (p2 - p1)
+    pts = chord_t + BOW * (pts - chord_t)
     # gentle seeded wander, zero at both ends
     wrng = np.random.default_rng(seed + 1)
     phase = wrng.uniform(0, 2 * np.pi)
-    t = np.linspace(0, 1, n)
     tang = np.gradient(pts, axis=0)
     tang /= np.linalg.norm(tang, axis=1, keepdims=True) + 1e-9
     normal = np.column_stack([-tang[:, 1], tang[:, 0]])
