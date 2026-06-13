@@ -97,6 +97,76 @@ def mixture_mode():
     return px[ix], py[iy]
 
 
+def ensemble_mode(seed=SEED):
+    """Argmax of the ensemble-average density over the SHOWN resamples.
+
+    The marker notation reads argmax of p-bar, so the cross sits at the
+    mode of the average of the 11 displayed densities — not the central
+    mixture's mode. Separate rng pass; does not disturb band generation."""
+    rng2 = np.random.default_rng(seed)
+    avg = None
+    for bi in range(N_BANDS):
+        cset = perturbed(MIXTURE, rng2)   # same sequence as the bands
+        if bi in SKIP_BANDS:
+            continue
+        px, py, PZ = gc.evaluate_mixture(cset, 600, gc.VIEWBOX_W, gc.VIEWBOX_H)
+        avg = PZ if avg is None else avg + PZ
+    iy, ix = np.unravel_index(avg.argmax(), avg.shape)
+    return px[ix], py[iy]
+
+
+# Site rotation applied by CSS (.contour-orb transform) — the label group
+# counter-rotates by this so the mathematics reads level on the page.
+# KEEP IN SYNC with style.css.
+CSS_ROT_DEG = 7.5
+
+LABEL_TEX = r'$\hat{\theta} = \arg\max_{\theta}\ \bar{p}(\theta \mid x)$'
+LABEL_HEIGHT = 26   # orb units, bbox height of the rendered expression
+
+
+def label_paths(ax, ay):
+    """LABEL_TEX as SVG path data (Computer Modern outlines via matplotlib
+    TextPath — vectors, no font dependency in the page). Anchored with left
+    edge at (ax, ay), vertically centred, counter-rotated to page-level."""
+    import matplotlib
+    matplotlib.rcParams['mathtext.fontset'] = 'cm'   # Computer Modern, as comped
+    from matplotlib.textpath import TextPath
+    from matplotlib.font_manager import FontProperties
+    from matplotlib.path import Path as MplPath
+    tp = TextPath((0, 0), LABEL_TEX, size=100, prop=FontProperties())
+    v = tp.vertices
+    x0, y0, x1, y1 = v[:, 0].min(), v[:, 1].min(), v[:, 0].max(), v[:, 1].max()
+    s = LABEL_HEIGHT / (y1 - y0)
+
+    def tx(p):
+        # scale, y-flip (TextPath is y-up, SVG y-down), centre vertically
+        return ((p[0] - x0) * s, -(p[1] - (y0 + y1) / 2) * s)
+
+    parts = []
+    i = 0
+    verts, codes = tp.vertices, tp.codes
+    while i < len(codes):
+        c = codes[i]
+        if c == MplPath.MOVETO:
+            p = tx(verts[i]); parts.append(f'M{p[0]:.2f} {p[1]:.2f}'); i += 1
+        elif c == MplPath.LINETO:
+            p = tx(verts[i]); parts.append(f'L{p[0]:.2f} {p[1]:.2f}'); i += 1
+        elif c == MplPath.CURVE3:
+            q1, q2 = tx(verts[i]), tx(verts[i + 1])
+            parts.append(f'Q{q1[0]:.2f} {q1[1]:.2f} {q2[0]:.2f} {q2[1]:.2f}'); i += 2
+        elif c == MplPath.CURVE4:
+            c1, c2, p2 = tx(verts[i]), tx(verts[i + 1]), tx(verts[i + 2])
+            parts.append(f'C{c1[0]:.2f} {c1[1]:.2f} {c2[0]:.2f} {c2[1]:.2f} '
+                         f'{p2[0]:.2f} {p2[1]:.2f}'); i += 3
+        elif c == MplPath.CLOSEPOLY:
+            parts.append('Z'); i += 1
+        else:
+            i += 1
+    d = ' '.join(parts)
+    return (f'  <g class="mode-label" transform="translate({ax:.1f} {ay:.1f}) '
+            f'rotate({-CSS_ROT_DEG})">\n    <path d="{d}"/>\n  </g>')
+
+
 def svg_body(seed=SEED):
     """Full orb SVG for a given resample seed (band config/colours fixed).
 
@@ -125,11 +195,14 @@ def svg_body(seed=SEED):
             d = bezier_d(P)
             if d:
                 L.append(f'    <path d="{d}" fill="rgba({int(r)},{int(g)},{int(b)},{a_:.3f})" stroke="none" />')
-    mx, my = mixture_mode()
+    mx, my = ensemble_mode(seed)
     arm = 10
     L.append(f'    <path class="mode-marker" d="M{mx-arm:.1f} {my:.1f}L{mx+arm:.1f} {my:.1f}'
              f'M{mx:.1f} {my-arm:.1f}L{mx:.1f} {my+arm:.1f}" fill="none" stroke-linecap="round" />')
     L.append('  </g>')
+    # label OUTSIDE the blur group: crisp annotation against the soft wash,
+    # still beneath the page grain overlay
+    L.append(label_paths(mx + 20, my))
     L.append('</svg>')
     return '\n'.join(L)
 
