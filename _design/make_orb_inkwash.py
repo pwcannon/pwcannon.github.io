@@ -169,6 +169,29 @@ def sampler_path(seed=SEED, n=46):
     return pts + normal * wander[:, None]
 
 
+def trim_to_halo(pts, centre, R, from_start):
+    """Cut the polyline where it enters a radius-R halo around centre,
+    landing the new endpoint exactly on the halo boundary."""
+    pts = np.asarray(pts, float)
+    c = np.asarray(centre, float)
+    d = np.linalg.norm(pts - c, axis=1)
+    idx = range(len(pts)) if from_start else range(len(pts) - 1, -1, -1)
+    prev = None
+    for i in idx:
+        if d[i] > R:
+            if prev is None:
+                return pts if from_start else pts
+            a, b = pts[prev], pts[i]          # a inside halo, b outside
+            da, db = d[prev], d[i]
+            t = (R - da) / (db - da)
+            edge = a + t * (b - a)
+            if from_start:
+                return np.vstack([edge, pts[i:]])
+            return np.vstack([pts[:prev], edge])
+        prev = i
+    return pts
+
+
 def open_bezier_d(P):
     """Open Catmull-Rom spline through P, as cubic Beziers."""
     P = np.asarray(P, float)
@@ -271,23 +294,36 @@ def svg_body(seed=SEED):
             d = bezier_d(P)
             if d:
                 L.append(f'    <path d="{d}" fill="rgba({int(r)},{int(g)},{int(b)},{a_:.3f})" stroke="none" />')
-    # sampler trajectory FIRST (under the crosses), then both mode crosses.
-    # Crosses counter-rotate about their centres to read level on the page.
-    traj = sampler_path(seed)
-    L.append(f'    <path class="mode-path" d="{open_bezier_d(traj)}" />')
-
-    def cross(cx, cy, arm):
-        return (f'    <g transform="rotate({-CSS_ROT_DEG} {cx:.1f} {cy:.1f})">\n'
-                f'      <path class="mode-marker" d="M{cx-arm:.1f} {cy:.1f}L{cx+arm:.1f} {cy:.1f}'
-                f'M{cx:.1f} {cy-arm:.1f}L{cx:.1f} {cy+arm:.1f}" fill="none" stroke-linecap="round" />\n'
-                f'    </g>')
-
     px_, py_, avg = ensemble_avg_density(seed)
     (mx, my), (lx, ly) = ensemble_mode(seed), ensemble_mode_lower(seed)
     h1 = avg[np.argmin(np.abs(py_ - my)), np.argmin(np.abs(px_ - mx))]
     h2 = avg[np.argmin(np.abs(py_ - ly)), np.argmin(np.abs(px_ - lx))]
-    L.append(cross(mx, my, 10))
-    L.append(cross(lx, ly, max(6.0, 10 * (h2 / h1) ** 0.5)))  # smaller mode, smaller cross
+    arm1, arm2 = 10.0, max(6.0, 10 * (h2 / h1) ** 0.5)  # smaller mode, smaller cross
+
+    # trajectory gradient: white at the upper mode -> darkest theme ink at
+    # the lower (the lower cross's colour). userSpaceOnUse along the chord.
+    L.insert(1, f'  <defs><linearGradient id="trajgrad" gradientUnits="userSpaceOnUse" '
+                f'x1="{mx:.1f}" y1="{my:.1f}" x2="{lx:.1f}" y2="{ly:.1f}">'
+                f'<stop offset="0" stop-color="rgba(255,255,255,0.92)"/>'
+                f'<stop offset="1" stop-color="rgba(10,30,46,0.92)"/>'
+                f'</linearGradient></defs>')
+
+    # sampler trajectory FIRST (under the crosses), trimmed so it never
+    # touches the crosses: a clearance halo ("force field") around each.
+    traj = sampler_path(seed)
+    traj = trim_to_halo(traj, (mx, my), arm1 + 7, from_start=True)
+    traj = trim_to_halo(traj, (lx, ly), arm2 + 7, from_start=False)
+    L.append(f'    <path class="mode-path" stroke="url(#trajgrad)" d="{open_bezier_d(traj)}" />')
+
+    def cross(cx, cy, arm, variant):
+        return (f'    <g transform="rotate({-CSS_ROT_DEG} {cx:.1f} {cy:.1f})">\n'
+                f'      <path class="mode-marker mode-marker--{variant}" '
+                f'd="M{cx-arm:.1f} {cy:.1f}L{cx+arm:.1f} {cy:.1f}'
+                f'M{cx:.1f} {cy-arm:.1f}L{cx:.1f} {cy+arm:.1f}" fill="none" stroke-linecap="round" />\n'
+                f'    </g>')
+
+    L.append(cross(mx, my, arm1, 'upper'))
+    L.append(cross(lx, ly, arm2, 'lower'))
     L.append('  </g>')
     L.append('</svg>')
     return '\n'.join(L)
