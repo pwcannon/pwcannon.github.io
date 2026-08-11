@@ -6,7 +6,7 @@
   <title>{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
 
   <!-- DM Sans -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..700;1,400&display=swap" rel="stylesheet">
 
   <!-- MathJax -->
   <script>
@@ -43,7 +43,7 @@
   <nav>
     <a href="{{ "/" | relative_url }}"{% if page.url == "/" %} class="active"{% endif %}>home</a>
     <a href="{{ "/blog" | relative_url }}"{% if page.url contains "/blog" or page.layout == "post" %} class="active"{% endif %}>blog</a>
-    <a href="{{ "/research" | relative_url }}"{% if page.url contains "/research" %} class="active"{% endif %}>research</a>
+    <a href="{{ "/contact" | relative_url }}"{% if page.url contains "/contact" %} class="active"{% endif %}>contact</a>
   </nav>
 </header>
 

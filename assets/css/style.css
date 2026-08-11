@@ -10,18 +10,18 @@ a:hover { color: var(--link-hover); }
 
 /* -- Theme vars: Light -- */
 body {
-  --bg: #EDF2F7;
-  --border: rgba(160, 185, 210, 0.45);
+  --bg: #F6F8FB;
+  --border: rgba(125, 155, 184, 0.38);
   --name: #0A1E2E;
   --nav-inactive: #A8C8E0;
   --nav-active: #E8F4FF;
   --nav-underline: #60B0E0;
   --lead: #0A1E2E;
-  --body-text: #2E4A66;
+  --body-text: #243F59;
   --link: #1565C0;
   --link-hover: #0D47A1;
-  --label: #8AAAC8;
-  --meta: #7A9AB8;
+  --label: #7899B7;
+  --meta: #698AA7;
   --meta-strong: #3A6A88;
   --footer: #8AAAC8;
   --award-bg: #E6F5EC; --award-color: #1A7A3A; --award-border: #A0D8B0;
@@ -54,7 +54,7 @@ body::after {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(175deg, #EDF2F7 0%, #E4EDF5 40%, #EEF0F4 100%);
+  background: linear-gradient(175deg, #F8FAFC 0%, #EEF3F8 40%, #F7F8FA 100%);
 }
 
 /* -- Static background blobs -- */
@@ -239,11 +239,11 @@ nav a:hover { color: var(--nav-active); }
 
 p.lead {
   font-size: 19px; color: var(--lead); font-weight: 500;
-  line-height: 1.65; margin-bottom: 24px;
+  line-height: 1.65; margin-bottom: 30px;
   letter-spacing: -0.01em;
 }
 p.body {
-  font-size: 15px; color: var(--body-text); font-weight: 400;
+  font-size: 15px; color: var(--body-text); font-weight: 450;
   line-height: 1.85; margin-bottom: 20px;
 }
 .main a {
@@ -292,7 +292,7 @@ hr.section-break { border: none; border-top: 1px solid var(--border); margin: 36
 .award {
   display: inline-block; background: var(--award-bg); color: var(--award-color);
   padding: 2px 8px; border-radius: 4px; font-size: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.9); margin-left: 6px; vertical-align: middle;
+  border: 1px solid rgba(36, 63, 89, 0.35); margin-left: 6px; vertical-align: middle;
 }
 .award.spotlight {
   background: #E6F4FF; color: #1A6AAA;
@@ -364,16 +364,8 @@ footer span {
    Blog post content styling
    ========================================================================== */
 
-/* Post body typeface — flip --post-font between the two stacks to compare:
-   var(--post-font-sans) | var(--post-font-serif) */
-body {
-  --post-font-sans: 'DM Sans', sans-serif;
-  --post-font-serif: 'Source Serif 4', Charter, Georgia, serif;
-  --post-font: var(--post-font-sans);
-}
-
 .post-content {
-  font-family: var(--post-font);
+  font-family: 'DM Sans', sans-serif;
   color: var(--body-text);
   /* 15px/1.85, full column: matches homepage body texture exactly.
      ~94 CPL — paper density by choice. Measured 12 Jun 2026 by compiling
@@ -480,7 +472,7 @@ body {
   line-height: 1.6;
 }
 .blog-year {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--label);
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -500,7 +492,7 @@ body {
   margin-bottom: 10px;
 }
 .blog-post-list a {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--link);
   font-weight: 500;
   transition: color 0.2s ease;
@@ -655,6 +647,11 @@ body {
     padding: 28px 24px;
     border-left: none;
     border-right: none;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    font-size: 16px;
   }
 
   /* Scale down lead text */
