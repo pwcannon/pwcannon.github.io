@@ -1,0 +1,82 @@
+---
+layout: post
+title: "Training for reasoning: a short note"
+display-title: "Training for reasoning"
+subtitle: "A short note"
+compact-header: true
+date: 2026-08-24
+permalink: /blog/training-for-reasoning/
+mathjax: true
+article_citations: true
+---
+<p>Starting with an existing model, there are now many ways to improve reasoning capabilities through post-training. Some methods train the model to imitate target text and others train it using evaluations of its own outputs. In practice many pipelines combine methods of both types, and hybrid approaches, too, so this is just an organizing distinction and not a true taxonomy. We’ll discuss these methods at an abstract level – the technical details aren’t important for the story here, but I’ll link papers so you can take a look if you’re interested.</p>
+<h2 id="learning-from-target-text">Learning from target text</h2>
+<div class="summary-box">
+<p><span class="summary-box-label">Method Summary</span> Any judgment that’s required, like checking which generated responses are acceptable, happens prior to the training step. By the time training begins, the model sees only the selected text and learns to imitate it.</p>
+</div>
+<h3 id="provided-or-teacher-generated-text">Provided or teacher-generated text</h3>
+<p>In this strategy, you simply continue training using (something like) the ordinary next-token loss on new data that promotes reasoning. The challenge is largely in constructing high-quality demonstrations. Human reasoning traces are costly and difficult to scale, while synthetic traces depend on a sufficiently capable ‘teacher’ model. Examples include</p>
+<ul>
+<li><p><strong>Continued pre-training</strong> on human-written mathematics, code, proofs, etc. <em>DeepSeekMath Corpus</em> <span class="citation" data-cites="shao2024deepseekmath">(<a href="#ref-shao2024deepseekmath" role="doc-biblioref">Shao et al. 2024</a>)</span> is an example of such a dataset.</p></li>
+<li><p><strong>Chain-of-thought SFT</strong><sup id="margin-note-ref-1" class="margin-note-ref" data-note="margin-note-1"><a href="#margin-note-1" aria-label="Margin note 1" aria-describedby="margin-note-1">[1]</a></sup> trains on complete worked solutions rather than final answers alone. When it’s done to a vanilla base model in order to <em>warm up</em> the model in advance of doing RL, you may see this referred to as <em>“cold-start” SFT</em>. DeepSeek-R1-Zero <span class="citation" data-cites="deepseek-ai2025deepseekr1">(<a href="#ref-deepseek-ai2025deepseekr1" role="doc-biblioref">DeepSeek-AI et al. 2025</a>)</span> shows that reasoning can emerge from RL without supervised warm-up. The DeepSeek-R1 pipeline, in contrast, begins by warming up the model with cold-start examples to establish a readable, human reasoning format before the RL stage.</p></li>
+<li><p><strong>Distillation</strong>, where a smaller or less capable ‘student’ model can learn directly from reasoning traces from a larger or more capable ‘teacher’ model. <span class="citation" data-cites="hsieh2023distilling">(See, e.g., <a href="#ref-hsieh2023distilling" role="doc-biblioref">Hsieh et al. 2023</a>)</span></p></li>
+</ul>
+<h3 id="self-generated-and-selected-text">Self-generated and selected text</h3>
+<p>In some verifiable domains, it’s possible to automatically check correctness at scale. For example, some mathematical proofs can be formally represented and checked using “proof assistant” systems like <a href="https://lean-lang.org/">Lean</a>. Another example is code which can be automatically checked against a battery of unit, integration, or other tests.</p>
+<p>It follows that in these domains we can use the models themselves to automate the construction of examples of reasoning using a simple recipe: (1) generate many completions to a question, (2) apply an acceptance rule to each completion, (3) train on the accepted ones. Many of these techniques can be applied iteratively. Starting with model <span class="math inline">\(\pi_k\)</span>, we create new training data from this model and perform SFT giving <span class="math inline">\(\pi_{k+1}\)</span>, and so on. Each new model therefore learns from whatever the acceptance rule allows through. Repeated rounds of the process can reinforce correct reasoning, but they can also reinforce flawed reasoning (provided it led to a correct answer).</p>
+<p>Methods in this family include</p>
+<ul>
+<li><p><strong>Rejection-sampling fine-tuning</strong>. This is the name normally given to the most basic implementation of the above idea, since it is an example of a rejection-sampling algorithm in statistics. <span class="citation" data-cites="deepseek-ai2025deepseekr1">(See, e.g. <a href="#ref-deepseek-ai2025deepseekr1" role="doc-biblioref">DeepSeek-AI et al. 2025</a>)</span></p></li>
+<li><p><strong>Self-taught Reasoner (STaR)</strong> <span class="citation" data-cites="zelikman2022star">(<a href="#ref-zelikman2022star" role="doc-biblioref">Zelikman et al. 2022</a>)</span>. Similar to rejection-sampling, except when an answer is rejected, the model gets another chance to get it right through a process they call <em>rationalization</em>; the incorrect answer and (presumably) faulty reasoning are discarded, and a fresh model call is made using the original question along with the correct answer as a hint. Using this new hint, the model is asked to answer again. If it gets it right this time, then the new reasoning is kept as a positive example along with those examples that didn’t require a hint. Otherwise, if it still gets the answer wrong, the reasoning is thrown out.</p></li>
+<li><p><strong>Learned reward-model filtering</strong>. Not a training procedure itself, but a common technique used within the methods above. A <em>reward model</em> is simply another model, sometimes an LLM of the same type/family as the main LLM being trained, that is trained to help determine whether answers given by the LLM are correct, safe, or desirable in some other way. We can then use the verdict of this model within rejection sampling or top-K selection, for example, to aid in the process of filtering generated data down to an acceptable self-imitation training set. Reward models are particularly useful in areas where correctness can’t be checked unambiguously with unit tests, proof checkers, and so on. Since they’re learned models, they are inevitably fallible - more on this later. An example of a model trained (in part) using rejection sampling fine-tuning with a reward model is Llama 2 <span class="citation" data-cites="touvron2023llama">(<a href="#ref-touvron2023llama" role="doc-biblioref">Touvron et al. 2023</a>)</span>.</p></li>
+</ul>
+<p>Note that these approaches can suffer from a simple but profound weakness, depending on the nature of the problem and acceptance rule. In cases where the acceptance rule checks only the final answer, it approves not only correct reasoning but those outputs where <em>incorrect</em> reasoning has given rise to the correct answer. STaR would be an example of a technique that is particularly vulnerable to this. A further weakness is that many apparently verifiable domains are verifiable only with respect to the limited properties checked by the available procedure; if code has a flaw that lies outside of the detection of the battery of tests it’s put through, this won’t be detected and the example will be trained on.</p>
+<h2 id="learning-from-evaluations">Learning from evaluations</h2>
+<div class="summary-box">
+<p><span class="summary-box-label">Method Summary</span> The required judgment is part of the training signal. Rather than dictating which text is admitted for training, as in the previous section, here the evaluation itself is the key signal in updating the model.</p>
+</div>
+<h3 id="pairwise-preferences">Pairwise preferences</h3>
+<p>Consider training data of the form <span class="math inline">\((x, y^-, y^+)\)</span>, where <span class="math inline">\(x\)</span> is the prompt and the <span class="math inline">\(y\)</span>s are two generations from a model (perhaps the same model) given <span class="math inline">\(x\)</span>, and where we have the additional <em>preference</em> information that <span class="math inline">\(y^+\)</span> is preferred to <span class="math inline">\(y^-\)</span>, often written <span class="math inline">\(y^+ \succ y^-\)</span>. These data might come from a human, another model, or an automatic check (in verifiable domains). An important detail is that the ordering is just a relative preference; <span class="math inline">\(y^+\)</span> is preferred to <span class="math inline">\(y^-\)</span>, but it may still be wrong or undesirable.</p>
+<p>A widely used method for learning from data of this kind is <em>direct preference optimization (DPO)</em> <span class="citation" data-cites="rafailov2024direct">(<a href="#ref-rafailov2024direct" role="doc-biblioref">Rafailov et al. 2024</a>)</span>. DPO starts with two copies of the existing model. One copy will become the trainable model and the other is a frozen reference. Briefly, the trainable model is updated to increase the likelihood of the preferred response relative to the less-preferred response, measured against this reference. The reference acts as a regularizer, discouraging the model from changing too much. Unlike SFT, DPO doesn’t learn from the preferred response alone, but from the contrast between the preferred and rejected responses. In standard offline DPO, the preference pairs are collected in advance and held fixed during the training run, though there are iterative variants where the pairs can be refreshed using new model outputs.</p>
+<h3 id="scalar-rewards">Scalar rewards</h3>
+<p>Rather than comparing two responses directly, we can go response by response, assigning each a scalar reward. Starting with the current model, we generate responses to a collection of prompts, score them, and then update the model so that higher-reward responses become more likely relative to lower-reward ones. This is then repeated using the updated model. Algorithms such as PPO and GRPO <span class="citation" data-cites="shao2024deepseekmath">(<a href="#ref-shao2024deepseekmath" role="doc-biblioref">Shao et al. 2024</a>)</span> differ in how they translate the observed rewards into a model update, but the underlying idea is the same.</p>
+<p>As we saw earlier, in some domains we have access to automatic checking. Applying reinforcement learning to these kinds of signals gets a special name: <em>reinforcement learning with verifiable rewards</em>, or <em>RLVR</em>. The same drawbacks as before apply; where the verification or testing fails to catch undesirable reasoning, it can be reinforced using these methods. DeepSeek-R1-Zero is an example of reasoning capabilities being developed through RL with automatically checked rewards <span class="citation" data-cites="deepseek-ai2025deepseekr1">(<a href="#ref-deepseek-ai2025deepseekr1" role="doc-biblioref">DeepSeek-AI et al. 2025</a>)</span>.</p>
+<p>In cases where no automatic verifier is available, the reward can instead come from a learned reward model, as is done in reinforcement learning from human feedback (RLHF) <span class="citation" data-cites="ouyang2022training">(<a href="#ref-ouyang2022training" role="doc-biblioref">Ouyang et al. 2022</a>)</span>. Pairwise preference data, described above, is used to train a reward model that assigns a scalar score to each response. This reward model then serves as a scalable proxy for human preferences, and is used for model optimization. The crucial distinction is how the comparisons between outputs affect the model update. In DPO, they’re used directly in the loss function, whereas in RLHF they’re first used to train a reward model which the model is then trained against.</p>
+<p>A downside to using learned reward models is that they’re imperfect proxies, and to some degree this can undermine the effectiveness of approaches like RLHF. A similar problem arises at test-time, where it’s common to guide search with a learned verifier.</p>
+<div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden">
+
+</div>
+
+<h2 id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-deepseek-ai2025deepseekr1" class="csl-entry" role="listitem">
+DeepSeek-AI, Daya Guo, Dejian Yang, et al. 2025. <span>“<span>DeepSeek-R1</span>: <span>Incentivizing Reasoning Capability</span> in <span>LLMs</span> via <span>Reinforcement Learning</span>.”</span> <em>Nature</em> 645 (8081): 633–38. <a href="https://doi.org/10.1038/s41586-025-09422-z">https://doi.org/10.1038/s41586-025-09422-z</a>.
+</div>
+<div id="ref-hsieh2023distilling" class="csl-entry" role="listitem">
+Hsieh, Cheng-Yu, Chun-Liang Li, Chih-Kuan Yeh, et al. 2023. <em>Distilling <span class="nocase">Step-by-Step</span>! <span>Outperforming Larger Language Models</span> with <span>Less Training Data</span> and <span>Smaller Model Sizes</span></em>. arXiv:2305.02301. arXiv. <a href="https://doi.org/10.48550/arXiv.2305.02301">https://doi.org/10.48550/arXiv.2305.02301</a>.
+</div>
+<div id="ref-ouyang2022training" class="csl-entry" role="listitem">
+Ouyang, Long, Jeff Wu, Xu Jiang, et al. 2022. <em>Training Language Models to Follow Instructions with Human Feedback</em>. arXiv:2203.02155. arXiv. <a href="https://doi.org/10.48550/arXiv.2203.02155">https://doi.org/10.48550/arXiv.2203.02155</a>.
+</div>
+<div id="ref-rafailov2024direct" class="csl-entry" role="listitem">
+Rafailov, Rafael, Archit Sharma, Eric Mitchell, Stefano Ermon, Christopher D. Manning, and Chelsea Finn. 2024. <em>Direct <span>Preference Optimization</span>: <span>Your Language Model</span> Is <span>Secretly</span> a <span>Reward Model</span></em>. arXiv:2305.18290. arXiv. <a href="https://doi.org/10.48550/arXiv.2305.18290">https://doi.org/10.48550/arXiv.2305.18290</a>.
+</div>
+<div id="ref-shao2024deepseekmath" class="csl-entry" role="listitem">
+Shao, Zhihong, Peiyi Wang, Qihao Zhu, et al. 2024. <em><span>DeepSeekMath</span>: <span>Pushing</span> the <span>Limits</span> of <span>Mathematical Reasoning</span> in <span>Open Language Models</span></em>. arXiv:2402.03300. arXiv. <a href="https://doi.org/10.48550/arXiv.2402.03300">https://doi.org/10.48550/arXiv.2402.03300</a>.
+</div>
+<div id="ref-touvron2023llama" class="csl-entry" role="listitem">
+Touvron, Hugo, Louis Martin, Kevin Stone, et al. 2023. <em>Llama 2: <span>Open Foundation</span> and <span>Fine-Tuned Chat Models</span></em>. arXiv:2307.09288. arXiv. <a href="https://doi.org/10.48550/arXiv.2307.09288">https://doi.org/10.48550/arXiv.2307.09288</a>.
+</div>
+<div id="ref-zelikman2022star" class="csl-entry" role="listitem">
+Zelikman, Eric, Yuhuai Wu, Jesse Mu, and Noah D. Goodman. 2022. <em><span>STaR</span>: <span>Bootstrapping Reasoning With Reasoning</span></em>. arXiv:2203.14465. arXiv. <a href="https://doi.org/10.48550/arXiv.2203.14465">https://doi.org/10.48550/arXiv.2203.14465</a>.
+</div>
+</div>
+
+<div id="margin-note-1" class="margin-note margin-note-right" data-ref="margin-note-ref-1" role="note" tabindex="-1">
+<div class="margin-note-number">
+<a href="#margin-note-ref-1" aria-label="Back to reference 1">1.</a>
+</div>
+<div class="margin-note-body">
+<p>For clarity: <em>SFT (supervised fine-tuning)</em> is often a very similar process to pre-training, in the sense that it uses the same loss function, or a similar autoregressive cross-entropy objective. It’s given the name ‘supervised’ because it is constructed as prompt-answer pairs, or prompt-(reasoning + answer) pairs, in contrast to the unstructured nature of pre-training on general text corpora.</p>
+</div>
+</div>

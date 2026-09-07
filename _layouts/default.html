@@ -1,93 +1,39 @@
-<!DOCTYPE html>
-<html lang="{{ site.lang | default: "en-US" }}">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
-
-  <!-- DM Sans -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..700;1,400&display=swap" rel="stylesheet">
-
-  <!-- MathJax -->
-  <script>
-    MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true,
-        packages: {'[+]': ['ams', 'noerrors']}
-      },
-      loader: { load: ['[tex]/ams', '[tex]/noerrors'] },
-      svg: { fontCache: 'global' },
-      options: { renderActions: { addMenu: [] } }
-    };
-  </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-  {% seo %}
-  {% include favicons.html %}
-  <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
-</head>
-<body>
-
-{% include background_blobs.html %}
-
-<div class="page-wrapper">
-
-<!-- Contour orb -->
-{% include contour_orb.html %}
-
-<header>
-  <span class="name">{{ site.title }}</span>
-  <div class="header-mid"></div>
-  <nav>
-    <a href="{{ "/" | relative_url }}"{% if page.url == "/" %} class="active"{% endif %}>home</a>
-    <a href="{{ "/blog" | relative_url }}"{% if page.url contains "/blog" or page.layout == "post" %} class="active"{% endif %}>blog</a>
-    <a href="{{ "/contact" | relative_url }}"{% if page.url contains "/contact" %} class="active"{% endif %}>contact</a>
-  </nav>
-</header>
-
-<div class="layout">
-  <div class="sidebar">
-    {% if page.url contains "/research" %}
-    <a href="{{ "/" | relative_url }}" class="back-link">&larr; home</a>
-    {% elsif page.url contains "/contact" %}
-    <a href="{{ "/" | relative_url }}" class="back-link">&larr; home</a>
-    {% else %}
-    {% if site.logo %}
-    <div class="photo-wrapper">
-      <img src="{{ site.logo | relative_url }}" alt="{{ site.title }}">
-    </div>
+<!doctype html>
+<html lang="{{ site.lang | default: "en-GB" }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    {% if page.noindex %}<meta name="robots" content="noindex">{% endif %}
+    {% seo %}
+    {% include favicons.html %}
+    <link rel="preload" href="{{ "/assets/fonts/geist-variable-1.7.2.woff2" | relative_url }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
+    {% if page.article_citations %}
+    <link rel="stylesheet" href="{{ "/assets/css/article-citations.css" | relative_url }}">
     {% endif %}
-    <div class="social-icons">
-      <a href="https://scholar.google.com/citations?user=drP5-oIAAAAJ" title="Google Scholar"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 0A12 12 0 1 0 12 24A12 12 0 1 0 12 0Z M8.20 15.47 L5.25 13.07 L12.00 7.73 L18.75 13.07 L15.80 15.47 C15.12 14.06 13.68 13.07 12.00 13.07 C10.33 13.07 8.88 14.05 8.20 15.47 Z"/></svg></a>
-      <a href="https://github.com/pwcannon" title="GitHub"><svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6.02 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12 12 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></a>
-      <a href="https://www.linkedin.com/in/patrick-cannon/" title="LinkedIn"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 0A12 12 0 1 0 12 24A12 12 0 1 0 12 0Z M17.66 17.75 L15.28 17.75 L15.28 14.02 C15.28 13.12 15.26 11.98 14.04 11.98 C12.79 11.98 12.60 12.95 12.60 13.95 L12.60 17.75 L10.21 17.75 L10.21 10.07 L12.50 10.07 L12.50 11.12 L12.53 11.12 C12.85 10.51 13.63 9.88 14.79 9.88 C17.21 9.88 17.66 11.47 17.66 13.54 L17.66 17.75 Z M7.53 9.02 A1.38 1.38 0 1 1 7.53 6.25 A1.38 1.38 0 0 1 7.53 9.02 Z M8.72 17.75 L6.34 17.75 L6.34 10.07 L8.72 10.07 L8.72 17.75 Z"/></svg></a>
-      <a href="https://x.com/pw_cannon" title="X"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 0A12 12 0 1 0 12 24A12 12 0 1 0 12 0Z M15.16 7.03 L16.85 7.03 L13.16 11.24 L17.50 16.97 L14.11 16.97 L11.45 13.50 L8.40 16.97 L6.72 16.97 L10.66 12.47 L6.50 7.03 L9.98 7.03 L12.38 10.21 Z M14.57 15.96 L15.51 15.96 L9.47 7.99 L8.47 7.99 Z"/></svg></a>
-    </div>
-    <hr class="sidebar-news-divider">
-    <p class="sidebar-news-label">recent</p>
-    <div class="sidebar-news">
-      <p class="news-item"><span class="news-date">10 Jun 2026</span> bluedot ai safety grant</p>
-      <p class="news-item"><span class="news-date">22 Mar 2026</span> new website!</p>
-    </div>
+    {% if page.closing_quote %}
+    <link rel="stylesheet" href="{{ "/assets/css/closing-quote.css" | relative_url }}">
     {% endif %}
-  </div>
-
-  <div class="main">
+    {% if page.body_class == "home-page" %}
+    <link rel="stylesheet" href="{{ "/assets/css/home-experiments.css" | relative_url }}">
+    {% endif %}
+    {% if page.mathjax %}
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+          processEscapes: true
+        },
+        options: { renderActions: { addMenu: [] } }
+      };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    {% endif %}
+  </head>
+  <body class="{% if page.body_class %}{{ page.body_class }}{% else %}{{ page.layout }}-page{% endif %}">
+    <div class="paper-surface" aria-hidden="true"></div>
     {{ content }}
-  </div>
-
-  <div class="right-panel"></div>
-</div>
-
-<footer>
-  <span>&copy; 2026 Patrick Cannon</span>
-</footer>
-
-</div><!-- .page-wrapper -->
-
-{% include noise_grain.html %}
-
-</body>
+  </body>
 </html>

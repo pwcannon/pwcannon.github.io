@@ -1,0 +1,30 @@
+.identity-links {
+  color: #989a9d;
+  font-size: 14.4px;
+}
+
+.identity-links span {
+  color: #b7b9bb;
+}
+
+.identity-copy h1 {
+  color: #2f659d;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .identity-copy h1 {
+    background: linear-gradient(102deg, #3f6998 0%, #27629d 22%, #123e77 48%, #050f28 100%);
+    background: linear-gradient(102deg in oklab, #3f6998 0%, #27629d 22%, #123e77 48%, #050f28 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* A short closing rule marks the end of the selected work. */
+.work-end {
+  width: 30px;
+  margin: 22px 0 0;
+  border: 0;
+  border-top: 1px solid rgb(39 36 31 / 24%);
+}

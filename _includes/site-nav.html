@@ -1,0 +1,8 @@
+<nav class="article-nav" aria-label="Site navigation">
+  <a href="{{ "/" | relative_url }}">Home</a>
+  {% unless page.url == "/blog/" %}
+  <span aria-hidden="true">·</span>
+  <a href="{{ "/blog/" | relative_url }}">Writing</a>
+  {% endunless %}
+  {% if include.date %}<time class="article-nav-date" datetime="{{ include.date | date_to_xmlschema }}">{{ include.date | date: "%-d %B %Y" }}</time>{% endif %}
+</nav>

@@ -1,5 +1,6 @@
 ---
-layout: default
+layout: legacy-page
+title: Contact
 permalink: /contact/
 ---
 

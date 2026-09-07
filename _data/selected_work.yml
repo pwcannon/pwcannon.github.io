@@ -1,0 +1,19 @@
+# A deliberately small, cross-format homepage selection. Add a published
+# essay with an internal URL such as /blog/essay-slug/; the homepage supports
+# internal and external links without any further template changes.
+
+- title: Approximate Bayesian Computation with Path Signatures
+  url: https://arxiv.org/abs/2106.12555
+  format: Paper
+  context: UAI 2024
+  distinction: Outstanding Paper Award
+
+- title: Robust Neural Posterior Estimation and Statistical Model Criticism
+  url: https://arxiv.org/abs/2210.06564
+  format: Paper
+  context: NeurIPS 2022
+
+- title: Investigating the Impact of Model Misspecification in Simulation-Based Inference
+  url: https://arxiv.org/abs/2209.01845
+  format: Preprint
+  context: "2022"

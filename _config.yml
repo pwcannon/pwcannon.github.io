@@ -1,20 +1,44 @@
 title: Patrick Cannon
+tagline: AI Safety
+description: "Independent AI safety researcher working on reliable oversight for language-model reasoning."
 url: https://patrickcannon.cc
-logo: /assets/img/Patrick_BW_square.jpg
-description: "Machine learning researcher. Reasoning, uncertainty, and alignment in large language models."
+baseurl: ""
+lang: en-GB
+author:
+  name: Patrick Cannon
+  url: https://patrickcannon.cc
+  twitter: pw_cannon
 twitter:
   username: pw_cannon
   card: summary_large_image
+
 permalink: pretty
 kramdown:
   math_engine: null
-# image: filename is versioned — bump together with CARD_ASSET in
-# _design/make_brand_assets.py (scrapers cache og-images by URL)
+
+plugins:
+  - jekyll-seo-tag
+
 defaults:
   - scope:
       path: ""
     values:
-      image: /assets/img/og_card_v4.png
+      image: /assets/img/social-card.png
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      mathjax: true
+
 exclude:
+  - README.md
+  - assets/fonts/README.md
   - CLAUDE.md
   - _design
+  - docs
+  - script
+  - jekyll-theme-minimal.gemspec
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE

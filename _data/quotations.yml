@@ -1,0 +1,9 @@
+# Quotations available to the site. Select a homepage quotation by setting
+# `closing_quote` in index.md to one of the IDs below. Keep the destination as
+# the most useful stable page for the work, whether internal or external.
+
+- id: the-hobbit-looking
+  text: "There is nothing like looking, if you want to find something."
+  author: J. R. R. Tolkien
+  work: The Hobbit
+  url: https://en.wikipedia.org/wiki/The_Hobbit

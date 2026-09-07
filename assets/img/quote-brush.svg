@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 120" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#477cad" stop-opacity="0"/>
+      <stop offset="0.035" stop-color="#477cad" stop-opacity="0.18"/>
+      <stop offset="0.28" stop-color="#2e659e" stop-opacity="0.22"/>
+      <stop offset="0.72" stop-color="#194f8a" stop-opacity="0.18"/>
+      <stop offset="0.94" stop-color="#2e659e" stop-opacity="0.11"/>
+      <stop offset="1" stop-color="#477cad" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="edge" x="-2%" y="-15%" width="104%" height="130%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.009 0.085" numOctaves="2" seed="19" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <mask id="shape" maskUnits="userSpaceOnUse">
+      <rect width="1000" height="120" fill="black"/>
+      <path
+        d="M8 34 C65 23 129 29 194 24 C273 18 341 25 414 22 C501 19 581 27 656 24 C744 20 825 29 907 25 C946 23 977 28 994 37 L988 80 C946 86 905 82 856 88 C780 96 700 88 626 93 C542 99 460 89 377 94 C291 99 210 89 133 94 C77 98 36 91 12 82 C20 68 4 53 8 34 Z"
+        fill="white"
+        filter="url(#edge)"
+      />
+      <g fill="none" stroke="black" stroke-linecap="round">
+        <path d="M28 43 C176 34 328 40 474 35 C639 30 791 39 956 34" stroke-width="2.5" stroke-opacity="0.26"/>
+        <path d="M48 55 C198 47 340 53 508 48 C668 43 812 51 976 47" stroke-width="1.8" stroke-opacity="0.32"/>
+        <path d="M20 70 C176 62 330 68 493 63 C647 58 815 68 961 61" stroke-width="3" stroke-opacity="0.2"/>
+        <path d="M64 82 C215 75 371 82 524 76 C683 70 825 79 929 73" stroke-width="1.7" stroke-opacity="0.35"/>
+      </g>
+    </mask>
+  </defs>
+  <rect width="1000" height="120" fill="url(#ink)" mask="url(#shape)"/>
+</svg>

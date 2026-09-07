@@ -1,113 +1,44 @@
-<!DOCTYPE html>
-<html lang="{{ site.lang | default: "en-US" }}">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title }} — {{ site.title }}</title>
+---
+layout: default
+---
 
-  <!-- DM Sans -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..700;1,400&display=swap" rel="stylesheet">
+<main class="article-shell">
+  <article class="article-document">
+    {% if page.compact-header %}
+    {% include site-nav.html date=page.date %}
+    {% else %}
+    {% include site-nav.html %}
+    {% endif %}
 
-  <!-- MathJax -->
-  <script>
-    MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true,
-        packages: {'[+]': ['ams', 'noerrors']}
-      },
-      loader: { load: ['[tex]/ams', '[tex]/noerrors'] },
-      svg: { fontCache: 'global' },
-      options: { renderActions: { addMenu: [] } }
-    };
-  </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-  {% seo %}
-  {% include favicons.html %}
-  <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
-</head>
-<body>
-
-{% include background_blobs.html %}
-
-<div class="page-wrapper">
-
-<!-- Contour orb -->
-{% include contour_orb.html %}
-
-<header>
-  <span class="name">{{ site.title }}</span>
-  <div class="header-mid"></div>
-  <nav>
-    <a href="{{ "/" | relative_url }}">home</a>
-    <a href="{{ "/blog" | relative_url }}" class="active">blog</a>
-    <a href="{{ "/contact" | relative_url }}">contact</a>
-  </nav>
-</header>
-
-<div class="layout">
-  <div class="sidebar">
-    <a href="{{ "/blog" | relative_url }}" class="back-link">&larr; all posts</a>
-  </div>
-
-  <div class="main">
-    <div class="post-header">
-      <h1 class="post-title">{{ page.title }}</h1>
-      {% if page.date %}
-      <time class="post-date" datetime="{{ page.date | date_to_xmlschema }}">
-        {{ page.date | date: "%B %-d, %Y" }}
-      </time>
+    <header class="article-header{% if page.compact-header %} article-header-compact{% endif %}">
+      <h1>{{ page.display-title | default: page.title | escape }}</h1>
+      {% if page.subtitle %}
+      <p class="article-subtitle">{{ page.subtitle | escape }}</p>
       {% endif %}
-    </div>
-    <div class="post-content">
+      {% unless page.compact-header %}
+      {% if page.date %}
+      <p class="article-meta">
+        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %B %Y" }}</time>
+      </p>
+      {% endif %}
+      {% endunless %}
+      {% if page.description %}
+      <div class="article-abstract">
+        <p class="article-abstract-label">Abstract</p>
+        <p>{{ page.description }}</p>
+      </div>
+      {% endif %}
+    </header>
+
+    <div class="article-content">
       {{ content }}
     </div>
-  </div>
 
-  <div class="right-panel"></div>
+    <footer class="article-footer">
+      <a href="{{ "/blog/" | relative_url }}">All writing</a>
+      <a href="mailto:hello@patrickcannon.cc">Email</a>
+    </footer>
+  </article>
+</main>
 
-  {% if page.sidebar_notes %}
-  {% for note in page.sidebar_notes %}
-  <div class="margin-note {% cycle 'margin-note-left', 'margin-note-right' %}" data-anchor="{{ note.at }}">{{ note.text }}</div>
-  {% endfor %}
-  {% endif %}
-</div>
-
-<footer>
-  <span>&copy; 2026 Patrick Cannon</span>
-</footer>
-
-</div><!-- .page-wrapper -->
-
-{% include noise_grain.html %}
-
-<script>
-(function() {
-  var notes = document.querySelectorAll('.margin-note[data-anchor]');
-  var layout = document.querySelector('.layout');
-  if (!notes.length || !layout) return;
-  var layoutTop = layout.getBoundingClientRect().top + window.scrollY;
-
-  function positionNotes() {
-    notes.forEach(function(note) {
-      var anchorId = note.getAttribute('data-anchor');
-      var anchor = document.getElementById(anchorId);
-      if (!anchor) return;
-      var anchorTop = anchor.getBoundingClientRect().top + window.scrollY;
-      note.style.top = (anchorTop - layoutTop) + 'px';
-    });
-  }
-
-  // Position after page load and MathJax rendering
-  positionNotes();
-  window.addEventListener('load', positionNotes);
-  // Re-position after MathJax finishes
-  if (window.MathJax && MathJax.startup) {
-    MathJax.startup.promise.then(positionNotes);
-  }
-})();
-</script>
-</body>
-</html>
+<script defer src="{{ "/assets/js/article-notes.js" | relative_url }}"></script>

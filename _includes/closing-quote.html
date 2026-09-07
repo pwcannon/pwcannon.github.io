@@ -1,0 +1,19 @@
+{% assign quotation = site.data.quotations | where: "id", include.id | first %}
+{% if quotation %}
+  {% if quotation.url contains "://" %}
+    {% assign quotation_url = quotation.url %}
+  {% else %}
+    {% assign quotation_url = quotation.url | relative_url %}
+  {% endif %}
+  <figure class="closing-quote">
+    <a
+      class="closing-quote-link"
+      href="{{ quotation_url }}"
+      aria-label="{{ quotation.text }} From {{ quotation.work }} by {{ quotation.author }}"
+    >
+      <blockquote>
+        <p>{{ quotation.text }}</p>
+      </blockquote>
+    </a>
+  </figure>
+{% endif %}

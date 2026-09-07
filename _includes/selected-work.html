@@ -1,0 +1,24 @@
+<div class="work-list">
+  {% for item in site.data.selected_work %}
+  {% if item.url contains "://" %}
+    {% assign item_url = item.url %}
+  {% else %}
+    {% assign item_url = item.url | relative_url %}
+  {% endif %}
+  <a class="work-item" href="{{ item_url }}">
+    <span class="work-index" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+    <span class="work-copy">
+      <span class="work-title">{{ item.title }}</span>
+      <span class="work-meta">
+        <span class="work-format">{{ item.format }}</span>
+        <span class="work-meta-separator" aria-hidden="true">·</span>
+        <span class="work-context">{{ item.context }}</span>
+        {% if item.distinction %}
+        <span class="work-meta-separator" aria-hidden="true">·</span>
+        <span class="work-distinction">{{ item.distinction }}</span>
+        {% endif %}
+      </span>
+    </span>
+  </a>
+  {% endfor %}
+</div>

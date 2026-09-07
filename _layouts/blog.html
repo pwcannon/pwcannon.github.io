@@ -1,55 +1,14 @@
-<!DOCTYPE html>
-<html lang="{{ site.lang | default: "en-US" }}">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog — {{ site.title }}</title>
+---
+layout: default
+---
 
-  <!-- DM Sans -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..700;1,400&display=swap" rel="stylesheet">
+<main class="writing-shell">
+  {% include site-nav.html %}
+  <header class="writing-header">
+    <h1>{{ page.title | default: "Writing" }}</h1>
+    <p>Essays and research notes. Posts here are never written by AI.</p>
+  </header>
 
-  {% seo %}
-  {% include favicons.html %}
-  <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
-</head>
-<body>
+  {{ content }}
 
-{% include background_blobs.html %}
-
-<div class="page-wrapper">
-
-<!-- Contour orb -->
-{% include contour_orb.html %}
-
-<header>
-  <span class="name">{{ site.title }}</span>
-  <div class="header-mid"></div>
-  <nav>
-    <a href="{{ "/" | relative_url }}">home</a>
-    <a href="{{ "/blog" | relative_url }}" class="active">blog</a>
-    <a href="{{ "/contact" | relative_url }}">contact</a>
-  </nav>
-</header>
-
-<div class="layout">
-  <div class="sidebar">
-    <a href="{{ "/" | relative_url }}" class="back-link">&larr; home</a>
-  </div>
-
-  <div class="main">
-    {{ content }}
-  </div>
-
-  <div class="right-panel"></div>
-</div>
-
-<footer>
-  <span>&copy; 2026 Patrick Cannon</span>
-</footer>
-
-</div><!-- .page-wrapper -->
-
-{% include noise_grain.html %}
-
-</body>
-</html>
+</main>
