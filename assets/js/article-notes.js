@@ -45,11 +45,7 @@
   var endnotes = notes;
   var section = document.createElement("section");
   section.className = "article-endnotes";
-  section.setAttribute("aria-labelledby", "endnotes-heading");
-  var heading = document.createElement("h2");
-  heading.id = "endnotes-heading";
-  heading.textContent = "Notes";
-  section.appendChild(heading);
+  section.setAttribute("aria-label", "Footnotes");
   page.querySelector(".article-content").appendChild(section);
   notes = endnotes.map(function (note) {
     section.appendChild(note);
