@@ -41,52 +41,35 @@
   );
   if (!notes.length) return;
 
-  var homes = new Map();
-
-  notes.forEach(function (note) {
-    var marker = document.createComment("margin-note-home");
-    note.parentNode.insertBefore(marker, note);
-    homes.set(note, marker);
+  // The source notes remain permanent endnotes. Only copies enter the margin.
+  var endnotes = notes;
+  var section = document.createElement("section");
+  section.className = "article-endnotes";
+  section.setAttribute("aria-labelledby", "endnotes-heading");
+  var heading = document.createElement("h2");
+  heading.id = "endnotes-heading";
+  heading.textContent = "Notes";
+  section.appendChild(heading);
+  page.querySelector(".article-content").appendChild(section);
+  notes = endnotes.map(function (note) {
+    section.appendChild(note);
+    var copy = note.cloneNode(true);
+    copy.id = note.id + "-margin";
+    copy.classList.add("desktop-margin-note");
+    copy.setAttribute("aria-hidden", "true");
+    copy.removeAttribute("tabindex");
+    copy.querySelectorAll("[id]").forEach(function (el) { el.removeAttribute("id"); });
+    copy.querySelectorAll("a").forEach(function (el) { el.tabIndex = -1; });
+    page.appendChild(copy);
+    return copy;
   });
-
-  function restoreNotes() {
-    notes.forEach(function (note) {
-      var marker = homes.get(note);
-      if (marker && marker.parentNode) {
-        marker.parentNode.insertBefore(note, marker.nextSibling);
-      }
-    });
-  }
-
-  function placeNotesInline() {
-    var lastAtBlock = new Map();
-
-    notes.forEach(function (note) {
-      note.style.removeProperty("top");
-      var reference = document.getElementById(note.getAttribute("data-ref"));
-      if (!reference) return;
-
-      var block =
-        reference.closest("p, li, blockquote, figcaption") ||
-        reference.parentElement;
-      var previousNote = lastAtBlock.get(block);
-
-      if (previousNote) {
-        previousNote.insertAdjacentElement("afterend", note);
-      } else {
-        block.insertAdjacentElement("afterend", note);
-      }
-      lastAtBlock.set(block, note);
-    });
-  }
 
   function positionMarginNotes() {
     if (!desktopNotes.matches) {
-      placeNotesInline();
+      notes.forEach(function (note) { note.style.removeProperty("top"); });
       return;
     }
 
-    restoreNotes();
     var pageTop = page.getBoundingClientRect().top + window.scrollY;
     var previousBottom = -Infinity;
 
@@ -140,7 +123,8 @@
     if (referenceLink) {
       referenceLink.addEventListener("click", function () {
         window.setTimeout(function () {
-          note.focus({ preventScroll: true });
+          var target = document.getElementById(referenceLink.hash.slice(1));
+          if (target) target.focus({ preventScroll: true });
         }, 0);
       });
     }

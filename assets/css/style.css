@@ -755,7 +755,7 @@ summary:focus-visible {
   text-indent: -1.75em;
 }
 
-.article-content h2:not(#references):not([id^="notes-and-format-examples"]) {
+.article-content h2:not(#references):not(#endnotes-heading):not([id^="notes-and-format-examples"]) {
   counter-increment: article-section;
   counter-reset: article-subsection;
 }
@@ -769,7 +769,7 @@ summary:focus-visible {
   counter-increment: article-subpoint;
 }
 
-.article-content h2:not(#references):not([id^="notes-and-format-examples"])::before {
+.article-content h2:not(#references):not(#endnotes-heading):not([id^="notes-and-format-examples"])::before {
   content: counter(article-section) "\2002";
 }
 
@@ -781,7 +781,7 @@ summary:focus-visible {
   content: counter(article-subpoint, lower-alpha) ".\2002";
 }
 
-.article-content h2:not(#references):not([id^="notes-and-format-examples"])::before,
+.article-content h2:not(#references):not(#endnotes-heading):not([id^="notes-and-format-examples"])::before,
 .article-content h3::before,
 .article-content h4::before {
   color: var(--name-blue);
@@ -1503,3 +1503,14 @@ summary:focus-visible {
 .legacy-content input,.legacy-content textarea { width:100%; padding:10px; font:inherit; border:1px solid var(--rule); background:transparent; }
 .legacy-content textarea { min-height:160px; }
 .legacy-content button { justify-self:start; padding:8px 20px; font:inherit; background:var(--name-blue); color:white; border:0; cursor:pointer; }
+
+/* Permanent endnotes; desktop margin notes are supplementary copies. */
+.margin-note:not(.desktop-margin-note) {
+  position: static; width: auto; margin: 24px 0; padding: 0;
+  border: 0; background: transparent; font-size: 16px; line-height: 1.5;
+  scroll-margin-top: 24px;
+}
+.article-endnotes { margin-top: 56px; border-top: 1px solid var(--rule); }
+.article-content #endnotes-heading { counter-increment: none; counter-reset: none; }
+.article-content #endnotes-heading::before { content: none; }
+@media (max-width: 1268px) { .desktop-margin-note { display: none; } }
