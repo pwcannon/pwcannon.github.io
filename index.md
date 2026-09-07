@@ -1,7 +1,7 @@
 ---
 layout: default
 permalink: /
-description: "Independent AI safety researcher working on reliable oversight for language-model reasoning."
+description: "Independent AI researcher working on reliable oversight for language-model reasoning."
 body_class: home-page
 ---
 
@@ -34,7 +34,7 @@ body_class: home-page
   </header>
 
   <section class="introduction" aria-label="About">
-    <p>I’m an independent AI safety researcher funded by <a href="https://bluedot.org/">BlueDot Impact</a>. My current work addresses robust oversight for language-model reasoning. I study when learned verifiers become unreliable under inference-time search, how high-confidence false approvals occur, and when systems should defer rather than trust a verifier’s judgement.</p>
+    <p>I’m an independent AI researcher funded by <a href="https://bluedot.org/">BlueDot Impact</a>. My current work addresses robust oversight for language-model reasoning. I study when learned verifiers become unreliable under inference-time search, how high-confidence false approvals occur, and when systems should defer rather than trust a verifier’s judgement.</p>
 
     <p>I have a PhD in statistics from the University of Bristol, where I worked on particle MCMC for population genetics with <a href="https://scholar.google.co.uk/citations?hl=en&amp;user=kcsbLrAAAAAJ&amp;view_op=list_works">Christophe Andrieu</a> and <a href="https://scholar.google.co.uk/citations?hl=en&amp;user=2K3F0MMAAAAJ">Mark Beaumont</a>.</p>
 
