@@ -60,7 +60,7 @@
     copy.removeAttribute("tabindex");
     copy.querySelectorAll("[id]").forEach(function (el) { el.removeAttribute("id"); });
     copy.querySelectorAll("a").forEach(function (el) { el.tabIndex = -1; });
-    page.appendChild(copy);
+    page.querySelector(".article-content").appendChild(copy);
     return copy;
   });
 
