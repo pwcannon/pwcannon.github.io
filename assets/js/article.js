@@ -1,6 +1,6 @@
 (function () {
   var desktopNotes = window.matchMedia('(min-width: 1269px)');
-  var page = document.querySelector('.quarto-article');
+  var page = document.querySelector('.prototype-page, .article-shell');
   if (!page) return;
 
   // Keep axis-label and caption gaps in body-line units, outside the SVG.

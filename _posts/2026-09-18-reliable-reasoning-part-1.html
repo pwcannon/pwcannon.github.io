@@ -1,10 +1,13 @@
 ---
-layout: post
+layout: "post"
 title: "Reliable Reasoning, Part 1"
-quarto_presentation: true
-quarto_header: |
-  <h1 class="post-title">Reliable Reasoning, Part 1</h1>
-  <p class="article-meta"><span class="article-meta-reading">~15 minutes</span></p>
+display-title: "Reliable Reasoning"
+subtitle: "Part 1"
+reading_time: "~15 minutes"
+date: "2026-09-18"
+permalink: "/blog/reliable-reasoning-part-1/"
+mathjax: true
+article_abstract: |
   <div class="article-abstract"><p><span class="article-abstract-prefix">tl;dr</span> This is the first in a series of posts on optimizing against a
   learned verifier, a core strategy in test-time scaling. We’ll explore
   what the optimization does to the served-output distribution, show how
@@ -15,7 +18,7 @@ quarto_header: |
   <p>In this post, we separate failures to generate a correct candidate
   from failures to select one, and show why average single-sample accuracy
   alone cannot determine the gains from repeated sampling.</p></div>
-quarto_margin_notes: |
+article_margin_notes: |
   <div id="margin-note-1" class="margin-note margin-note-right" data-ref="margin-note-ref-1" data-endnote="margin-note-footnote-1" role="note" tabindex="-1">
   <div class="margin-note-number">
   <a href="#margin-note-ref-1" aria-label="Back to reference 1">[1]</a>
@@ -63,11 +66,6 @@ quarto_margin_notes: |
   <p>Note, this isn’t quite the <span class="math inline">\(N=1\)</span> and <span class="math inline">\(N=100\)</span> endpoints of the same experiment. Greedy decoding is different from taking one stochastic draw from the sampling law used to form the candidate pool. Here, greedy decoding used <span class="math inline">\(T=0\)</span>, while the 100 samples used <span class="math inline">\(T=0.7\)</span>.</p>
   </div>
   </div>
-compact-header: true
-date: 2026-09-18
-permalink: /blog/reliable-reasoning-part-1/
-mathjax: true
-article_citations: true
 ---
 <nav class="article-toc" aria-label="Table of contents"><div class="article-toc-heading"><p class="article-toc-title">Contents</p><button class="article-toc-toggle" type="button" aria-expanded="false" aria-controls="article-toc-sections"><span class="article-toc-toggle-label">Show full contents</span><span class="article-toc-toggle-icon" aria-hidden="true">+</span></button></div><ol class="article-toc-level article-toc-level-1" id="article-toc-sections"><li><a href="#motivation">Motivation</a></li><li><a href="#reasoning-strategies-at-test-time">Reasoning strategies at test time</a><ol class="article-toc-level article-toc-level-2" hidden><li><a href="#at-the-input-level">At the input level</a></li><li><a href="#at-the-output-level">At the output level</a></li><li><a href="#additional-assumptions">Additional assumptions</a></li></ol></li><li><a href="#test-time-search">Test-time search</a><ol class="article-toc-level article-toc-level-2" hidden><li><a href="#repeated-sampling">Repeated sampling</a></li><li><a href="#exact-checks">Exact checks</a></li><li><a href="#beyond-exact-checks">Beyond exact checks</a></li><li><a href="#summary">Summary</a></li></ol></li></ol></nav>
 <h2 id="motivation">Motivation</h2>

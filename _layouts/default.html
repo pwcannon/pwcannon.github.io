@@ -9,11 +9,8 @@
     {% include favicons.html %}
     <link rel="preload" href="{{ "/assets/fonts/geist-variable-1.7.2.woff2" | relative_url }}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
-    {% if page.article_citations %}
-    <link rel="stylesheet" href="{{ "/assets/css/article-citations.css" | relative_url }}">
-    {% endif %}
-    {% if page.quarto_presentation %}
-    <link rel="stylesheet" href="{{ "/assets/css/quarto-article.css" | relative_url }}">
+    {% if page.layout == "post" %}
+    <link rel="stylesheet" href="{{ "/assets/css/article.css" | relative_url }}">
     {% endif %}
     {% if page.closing_quote %}
     <link rel="stylesheet" href="{{ "/assets/css/closing-quote.css" | relative_url }}">
@@ -24,7 +21,7 @@
     {% if page.mathjax %}
     <script>
       window.MathJax = {
-        {% if page.quarto_presentation %}chtml: { mtextInheritFont: true },{% endif %}
+        {% if page.layout == "post" %}chtml: { mtextInheritFont: true },{% endif %}
         tex: {
           inlineMath: [["$", "$"], ["\\(", "\\)"]],
           displayMath: [["$$", "$$"], ["\\[", "\\]"]],

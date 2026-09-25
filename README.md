@@ -2,16 +2,38 @@
 
 Personal research website. Jekyll, published by GitHub Pages from `master`.
 
-## Build
+Last updated: 2026-09-25
 
-Use `bundle exec jekyll build` with the repository Gemfile, or `jekyll build` with the installed GitHub Pages-compatible Jekyll environment.
+## Build and release
 
-## Release and rollback
+Use `bundle exec jekyll build` with the repository Gemfile, or the installed
+GitHub Pages-compatible Jekyll environment. Build and review the maintained
+checkout locally before committing a release. Publication requires Patrick's
+explicit instruction; pushing `master` triggers GitHub Pages. Verify the live
+page after deployment. Roll back with a reviewed revert, never a reset or force
+push. Historical design experiments remain on an archive branch and must not be
+merged wholesale.
 
-The September 2026 redesign is a single commit based on `5f9af4b` (the previous website). Revert the redesign commit on master and push to restore the prior tracked website while preserving history. Do not reset or force-push master.
+## Article sources and styling
 
-The original local checkout contained uncommitted design experiments and was left untouched. Release preparation used a separate checkout.
+Article prose and maths are edited in the separate private Quarto blog repository,
+not in `_posts`. Its `PUBLICATION-WORKFLOW.md` documents rendering and export.
+The shared exporter generates each post's body and metadata; reading time is
+computed during the Quarto render. A full `title` remains available for listings
+and search metadata; `display-title` and `subtitle` control the visible heading.
 
-## Content
+All posts use `_layouts/post.html`, `assets/css/article.css` and
+`assets/js/article.js`. The CSS and JavaScript are generated from the private
+shared presentation; change those sources and regenerate both assets rather than
+editing website copies. Margin notes, responsive footnotes, technical notes,
+figures and references share those components. Footnotes precede references;
+method summaries use ordinary prose. Do not introduce per-post layout switches.
 
-The first essay is `_posts/2026-08-24-training-for-reasoning.html`, exported from the training-for-reasoning research source. Shared article rendering lives in `_layouts/post.html`. Research and contact URLs are retained. Design comparison pages and painting experiments are not published.
+`assets/css/style.css` owns the site shell, navigation, footer and non-article
+pages. The article exporter deliberately excludes those rules. Keep the existing
+website navigation when changing article presentation. Check both published
+articles at desktop and phone widths after changing shared components, and check
+the homepage and Writing page after changing site-wide CSS.
+
+Publications are single-sourced in `_data/publications.yml`. Private drafts,
+review artefacts and design comparison pages must not be included in releases.

@@ -2,45 +2,25 @@
 layout: default
 ---
 
-<main class="article-shell{% if page.quarto_presentation %} quarto-article{% endif %}">
+<main class="article-shell">
   <article class="article-document">
-    {% if page.compact-header %}
     {% include site-nav.html date=page.date %}
-    {% else %}
-    {% include site-nav.html %}
-    {% endif %}
 
-    {% if page.quarto_presentation %}
     <header class="article-header">
-      {{ page.quarto_header }}
-    </header>
-    {% else %}
-    <header class="article-header{% if page.compact-header %} article-header-compact{% endif %}">
-      <h1>{{ page.display-title | default: page.title | escape }}</h1>
+      <h1 class="post-title">{{ page.display-title | default: page.title | escape }}</h1>
       {% if page.subtitle %}
       <p class="article-subtitle">{{ page.subtitle | escape }}</p>
       {% endif %}
-      {% unless page.compact-header %}
-      {% if page.date %}
-      <p class="article-meta">
-        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %B %Y" }}</time>
-      </p>
+      {% if page.reading_time %}
+      <p class="article-meta"><span class="article-meta-reading">{{ page.reading_time | escape }}</span></p>
       {% endif %}
-      {% endunless %}
-      {% if page.description %}
-      <div class="article-abstract">
-        <p class="article-abstract-label">Abstract</p>
-        <p>{{ page.description }}</p>
-      </div>
-      {% endif %}
+      {{ page.article_abstract }}
     </header>
-    {% endif %}
 
     <div class="article-content">
       {{ content }}
     </div>
-
-    {% if page.quarto_presentation %}{{ page.quarto_margin_notes }}{% endif %}
+    {{ page.article_margin_notes }}
 
     <footer class="article-footer">
       <a href="{{ "/blog/" | relative_url }}">All writing</a>
@@ -49,8 +29,4 @@ layout: default
   </article>
 </main>
 
-{% if page.quarto_presentation %}
-<script defer src="{{ "/assets/js/quarto-article.js" | relative_url }}"></script>
-{% else %}
-<script defer src="{{ "/assets/js/article-notes.js" | relative_url }}"></script>
-{% endif %}
+<script defer src="{{ "/assets/js/article.js" | relative_url }}"></script>
