@@ -338,11 +338,9 @@ summary:focus-visible {
 
 .site-wordmark {
   color: var(--name-blue);
-  font-family: var(--sans);
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 450;
   letter-spacing: -0.012em;
-  white-space: nowrap;
 }
 
 .writing-header {
@@ -624,8 +622,7 @@ body {
 .article-nav > span { color: #b7b9bb; font-weight: 400; }
 
 @media (max-width: 640px) {
-.article-nav { font-size: 12px; margin-bottom: 36px; flex-wrap: wrap; }
-.article-nav .site-wordmark { font-size: 16px; }
+.article-nav { font-size: 12px; margin-bottom: 36px; }
 }
 
 .article-nav .article-nav-date {
