@@ -12,6 +12,9 @@
     {% if page.article_citations %}
     <link rel="stylesheet" href="{{ "/assets/css/article-citations.css" | relative_url }}">
     {% endif %}
+    {% if page.quarto_presentation %}
+    <link rel="stylesheet" href="{{ "/assets/css/quarto-article.css" | relative_url }}">
+    {% endif %}
     {% if page.closing_quote %}
     <link rel="stylesheet" href="{{ "/assets/css/closing-quote.css" | relative_url }}">
     {% endif %}
@@ -21,6 +24,7 @@
     {% if page.mathjax %}
     <script>
       window.MathJax = {
+        {% if page.quarto_presentation %}chtml: { mtextInheritFont: true },{% endif %}
         tex: {
           inlineMath: [["$", "$"], ["\\(", "\\)"]],
           displayMath: [["$$", "$$"], ["\\[", "\\]"]],
