@@ -659,9 +659,9 @@ body {
 
 /* Botanical header engraving; use the supersampled assets at their intended size. */
 .article-title-row { display: grid; grid-template-columns: minmax(0, 1fr) 174px; gap: 24px; align-items: start; }
-.article-ginkgo { display: block; justify-self: end; position: relative; top: -13px; }
-.article-ginkgo img { display: block; width: 174px; height: 174px; mix-blend-mode: multiply; }
+.article-header-artwork { display: block; justify-self: end; position: relative; top: -13px; }
+.article-header-artwork img { display: block; width: 174px; height: 174px; mix-blend-mode: multiply; }
 @media (max-width: 600px) {
   .article-title-row { display: block; }
-  .article-ginkgo { display: none; }
+  .article-header-artwork { display: none; }
 }

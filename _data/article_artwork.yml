@@ -1,0 +1,5 @@
+# Header artwork is opt-in per article; do not reuse it automatically.
+/blog/reliable-reasoning-part-1/:
+  src: /assets/img/ginkgo/leaf-174-1x.png
+  src_2x: /assets/img/ginkgo/leaf-174-2x.png
+  src_3x: /assets/img/ginkgo/leaf-174-3x.png

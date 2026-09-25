@@ -1,0 +1,6 @@
+<picture class="article-header-artwork">
+  <source media="(max-width: 600px)" srcset="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+  <img src="{{ include.artwork.src | relative_url }}"
+       srcset="{{ include.artwork.src | relative_url }} 1x, {{ include.artwork.src_2x | relative_url }} 2x, {{ include.artwork.src_3x | relative_url }} 3x"
+       width="174" height="174" alt="" aria-hidden="true">
+</picture>

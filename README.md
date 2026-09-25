@@ -27,7 +27,10 @@ All posts use `_layouts/post.html`, `assets/css/spacing.css`,
 shared presentation; change those sources and regenerate both assets rather than
 editing website copies. Margin notes, responsive footnotes, technical notes,
 figures and references share those components. Footnotes precede references;
-method summaries begin with an italic “Method summary:” label followed by normal text. Do not introduce per-post layout switches.
+method summaries begin with an italic “Method summary:” label followed by normal text. Keep the article layout shared. Header artwork is opt-in through
+`_data/article_artwork.yml`, with an explicit entry for each article. Artwork
+should be unique to the article or deliberately related within a series; never
+apply a single illustration to every article by default.
 
 `assets/css/style.css` owns the site shell, navigation, footer and non-article
 pages. The article exporter deliberately excludes those rules. Keep the existing

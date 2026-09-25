@@ -6,9 +6,12 @@ layout: default
   <article class="article-document">
     {% include site-nav.html date=page.date %}
 
+    {% assign header_artwork = site.data.article_artwork[page.url] %}
     <header class="article-header">
+      {% if header_artwork %}
       <div class="article-title-row">
       <div class="article-title-copy">
+      {% endif %}
       <h1 class="post-title">{{ page.display-title | default: page.title | escape }}</h1>
       {% if page.subtitle %}
       <p class="article-subtitle">{{ page.subtitle | escape }}</p>
@@ -16,9 +19,11 @@ layout: default
       {% if page.reading_time %}
       <p class="article-meta"><span class="article-meta-reading">{{ page.reading_time | escape }}</span></p>
       {% endif %}
+      {% if header_artwork %}
       </div>
-      {% include ginkgo-header.html %}
+      {% include article-artwork.html artwork=header_artwork %}
       </div>
+      {% endif %}
       {{ page.article_abstract }}
     </header>
 
