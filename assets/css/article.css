@@ -66,7 +66,7 @@
 
 :where(.article-shell) .article-content .article-toc {
   width: 100%;
-  margin: 0 0 var(--space-2xl);
+  margin: var(--space-2xl) 0;
   margin-left: 0;
   padding: 0;
 }
