@@ -304,6 +304,17 @@ summary:focus-visible {
   color: #747577;
 }
 
+.work-recency:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.work-new {
+  color: #8752b3;
+  font-weight: 400;
+}
+
 .work-distinction {
   color: var(--name-blue);
   font-weight: 600;

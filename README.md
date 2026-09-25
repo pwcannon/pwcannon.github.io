@@ -56,3 +56,11 @@ use 24 px. Contents uses subsection spacing: 40 px above and below the whole blo
 and 16 px between the heading and list. These rules apply on phones too. There is no special abstract or
 first-section spacing. Typography, outer page padding and diagram geometry
 remain separate. Regenerate the spacing stylesheet along with article CSS/JS.
+
+## Selected work
+
+Selected work uses `_data/selected_work.yml`. A purple “new” label uses regular weight in
+the award label’s metadata row for the first 30 days after
+publication. Internal blog links inherit the post date; other entries can set
+`date: YYYY-MM-DD`. The homepage script checks recency on page load, so labels
+expire without rebuilding. Undated and future-dated entries receive no label.

@@ -5,6 +5,8 @@
   {% else %}
     {% assign item_url = item.url | relative_url %}
   {% endif %}
+  {% assign selected_post = site.posts | where: "url", item.url | first %}
+  {% assign published_date = selected_post.date | default: item.date %}
   <a class="work-item" href="{{ item_url }}">
     <span class="work-index" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
     <span class="work-copy">
@@ -13,6 +15,9 @@
         <span class="work-format">{{ item.format }}</span>
         <span class="work-meta-separator" aria-hidden="true">·</span>
         <span class="work-context">{{ item.context }}</span>
+        {% if published_date %}
+        <span class="work-recency" data-published="{{ published_date | date: '%Y-%m-%d' }}" hidden><span class="work-meta-separator" aria-hidden="true">·</span> <span class="work-new">new</span></span>
+        {% endif %}
         {% if item.distinction %}
         <span class="work-meta-separator" aria-hidden="true">·</span>
         <span class="work-distinction">{{ item.distinction }}</span>
@@ -22,3 +27,5 @@
   </a>
   {% endfor %}
 </div>
+
+<script defer src="{% include asset-url.html path="/assets/js/selected-work.js" %}"></script>
