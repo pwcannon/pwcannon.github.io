@@ -27,7 +27,7 @@ All posts use `_layouts/post.html`, `assets/css/article.css` and
 shared presentation; change those sources and regenerate both assets rather than
 editing website copies. Margin notes, responsive footnotes, technical notes,
 figures and references share those components. Footnotes precede references;
-method summaries use ordinary prose. Do not introduce per-post layout switches.
+method summaries use a bold inline label followed by an em space. Do not introduce per-post layout switches.
 
 `assets/css/style.css` owns the site shell, navigation, footer and non-article
 pages. The article exporter deliberately excludes those rules. Keep the existing
