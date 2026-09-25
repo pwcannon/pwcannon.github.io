@@ -8,6 +8,11 @@
   context: UAI 2024
   distinction: Outstanding Paper Award
 
+- title: "Training for reasoning: a short note"
+  url: /blog/training-for-reasoning/
+  format: Note
+  context: "24 Aug 2026"
+
 - title: Robust Neural Posterior Estimation and Statistical Model Criticism
   url: https://arxiv.org/abs/2210.06564
   format: Paper
