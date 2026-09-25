@@ -114,6 +114,8 @@ summary:focus-visible {
 
 .identity-mark {
   display: block;
+  transform: scale(0.8);
+  transform-origin: center;
   width: 144px;
   height: auto;
   margin: -8px 48px 0 0;
