@@ -22,8 +22,8 @@ The shared exporter generates each post's body and metadata; reading time is
 computed during the Quarto render. A full `title` remains available for listings
 and search metadata; `display-title` and `subtitle` control the visible heading.
 
-All posts use `_layouts/post.html`, `assets/css/article.css` and
-`assets/js/article.js`. The CSS and JavaScript are generated from the private
+All posts use `_layouts/post.html`, `assets/css/spacing.css`,
+`assets/css/article.css` and `assets/js/article.js`. The CSS and JavaScript are generated from the private
 shared presentation; change those sources and regenerate both assets rather than
 editing website copies. Margin notes, responsive footnotes, technical notes,
 figures and references share those components. Footnotes precede references;
@@ -45,3 +45,13 @@ appends Jekyll's build timestamp, shared by all pages in that build. Every build
 therefore requests a fresh, matching set of CSS and JavaScript instead of mixing
 new page markup with a returning visitor's cached assets. No manual version bump
 is required. Keep the version when adding new local CSS or script references.
+
+## Spacing
+
+The generated `assets/css/spacing.css` provides one scale: 4, 8, 16, 24, 40 and
+56 px. Its source is the private blog's `shared/css/spacing.css`. Paragraphs,
+equations and abstract gaps use 16 px; main sections use 56 px before their
+heading, subsections 40 px, and figure padding and technical-note outer gaps
+use 24 px. These rules apply on phones too. There is no special abstract or
+first-section spacing. Typography, outer page padding and diagram geometry
+remain separate. Regenerate the spacing stylesheet along with article CSS/JS.

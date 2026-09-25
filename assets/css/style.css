@@ -470,9 +470,9 @@ summary:focus-visible {
 
 .article-footer {
   display: flex;
-  margin-top: 84px;
+  margin-top: var(--space-2xl);
   justify-content: space-between;
-  padding-top: 17px;
+  padding-top: var(--space-md);
   border-top: 1px solid var(--rule);
   color: var(--muted);
   font-size: 11px;
@@ -602,9 +602,9 @@ body {
   display: flex;
   justify-content: flex-start;
   align-items: baseline;
-  gap: 8px;
-  margin: 0 0 48px;
-  padding-bottom: 18px;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-xl);
+  padding-bottom: var(--space-md);
   border-bottom: 1px solid var(--rule);
   color: #a3a5a8;
   font-family: var(--sans);
@@ -622,7 +622,7 @@ body {
 .article-nav > span { color: #b7b9bb; font-weight: 400; }
 
 @media (max-width: 640px) {
-.article-nav { font-size: 12px; margin-bottom: 36px; }
+.article-nav { font-size: 12px; }
 }
 
 .article-nav .article-nav-date {

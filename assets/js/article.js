@@ -129,6 +129,7 @@
     var pageRect = noteContainer.getBoundingClientRect();
     var pageTop = pageRect.top + window.scrollY;
     var scale = pageRect.width / noteContainer.offsetWidth;
+    var noteGap = parseFloat(getComputedStyle(noteContainer).getPropertyValue('--space-md'));
     var previousBottom = -Infinity;
 
     notes.forEach(function (note) {
@@ -137,7 +138,7 @@
 
       var referenceTop = reference.getBoundingClientRect().top + window.scrollY;
       var desiredTop = (referenceTop - pageTop) / scale;
-      var top = Math.ceil(Math.max(desiredTop, previousBottom + 18) * 4) / 4;
+      var top = Math.ceil(Math.max(desiredTop, previousBottom + noteGap) * 4) / 4;
       note.style.top = top + 'px';
       previousBottom = top + note.getBoundingClientRect().height / scale;
     });

@@ -8,6 +8,7 @@
     {% seo %}
     {% include favicons.html %}
     <link rel="preload" href="{{ "/assets/fonts/geist-variable-1.7.2.woff2" | relative_url }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/spacing.css" %}">
     <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/style.css" %}">
     {% if page.layout == "post" %}
     <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/article.css" %}">
