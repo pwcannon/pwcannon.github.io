@@ -27,6 +27,8 @@
   line-height: 1.45;
 }
 
+:where(.article-shell) .article-meta-reading { color: #898b8e; }
+
 :where(.article-shell) .article-meta > .article-meta-reading::before {
   content: none;
 }
