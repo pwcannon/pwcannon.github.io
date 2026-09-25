@@ -993,6 +993,10 @@
   line-height: 1.4;
 }
 
+:where(.article-shell) .margin-note-body {
+  font-size: calc(1em - 1pt);
+}
+
 :where(.article-shell) .margin-note-ref a,
 :where(.article-shell) .margin-note-number a,
 :where(.article-shell) .article-content .margin-note-backlink { color: var(--name-blue); }
