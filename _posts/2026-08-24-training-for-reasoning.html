@@ -8,6 +8,15 @@ date: "2026-08-24"
 permalink: "/blog/training-for-reasoning/"
 mathjax: true
 article_abstract: |
+  <div class="article-abstract"><p><span class="article-abstract-prefix">tl;dr</span> Starting with an existing model, there are now many ways to improve
+  reasoning capabilities through post-training. Some methods train the
+  model to imitate target text and others train it using evaluations of
+  its own outputs. In practice many pipelines combine methods of both
+  types, and hybrid approaches, too, so this is just an organizing
+  distinction and not a true taxonomy. We’ll discuss these methods at an
+  abstract level – the technical details aren’t important for the story
+  here, but I’ll link papers so you can take a look if you’re
+  interested.</p></div>
 article_margin_notes: |
   <div id="margin-note-1" class="margin-note margin-note-right" data-ref="margin-note-ref-1" data-endnote="margin-note-footnote-1" role="note" tabindex="-1">
   <div class="margin-note-number">
@@ -18,7 +27,6 @@ article_margin_notes: |
   </div>
   </div>
 ---
-<p>Starting with an existing model, there are now many ways to improve reasoning capabilities through post-training. Some methods train the model to imitate target text and others train it using evaluations of its own outputs. In practice many pipelines combine methods of both types, and hybrid approaches, too, so this is just an organizing distinction and not a true taxonomy. We’ll discuss these methods at an abstract level – the technical details aren’t important for the story here, but I’ll link papers so you can take a look if you’re interested.</p>
 <h2 id="learning-from-target-text">Learning from target text</h2>
 <p><strong>Method Summary</strong> Any judgment that’s required, like checking which generated responses are acceptable, happens prior to the training step. By the time training begins, the model sees only the selected text and learns to imitate it.</p>
 <h3 id="provided-or-teacher-generated-text">Provided or teacher-generated text</h3>
