@@ -52,7 +52,7 @@ The generated `assets/css/spacing.css` provides one scale: 4, 8, 16, 24, 40 and
 56 px. Its source is the private blog's `shared/css/spacing.css`. Paragraphs,
 equations and abstract gaps use 16 px; main sections use 56 px before their
 heading, subsections 40 px, and figure padding and technical-note outer gaps
-use 24 px. Contents is a main section: 56 px before its heading and 16 px
-between the heading and list. These rules apply on phones too. There is no special abstract or
+use 24 px. Contents uses subsection spacing: 40 px above and below the whole block,
+and 16 px between the heading and list. These rules apply on phones too. There is no special abstract or
 first-section spacing. Typography, outer page padding and diagram geometry
 remain separate. Regenerate the spacing stylesheet along with article CSS/JS.

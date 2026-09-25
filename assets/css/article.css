@@ -66,9 +66,13 @@
 
 :where(.article-shell) .article-content .article-toc {
   width: 100%;
-  margin: var(--space-2xl) 0;
+  margin: var(--space-xl) 0;
   margin-left: 0;
   padding: 0;
+}
+
+:where(.article-shell) .article-content .article-toc + h2 {
+  margin-top: var(--space-xl);
 }
 
 :where(.article-shell) .article-content .article-toc-heading {
