@@ -8,15 +8,15 @@
     {% seo %}
     {% include favicons.html %}
     <link rel="preload" href="{{ "/assets/fonts/geist-variable-1.7.2.woff2" | relative_url }}" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
+    <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/style.css" %}">
     {% if page.layout == "post" %}
-    <link rel="stylesheet" href="{{ "/assets/css/article.css" | relative_url }}">
+    <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/article.css" %}">
     {% endif %}
     {% if page.closing_quote %}
-    <link rel="stylesheet" href="{{ "/assets/css/closing-quote.css" | relative_url }}">
+    <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/closing-quote.css" %}">
     {% endif %}
     {% if page.body_class == "home-page" %}
-    <link rel="stylesheet" href="{{ "/assets/css/home-experiments.css" | relative_url }}">
+    <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/home-experiments.css" %}">
     {% endif %}
     {% if page.mathjax %}
     <script>

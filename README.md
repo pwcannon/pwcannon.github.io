@@ -37,3 +37,11 @@ the homepage and Writing page after changing site-wide CSS.
 
 Publications are single-sourced in `_data/publications.yml`. Private drafts,
 review artefacts and design comparison pages must not be included in releases.
+
+## Asset caching
+
+Route local stylesheet and script URLs through `_includes/asset-url.html`. It
+appends Jekyll's build timestamp, shared by all pages in that build. Every build
+therefore requests a fresh, matching set of CSS and JavaScript instead of mixing
+new page markup with a returning visitor's cached assets. No manual version bump
+is required. Keep the version when adding new local CSS or script references.
