@@ -1,0 +1,416 @@
+---
+layout: post
+title: "Reliable Reasoning, Part 1"
+quarto_presentation: true
+quarto_header: |
+  <h1 class="post-title">Reliable Reasoning, Part 1</h1>
+  <p class="article-meta"><span class="article-meta-reading">~15 minutes</span></p>
+  <div class="article-abstract"><p><span class="article-abstract-prefix">tl;dr</span> This is the first in a series of posts on optimizing against a
+  learned verifier, a core strategy in test-time scaling. We’ll explore
+  what the optimization does to the served-output distribution, show how
+  more compute offers a trade-off between increasing answer correctness
+  and amplifying verifier error, and ultimately tackle the crucial
+  oversight question “when can we trust answers arrived at in this
+  way?”</p>
+  <p>In this post, we separate failures to generate a correct candidate
+  from failures to select one, and show why average single-sample accuracy
+  alone cannot determine the gains from repeated sampling.</p></div>
+quarto_margin_notes: |
+  <div id="margin-note-1" class="margin-note margin-note-right" data-ref="margin-note-ref-1" data-endnote="margin-note-footnote-1" role="note" tabindex="-1">
+  <div class="margin-note-number">
+  <a href="#margin-note-ref-1" aria-label="Back to reference 1">[1]</a>
+  </div>
+  <div class="margin-note-body">
+  <p>I’ll use the term <em>verifier</em> for any mechanism that scores candidate outputs. When the scorer is learned, the literature often calls it a reward model, and we’ll see a few examples later that use this terminology.</p>
+  </div>
+  </div>
+  <div id="margin-note-2" class="margin-note margin-note-right" data-ref="margin-note-ref-2" data-endnote="margin-note-footnote-2" role="note" tabindex="-1">
+  <div class="margin-note-number">
+  <a href="#margin-note-ref-2" aria-label="Back to reference 2">[2]</a>
+  </div>
+  <div class="margin-note-body">
+  <p>Here, the generator is the LLM together with its decoding settings. ‘Policy’ is the corresponding reinforcement learning term.</p>
+  </div>
+  </div>
+  <div id="margin-note-3" class="margin-note margin-note-right" data-ref="margin-note-ref-3" data-endnote="margin-note-footnote-3" role="note" tabindex="-1">
+  <div class="margin-note-number">
+  <a href="#margin-note-ref-3" aria-label="Back to reference 3">[3]</a>
+  </div>
+  <div class="margin-note-body">
+  <p>In case it feels a little hand-wavy, there are ways to make this rigorous. Let <span class="math inline">\(\mathcal{V}\)</span> denote the model’s token vocabulary. A complete output is a finite token string <span class="math inline">\(y=(y_1,\ldots,y_T)\)</span>, with stochastic length <span class="math inline">\(T\)</span>, so the space of possible outputs is <span class="math display">\[
+  \mathcal{Y}=\bigcup_{\ell\geq 0}\mathcal{V}^{\ell},
+  \]</span> commonly written <span class="math inline">\(\mathcal{V}^{\ast}\)</span> using the <a href="https://en.wikipedia.org/wiki/Kleene_star">Kleene star</a>. Generation stops at the first end-of-sequence (EOS) token, which is retained, or at the maximum length. Autoregressively, the probability of such a complete output is <span class="math display">\[
+  \pi(y\mid x)
+  =
+  \prod_{t=1}^{T}
+  \pi\!\left(y_t\mid x,y_{&lt;t}\right),
+  \]</span> where <span class="math inline">\(y_{&lt;t}=(y_1,\ldots,y_{t-1})\)</span>, and the token probabilities include temperature scaling and any top-<span class="math inline">\(k\)</span> or top-<span class="math inline">\(p\)</span> truncation. All other strings have probability zero.</p>
+  </div>
+  </div>
+  <div id="margin-note-4" class="margin-note margin-note-right" data-ref="margin-note-ref-4" data-endnote="margin-note-footnote-4" role="note" tabindex="-1">
+  <div class="margin-note-number">
+  <a href="#margin-note-ref-4" aria-label="Back to reference 4">[4]</a>
+  </div>
+  <div class="margin-note-body">
+  <p>If the selector includes some stochastic component(s), we can simply include its randomness as an independent random variable in the joint distribution and marginalize it out. Nothing changes in the subsequent arguments because, whatever the value of the random variable, the selector always returns one of the candidates.</p>
+  </div>
+  </div>
+  <div id="margin-note-5" class="margin-note margin-note-right" data-ref="margin-note-ref-5" data-endnote="margin-note-footnote-5" role="note" tabindex="-1">
+  <div class="margin-note-number">
+  <a href="#margin-note-ref-5" aria-label="Back to reference 5">[5]</a>
+  </div>
+  <div class="margin-note-body">
+  <p>Note, this isn’t quite the <span class="math inline">\(N=1\)</span> and <span class="math inline">\(N=100\)</span> endpoints of the same experiment. Greedy decoding is different from taking one stochastic draw from the sampling law used to form the candidate pool. Here, greedy decoding used <span class="math inline">\(T=0\)</span>, while the 100 samples used <span class="math inline">\(T=0.7\)</span>.</p>
+  </div>
+  </div>
+compact-header: true
+date: 2026-09-18
+permalink: /blog/reliable-reasoning-part-1/
+mathjax: true
+article_citations: true
+---
+<nav class="article-toc" aria-label="Table of contents"><div class="article-toc-heading"><p class="article-toc-title">Contents</p><button class="article-toc-toggle" type="button" aria-expanded="false" aria-controls="article-toc-sections"><span class="article-toc-toggle-label">Show full contents</span><span class="article-toc-toggle-icon" aria-hidden="true">+</span></button></div><ol class="article-toc-level article-toc-level-1" id="article-toc-sections"><li><a href="#motivation">Motivation</a></li><li><a href="#reasoning-strategies-at-test-time">Reasoning strategies at test time</a><ol class="article-toc-level article-toc-level-2" hidden><li><a href="#at-the-input-level">At the input level</a></li><li><a href="#at-the-output-level">At the output level</a></li><li><a href="#additional-assumptions">Additional assumptions</a></li></ol></li><li><a href="#test-time-search">Test-time search</a><ol class="article-toc-level article-toc-level-2" hidden><li><a href="#repeated-sampling">Repeated sampling</a></li><li><a href="#exact-checks">Exact checks</a></li><li><a href="#beyond-exact-checks">Beyond exact checks</a></li><li><a href="#summary">Summary</a></li></ol></li></ol></nav>
+<h2 id="motivation">Motivation</h2>
+<p>Modern reasoning systems don’t have to rely on the first answer generated by an LLM. In fact, it’s now understood that effort expended <em>after</em> the model has been trained can be more effective than more training effort or increased parameters <span class="citation" data-cites="snell2024scaling wu2024inference">(e.g., <a href="#ref-snell2024scaling" role="doc-biblioref">Snell et al. 2024</a>; <a href="#ref-wu2024inference" role="doc-biblioref">Wu et al. 2024</a>)</span>.</p>
+<p>A common way to use this <strong>test-time</strong> compute is to sample many candidate outputs from the model, and to judge them in some fashion using a <em>verifier</em><sup id="margin-note-ref-1" class="margin-note-ref" data-note="margin-note-1"><a href="#margin-note-1" aria-label="Margin note 1" aria-describedby="margin-note-1">[1]</a></sup>. The resulting system separates three tasks: the <em>generator</em> (LLM) proposes outputs, the <em>verifier</em> scores them, and the <em>selector</em> uses the scores to decide which candidate is surfaced to the user. An early example of this was given by <span class="citation" data-cites="cobbe2021training">Cobbe et al. (<a href="#ref-cobbe2021training" role="doc-biblioref">2021</a>)</span> in the context of mathematical reasoning. Provided the model has some non-zero probability of generating the right answer, and the verifier can identify it, the benefit is clear. We simply keep generating until our oracle verifier (which identifies correctness without error) is satisfied or, for a fixed budget, sample <span class="math inline">\(N\)</span> candidates, rank them by verifier score and return the highest-scoring one. The latter procedure is known as <em>Best-of-<span class="math inline">\(N\)</span></em> selection; we’ll return to it in detail in a later post in this series.</p>
+<p>Under these assumptions, scaling test-time compute can only ever help us, at some computational cost. Unfortunately, there is no guarantee the model can generate a correct output and oracle verifiers don’t exist for most relevant tasks, so in practice the success of the approach rests heavily on the quality of generation and of the verifier model.</p>
+<p>If you’re interested in how language models are encouraged to reason well through <em>training</em>, take a look at the review post <a href="/blog/training-for-reasoning/">Training for reasoning: a short note</a>.</p>
+<h2 id="reasoning-strategies-at-test-time">Reasoning strategies at test time</h2>
+<p><span class="citation" data-cites="snell2024scaling">Snell et al. (<a href="#ref-snell2024scaling" role="doc-biblioref">2024</a>)</span> frames test-time scaling, also called inference-time scaling, as</p>
+<blockquote>
+<p>modifying the model’s predicted distribution adaptively at test-time, conditioned on a given prompt.</p>
+</blockquote>
+<p>What do they mean by this? Let <span class="math inline">\(\pi\)</span> denote the current generator<sup id="margin-note-ref-2" class="margin-note-ref" data-note="margin-note-2"><a href="#margin-note-2" aria-label="Margin note 2" aria-describedby="margin-note-2">[2]</a></sup>. For a problem presented through a prompt <span class="math inline">\(x\)</span>, the generator defines a <em>proposal distribution</em> <span class="math inline">\(\pi(\cdot \mid x)\)</span> over its outputs<sup id="margin-note-ref-3" class="margin-note-ref" data-note="margin-note-3"><a href="#margin-note-3" aria-label="Margin note 3" aria-describedby="margin-note-3">[3]</a></sup>. For definiteness, we use <span class="math inline">\(\pi(\cdot \mid x)\)</span> to denote the complete sampling law, including stopping, maximum length, temperature and any top-k or top-p truncation. It isn’t determined by the network weights alone.</p>
+<p>Snell et al. describe two ways in which test-time compute can be used to modify the model’s predicted distribution: input and output level.</p>
+<h3 id="at-the-input-level">At the input level</h3>
+<p>Input-level methods change the information presented to the generator. A system might ask the model to critique an initial attempt, revise it <span class="citation" data-cites="madaan2023selfrefine">(<a href="#ref-madaan2023selfrefine" role="doc-biblioref">Madaan et al. 2023</a>)</span>, or explore a problem over several turns <span class="citation" data-cites="shinn2023reflexion">(<a href="#ref-shinn2023reflexion" role="doc-biblioref">Shinn et al. 2023</a>)</span> before constructing a new prompt <span class="math inline">\(\widetilde{x}\)</span>. The final output is then drawn from</p>
+<p><span class="math display">\[
+\widetilde{Y}\sim\pi(\cdot\mid\widetilde{x}).
+\]</span></p>
+<p>Through critique and other non-deterministic methods, <span class="math inline">\(\widetilde{x}\)</span> may itself be the realized result of a stochastic adaptive procedure; the displayed law is then conditional on that realized prompt. The aim is that <span class="math inline">\(\widetilde{Y}\)</span> is on average a better output for the prompt <span class="math inline">\(x\)</span> than the base output <span class="math inline">\(Y\sim\pi(\,\cdot\mid x)\)</span>.</p>
+<h3 id="at-the-output-level">At the output level</h3>
+<p>Output-level strategies typically sample several candidate outputs and compare or combine them in some way <span class="citation" data-cites="cobbe2021training">(<a href="#ref-cobbe2021training" role="doc-biblioref">Cobbe et al. 2021</a>)</span>. This is where we’ll focus our efforts in this series. Setting up some notation, suppose we sample <span class="math inline">\(N\)</span> candidate outputs <span class="math inline">\(Y_1,\ldots,Y_N\)</span> from <span class="math inline">\(\pi(\,\cdot\mid x)\)</span>, and abbreviate this as <span class="math inline">\(Y_{1:N}:=(Y_1,\ldots,Y_N)\)</span>; we’ll call this the <em>candidate pool</em>.</p>
+<p>A <em>selector</em> is a rule that takes the candidate pool as input and returns a single output:</p>
+<p><span class="math display">\[
+Y^\star = \operatorname{Sel}_N\!\left(x;Y_{1:N}\right).
+\]</span></p>
+<p>Any scoring or checking is included in this rule. We’ll assume the selector is deterministic given <span class="math inline">\(x\)</span> and <span class="math inline">\(Y_{1:N}\)</span> to keep the notation light<sup id="margin-note-ref-4" class="margin-note-ref" data-note="margin-note-4"><a href="#margin-note-4" aria-label="Margin note 4" aria-describedby="margin-note-4">[4]</a></sup>. This is quite a generic setup, and the selector as written could use exact correctness checks, consensus voting, or a learned verifier to rank the candidates. The final selected output has its own distribution, which we write as</p>
+<p><span class="math display">\[
+Y^\star \sim q_N(\,\cdot\mid x)
+\]</span> where we’ve left the dependence on the selector implicit. Equivalently, for each output <span class="math inline">\(y \in \mathcal{Y}\)</span>, <span class="math display">\[
+q_N(y \mid x)
+= \underset{Y_{1:N}}{\Pr}\!\left(\operatorname{Sel}_N(x;Y_{1:N})=y\right),
+\]</span> which we call the <em>served-output distribution</em>.</p>
+<h3 id="additional-assumptions">Additional assumptions</h3>
+<p>The setup so far is general, and captures almost every approach. We’ll now make a number of assumptions that we’ll carry through the rest of the series. In making these assumptions, we restrict our attention to a sizable class of popular test-time methods and gain the ability to make mathematical progress in analyzing them.</p>
+<div id="assumptions" class="standing-assumption">
+<div id="assumption-sampling" class="assumption" data-label="SAMPLING ASSUMPTION">
+<p><span class="math display">\[
+Y_1,\ldots,Y_N \stackrel{\mathrm{iid}}{\sim} \pi(\,\cdot\mid x), \qquad N \text{ fixed in advance}.
+\]</span></p>
+<p>The candidates are <em>iid</em> from a fixed generator, and <span class="math inline">\(N\)</span> is fixed in advance and independent of the prompt or the candidates themselves.</p>
+<div class="assumption-excludes" data-label="What this assumption excludes">
+<p><strong>Same prompt and generator for every draw</strong>. Methods like Self-Refine <span class="citation" data-cites="madaan2023selfrefine">(<a href="#ref-madaan2023selfrefine" role="doc-biblioref">Madaan et al. 2023</a>)</span> and Reflexion <span class="citation" data-cites="shinn2023reflexion">(<a href="#ref-shinn2023reflexion" role="doc-biblioref">Shinn et al. 2023</a>)</span>, as their names suggest, generate later draws from a prompt derived from earlier draws.</p>
+<p><strong>Independent draws</strong>. Some methods don’t generate outputs independently, but run them forward for some number of steps and then decide which to continue, or how to weight them, and so on. Some examples include Tree of Thoughts <span class="citation" data-cites="yao2023tree">(<a href="#ref-yao2023tree" role="doc-biblioref">Yao et al. 2023</a>)</span>, PRM-guided beam search <span class="citation" data-cites="snell2024scaling">(<a href="#ref-snell2024scaling" role="doc-biblioref">Snell et al. 2024</a>)</span>, and sequential Monte Carlo methods like Rollout Roulette <span class="citation" data-cites="puri2025rollout">(<a href="#ref-puri2025rollout" role="doc-biblioref">Puri et al. 2025</a>)</span> and twisted SMC <span class="citation" data-cites="zhao2024probabilistic">(<a href="#ref-zhao2024probabilistic" role="doc-biblioref">Zhao et al. 2024</a>)</span> that we’ll discuss in more detail in a later post in this series. Worth noting – outputs generated in this way are dependent and generally no longer follow the original proposal distribution <span class="math inline">\(\pi\)</span>.</p>
+<p><strong><span class="math inline">\(N\)</span> fixed in advance</strong>. Rather than fixing the budget in advance, it’s possible to allocate compute dynamically, perhaps by problem difficulty (<span class="citation" data-cites="snell2024scaling">Snell et al. (<a href="#ref-snell2024scaling" role="doc-biblioref">2024</a>)</span> again) or sampling until a condition is met (Adaptive-Consistency <span class="citation" data-cites="aggarwal2023lets">(<a href="#ref-aggarwal2023lets" role="doc-biblioref">Aggarwal et al. 2023</a>)</span>).</p>
+<p>Choosing <span class="math inline">\(N\)</span> from the prompt before sampling preserves our per-prompt coverage formula, whereas stopping based on generated candidates generally does not; we use a common <span class="math inline">\(N\)</span> across prompts for the population bounds below.</p>
+</div>
+</div>
+<div id="assumption-selection" class="assumption" data-label="SELECTOR ASSUMPTION">
+<p><span class="math display">\[
+Y^\star=\operatorname{Sel}_N\!\left(x;Y_{1:N}\right)\in\{Y_1,\ldots,Y_N\}.
+\]</span></p>
+<p>The selector returns one sampled candidate unchanged; it does not combine, modify or reassemble candidates.</p>
+<div class="assumption-excludes" data-label="What this assumption excludes">
+<p>LLM-Blender <span class="citation" data-cites="jiang2023llmblender">(<a href="#ref-jiang2023llmblender" role="doc-biblioref">Jiang et al. 2023</a>)</span> and Mixture-of-Agents <span class="citation" data-cites="wang2024mixtureofagents">(<a href="#ref-wang2024mixtureofagents" role="doc-biblioref">Wang et al. 2024</a>)</span> are examples of fusion, where candidates are (optionally) ranked and then merged in some fashion.</p>
+</div>
+</div>
+</div>
+<p>If you’re interested in approaches outside of the assumptions taken here, <span class="citation" data-cites="zhang2025surveya">Zhang et al. (<a href="#ref-zhang2025surveya" role="doc-biblioref">2025</a>)</span> give a broad review of test-time scaling methods.</p>
+<p>Under the selector assumption, for <span class="math inline">\(N=1\)</span>, the proposal and served-output distributions coincide. For higher <span class="math inline">\(N\)</span>, they generally don’t. Note, too, that <span class="math inline">\(\operatorname{supp}(q_N)\subseteq \operatorname{supp}(\pi)\)</span>. The end-to-end setup is illustrated in <a href="#fig-test-time-selection" class="quarto-xref">Fig. 1</a>.</p>
+<div id="fig-test-time-selection" class="pipeline-diagram quarto-float quarto-figure quarto-figure-center" alt="A fixed prompt and generator produce a pool of candidate outputs. A selector jointly considers the candidate pool and reduces it to one served output.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-test-time-selection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img role="img" aria-label="A fixed prompt and generator produce a pool of candidate outputs. A selector jointly considers the candidate pool and reduces it to one served output." src="/assets/img/reliable-reasoning-part-1/test-time-proposal-selection-pipeline.svg" class="pipeline-diagram" alt="A fixed prompt and generator produce a pool of candidate outputs. A selector jointly considers the candidate pool and reduces it to one served output.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-test-time-selection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 1: Output-level test-time computation with a fixed prompt and generator. The selector jointly considers the candidate pool and returns one served output.
+</figcaption>
+</figure>
+</div>
+<p>This setup raises many questions: What information can a selector use? How quickly does candidate coverage (the probability that at least one candidate is correct) grow with <span class="math inline">\(N\)</span>? How much of that candidate coverage does the selector convert into correct served outputs? As <span class="math inline">\(N\)</span> increases, which regions of the proposal distribution does <span class="math inline">\(q_N\)</span> upweight, particularly where the selector is wrong?</p>
+<p>We hold the generator fixed throughout, and the prompt fixed except when averaging over a population of problems. We vary the candidate budget and selector. Our central interest is the resulting served-output distribution <span class="math inline">\(q_N(\cdot \mid x)\)</span>.</p>
+<h2 id="test-time-search">Test-time search</h2>
+<p>The previous section described how applying a selector <span class="math inline">\(\mathrm{Sel}_N\)</span> with a candidate budget <span class="math inline">\(N\)</span> to a fixed generator <span class="math inline">\(\pi\)</span> induces a served-output distribution <span class="math inline">\(q_N\)</span>. What we really care about is how these choices affect the probability of the system returning a correct output to the user.</p>
+<h3 id="repeated-sampling">Repeated sampling</h3>
+<p>Let’s first gain some intuition by trying to pin down mathematically why we should be at all optimistic about sampling more than once from the model. For now, we put selectors to one side and take a step back. Suppose we’re generating outputs from a generator <span class="math inline">\(\pi\)</span>, conditional on a prompt <span class="math inline">\(x\)</span>.</p>
+<p>Let <span class="math inline">\(c(x, y) \in \{0, 1\}\)</span> indicate whether output <span class="math inline">\(y\)</span> gives a correct final answer for <span class="math inline">\(x\)</span>.</p>
+<div id="assumption-correctness" class="standing-assumption">
+<div class="assumption" data-label="CORRECTNESS ASSUMPTION">
+<p>This is the last of the major standing assumptions we make throughout this series, and it comes in three parts.</p>
+<ol type="1">
+<li><p><em>Correctness is binary.</em> The extracted final answer is either correct, or it isn’t; there’s no grading or partial credit.</p></li>
+<li><p><em>Correctness is a fixed function of the prompt and the output.</em> First, it’s a function in the sense that it’s a fixed, deterministic map. We also take ‘truth’ here to be an exogenous property; it isn’t defined by the model, evaluator etc.</p></li>
+<li><p><em>Correctness depends on the output only through its extracted final answer.</em> We’ll call an output <em>correct</em> when its extracted final answer is correct. This is different from requiring the reasoning trace itself to be valid, since a model can arrive at the right answer for the wrong reasons. Equally, sound reasoning can be followed by an incorrect answer. We return to this distinction when discussing outcome and process verifiers.</p></li>
+</ol>
+</div>
+</div>
+<p>These assumptions concern correctness itself; a selector may still use graded scores or assess intermediate reasoning.</p>
+<p>For any conditional output law <span class="math inline">\(\mu(\cdot\mid x)\)</span>, define its per-prompt accuracy as</p>
+<p><span id="eq-per-prompt-accuracy"><span class="math display">\[
+\begin{aligned}
+a_\mu(x)
+&amp;\triangleq \underset{Y\sim\mu(\cdot\mid x)}{\mathbb E}\!\left[c(x,Y)\right] \\[0.8em]
+&amp;= \underset{Y\sim\mu(\cdot\mid x)}{\Pr}\!\left(c(x,Y)=1\right).
+\end{aligned}
+\tag{1}\]</span></span></p>
+<p>For the generator, <span class="math inline">\(a_\pi(x)\)</span> is therefore its single-sample accuracy for prompt <span class="math inline">\(x\)</span>: the probability of an output having a correct final answer. Suppose that <span class="math inline">\(a_\pi(x)&gt;0\)</span>. Let’s now draw our candidate pool:</p>
+<p><span id="eq-iid-draws-from-model"><span class="math display">\[
+Y_1,\ldots,Y_N \stackrel{\mathrm{iid}}{\sim} \pi(\,\cdot\mid x).
+\tag{2}\]</span></span></p>
+<p>Since we’ve drawn <span class="math inline">\(N\)</span> <em>iid</em> samples, the probability that none gives the correct answer is</p>
+<p><span class="math display">\[
+(1-a_\pi(x))^N \xrightarrow[N \to \infty]{} 0,
+\]</span></p>
+<p>and therefore repeated sampling eventually produces a correct answer with probability one. It may sound too good to be true, and in reality it is. By thinking about where this equation breaks down, we can uncover some of the shortcomings of this approach.</p>
+<ol type="1">
+<li><p>Firstly, it relies on some correct output having positive probability under the proposal distribution. In other words, we need <span class="math inline">\(a_\pi(x)&gt;0\)</span>. This is certainly not guaranteed, but can be influenced by improvements to training or, at test time, input-level strategies. Yet for a new problem we generally don’t know <span class="math inline">\(a_\pi(x)\)</span> exactly or have a reliable lower bound for it.</p></li>
+<li><p>Even if we knew that <span class="math inline">\(a_\pi(x)&gt;0\)</span>, the probability may be far too small to practically exploit. Without truncation and with positive token probabilities, every finite complete output has positive probability. In other words, unless the output is truncated (by setting a length cap, or using top-<span class="math inline">\(k\)</span> or top-<span class="math inline">\(p\)</span>), the issue you face is that the correct output may be very unlikely to be sampled.</p></li>
+</ol>
+<p>While on the face of it these drawbacks seem to be bad news, we nonetheless see in practice that using multiple samples from the model can substantially increase average candidate coverage. An example from <span class="citation" data-cites="cobbe2021training">Cobbe et al. (<a href="#ref-cobbe2021training" role="doc-biblioref">2021</a>)</span> makes our point: early in fine-tuning, their 6B generator solved ~19% of GSM8K problems using (deterministic) greedy decoding, while 100 sampled outputs contained a correct answer for ~84%<sup id="margin-note-ref-5" class="margin-note-ref" data-note="margin-note-5"><a href="#margin-note-5" aria-label="Margin note 5" aria-describedby="margin-note-5">[5]</a></sup>. This makes intuitive sense. The probability of sampling a correct answer varies across problems. For a subset, the greedy decoding output contains a correct final answer. The remaining questions are, in principle, where the biggest gains will be made from repeated random sampling. The probability of generating at least one correct answer for these problems increases monotonically with the budget <span class="math inline">\(N\)</span> whenever the probability of a correct output is positive. On this point, <span class="citation" data-cites="brown2024large">Brown et al. (<a href="#ref-brown2024large" role="doc-biblioref">2024</a>)</span> found, across multiple models and tasks, that average candidate coverage grows roughly log-linearly with <span class="math inline">\(N\)</span> over four orders of magnitude. This line of thinking also tells us why we don’t expect repeated sampling to take us all the way to 100% average candidate coverage. For any given model, there will exist some problems requiring reasoning that is outside of the support of the model, or vanishingly unlikely, in order to be correctly solved. Those problems will never be solved by the model with any practical budget.</p>
+<p>We’re ready to define <em>candidate coverage</em>, that is, the probability of the candidate pool containing at least one correct candidate. Continuing from the setup of <a href="#eq-iid-draws-from-model" class="quarto-xref">Eq. 2</a>, define</p>
+<p><span class="math display">\[
+\operatorname{Cover}_N(x)
+\triangleq
+\underset{Y_{1:N}\sim\pi(\cdot\mid x)^{\otimes N}}{\Pr}\!\left(\exists i\leq N:c(x,Y_i)=1\right).
+\]</span></p>
+<p>Note that candidate coverage is not the probability that the system returns a correct output; it says only whether a correct candidate is available to be selected.</p>
+<details id="candidate-coverage-example" class="technical-note"><summary><span class="technical-note-label">EXAMPLE</span> <span class="technical-note-title">Candidate coverage from repeated sampling</span></summary><div class="technical-note-body">
+<p>Under our <a href="#assumption-sampling">sampling assumption</a>, candidate coverage is</p>
+<p><span class="math display">\[
+\operatorname{Cover}_N(x) = 1 -(1-a_\pi(x))^N.
+\]</span></p>
+<p>Notice that this increases monotonically in <span class="math inline">\(N\)</span>. To obtain candidate coverage at least <span class="math inline">\(1-\delta\)</span>, for <span class="math inline">\(0 &lt; a_\pi(x) &lt; 1\)</span> and <span class="math inline">\(0 &lt; \delta &lt; 1\)</span>, rearranging this equation shows</p>
+<p><span class="math display">\[
+N_{\min}=\left\lceil\frac{\log\delta}{\log(1-a_\pi(x))}\right\rceil.
+\]</span></p>
+<p>When <span class="math inline">\(a_\pi(x)\)</span> is small, <span class="math inline">\(\log(1-a_\pi(x))\approx-a_\pi(x)\)</span>, so</p>
+<p><span class="math display">\[
+N_{\min}\approx\frac{\log(1/\delta)}{a_\pi(x)}.
+\]</span></p>
+<p>Thus the required sampling budget grows approximately inversely with single-sample accuracy and logarithmically with the desired inverse failure probability <span class="math inline">\(1/\delta\)</span>. Naturally, if <span class="math inline">\(a_\pi(x) = 1\)</span>, only one sample is needed, and if <span class="math inline">\(a_\pi(x) = 0\)</span> then no amount of sampling can give the right answer.</p>
+<p>If each draw from the model produces the correct answer with 1% probability, say, and we seek 95% candidate coverage, the exact expression gives <span class="math inline">\(N_{\min}=299\)</span> (while the approximation gives about 300).</p>
+</div></details>
+<p>Across a population of problems, with prompts <span class="math inline">\(X\sim\mathcal D\)</span>, average candidate coverage is simply the familiar metric <span class="math inline">\(\operatorname{pass@N}=\mathbb E_{X\sim\mathcal D}[\operatorname{Cover}_N(X)]\)</span> <span class="citation" data-cites="chen2021evaluating">(<a href="#ref-chen2021evaluating" role="doc-biblioref">Chen et al. 2021</a>)</span>.</p>
+<p>You may be asking – can we predict the gains from repeated sampling if we know a model’s average single-sample accuracy? In other words, if we know a model’s <span class="math inline">\(\operatorname{pass@1}\)</span> can we predict its <span class="math inline">\(\operatorname{pass@N}\)</span>? We can only give bounds, but in order to understand the relationship precisely we’d need to know how the probability of success varies across problems. It’s instructive to think about why.</p>
+<p>Imagine two generators, <span class="math inline">\(\pi_1\)</span> and <span class="math inline">\(\pi_2\)</span>, tested on the same benchmark and found to have an identical average single-sample accuracy, that is, an identical <span class="math inline">\(\operatorname{pass@1}\)</span>. Suppose that</p>
+<ul>
+<li><span class="math inline">\(\pi_1\)</span> solves every problem with probability 0.5 on each draw.</li>
+<li><span class="math inline">\(\pi_2\)</span> is constructed so that it gets half of the benchmark problems correct every time, and half wrong every time.</li>
+</ul>
+<p>Both have <span class="math inline">\(\operatorname{pass@1} = 0.5\)</span>, but the gains they each make from repeated sampling are completely different. By construction, <span class="math inline">\(\pi_2\)</span> stands to gain nothing at all, and its <span class="math inline">\(\operatorname{pass@1}\)</span> and <span class="math inline">\(\operatorname{pass@N}\)</span> are equal. In contrast, <span class="math inline">\(\pi_1\)</span> benefits from repeated sampling for any prompt <span class="math inline">\(x\)</span>, since for this model <span class="math inline">\(\operatorname{Cover}_N(x) = 1 -(\frac{1}{2})^N\)</span>, which is approximately 99.9% for <span class="math inline">\(N=10\)</span>.</p>
+<p>In general, under the sampling assumptions we’ve made in this post, we know</p>
+<p><span class="math display">\[
+\operatorname{pass@N}
+=\mathbb E_{X\sim\mathcal D}\!\left[1-(1-a_\pi(X))^N\right]
+\;\le\;
+1-\bigl(1-\mathbb E[a_\pi(X)]\bigr)^N.
+\]</span> The first equality is a definition along with our assumptions. The inequality that follows is an application of Jensen’s inequality, since for <span class="math inline">\(N&gt;1\)</span>, the function <span class="math inline">\(p\mapsto 1-(1-p)^N\)</span> is strictly concave. Note that we also have a lower bound, since <span class="math inline">\(\operatorname{pass@N} \geq  \operatorname{pass@1}\)</span>. Finally, letting <span class="math inline">\(m = \operatorname{pass@1}\)</span>, we get</p>
+<p><span class="math display">\[
+m \leq \operatorname{pass@N} \leq 1-\bigl(1-m\bigr)^N.
+\]</span></p>
+<p>These bounds are tight: our generators <span class="math inline">\(\pi_1\)</span> and <span class="math inline">\(\pi_2\)</span> attain the upper and lower bounds respectively.</p>
+<p>The statement tells us that if we have access to the benchmark average success probability <span class="math inline">\(\mathbb E[a_\pi(X)]\)</span>, and use this in place of the per-problem success probability, we obtain an upper bound on <span class="math inline">\(\operatorname{pass@N}\)</span>, attained when the probability of success is the same across all benchmark problems.</p>
+<p>Average single-sample accuracy therefore bounds average candidate coverage over a problem population, but doesn’t determine it. For that, we’d need to know how the probability of success varies across problems in the benchmark.</p>
+<p>If success probabilities across a hypothetical population are uniformly distributed on <span class="math inline">\([0,1]\)</span>, average candidate coverage is <span class="math inline">\(N/(N+1)\)</span>. More generally, for a <span class="math inline">\(\operatorname{Beta}(\alpha,\beta)\)</span> distribution, with <span class="math inline">\(\alpha,\beta&gt;0\)</span>, its shortfall from one decays like <span class="math inline">\(N^{-\alpha}\)</span> for large <span class="math inline">\(N\)</span>. These examples show how the amount of probability mass near zero success probability controls the rate at which coverage improves (<a href="#fig-coverage-by-difficulty" class="quarto-xref">Fig. 2</a>).</p>
+<div id="fig-coverage-by-difficulty" class="quarto-float quarto-figure quarto-figure-center" alt="Average candidate coverage under independent sampling, plotted against a logarithmic sampling budget. Constant success probability 0.5 approaches full coverage fastest; uniform success probabilities approach it more slowly; half always-solvable and half unsolvable problems remain at 50%. A Beta(0.5, 2) population starts at 20% and reaches 86.8% at 100 samples.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-coverage-by-difficulty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img role="img" aria-label="Average candidate coverage under independent sampling, plotted against a logarithmic sampling budget. Constant success probability 0.5 approaches full coverage fastest; uniform success probabilities approach it more slowly; half always-solvable and half unsolvable problems remain at 50%. A Beta(0.5, 2) population starts at 20% and reaches 86.8% at 100 samples." src="/assets/img/reliable-reasoning-part-1/coverage-by-difficulty.svg" alt="Average candidate coverage under independent sampling, plotted against a logarithmic sampling budget. Constant success probability 0.5 approaches full coverage fastest; uniform success probabilities approach it more slowly; half always-solvable and half unsolvable problems remain at 50%. A Beta(0.5, 2) population starts at 20% and reaches 86.8% at 100 samples.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-coverage-by-difficulty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 2: Average candidate coverage for four hypothetical distributions of single-sample accuracy.
+</figcaption>
+</figure>
+</div>
+<details id="difficulty-coverage" class="technical-note"><summary><span class="technical-note-label">TECHNICAL NOTE</span> <span class="technical-note-title">How difficulty shapes coverage</span></summary><div class="technical-note-body">
+<p>Write <span class="math inline">\(p=a_\pi(X)\)</span> for the single-sample accuracy of a randomly drawn problem. Under our sampling assumption, the average probability that no candidate is correct is <span class="math inline">\(\mathbb E[(1-p)^N]\)</span>.</p>
+<p>If <span class="math inline">\(p\)</span> is uniformly distributed on <span class="math inline">\([0,1]\)</span>,</p>
+<p><span class="math display">\[
+\mathbb E[(1-p)^N]=\int_0^1(1-p)^N\,\mathrm dp=\frac{1}{N+1}.
+\]</span></p>
+<p>Consequently, average candidate coverage is <span class="math inline">\(N/(N+1)\)</span>. Failure to generate a correct candidate decays exponentially in <span class="math inline">\(N\)</span> for each fixed problem with <span class="math inline">\(0&lt;p&lt;1\)</span>, but like <span class="math inline">\(1/N\)</span> after averaging over this population. Under the uniform assumption, a fraction <span class="math inline">\(1/N\)</span> of problems have success probability at most <span class="math inline">\(1/N\)</span>. Each has failure probability at least <span class="math inline">\((1-1/N)^N\)</span> after <span class="math inline">\(N\)</span> draws, which tends to <span class="math inline">\(e^{-1}\approx37\%\)</span> as <span class="math inline">\(N\)</span> grows.</p>
+<p>More generally, suppose <span class="math inline">\(p\sim\operatorname{Beta}(\alpha,\beta)\)</span>, with <span class="math inline">\(\alpha,\beta&gt;0\)</span>. Its density is <span class="math inline">\(p^{\alpha-1}(1-p)^{\beta-1}/B(\alpha,\beta)\)</span>, where <span class="math inline">\(B\)</span> is the beta function. Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+1-\operatorname{pass@N}
+&amp;=\frac{1}{B(\alpha,\beta)}\int_0^1p^{\alpha-1}(1-p)^{\beta+N-1}\,\mathrm dp\\[0.5em]
+&amp;=\frac{B(\alpha,\beta+N)}{B(\alpha,\beta)}\\[0.5em]
+&amp;=\frac{\Gamma(\alpha+\beta)}{\Gamma(\beta)}
+\frac{\Gamma(\beta+N)}{\Gamma(\alpha+\beta+N)}\\[0.5em]
+&amp;\sim\frac{\Gamma(\alpha+\beta)}{\Gamma(\beta)}N^{-\alpha}
+\qquad (N\to\infty),
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(\Gamma\)</span> is the gamma function; the last step uses <span class="math inline">\(\Gamma(N+b)/\Gamma(N+a+b)\sim N^{-a}\)</span>. The uniform case is <span class="math inline">\(\alpha=\beta=1\)</span>. The exponent <span class="math inline">\(\alpha\)</span> describes the density near zero success probability: smaller <span class="math inline">\(\alpha\)</span> gives slower decay. These are hypothetical population distributions, not the exact empirical distribution of a finite benchmark.</p>
+</div></details>
+<p>Next we’ll discuss the simplest kind of selector, where correctness can be checked directly.</p>
+<h3 id="exact-checks">Exact checks</h3>
+<p>In some verifiable domains, correctness can be checked exactly. Recall that <span class="math inline">\(q_N(\cdot\mid x)\)</span> is the distribution of the selected output <span class="math inline">\(Y^\star\)</span>. Applying <a href="#eq-per-prompt-accuracy" class="quarto-xref">Eq. 1</a> to this distribution gives the served accuracy for prompt <span class="math inline">\(x\)</span>,</p>
+<p><span class="math display">\[
+a_{q_N}(x)
+=\underset{Y^\star\sim q_N(\cdot\mid x)}{\Pr}\!\left(c(x,Y^\star)=1\right).
+\]</span></p>
+<p>Suppose a checker accepts precisely those candidates for which <span class="math inline">\(c(x,y)=1\)</span>, and the selector returns an accepted candidate whenever one exists. The system then serves a correct output exactly when the candidate pool contains one, so</p>
+<p><span class="math display">\[
+a_{q_N}(x)=\operatorname{Cover}_N(x).
+\]</span></p>
+<p>For a fixed generator and candidate budget, this is as good as it gets.</p>
+<p>It’s worth mentioning a practical wrinkle to the idea of <em>verifiable domains</em>. Even domains that at face value seem verifiable can turn out not to be, as a result of practical or cost constraints. Code, for example, can practically be checked up to a finite suite of tests <span class="citation" data-cites="li2022competitionlevel">(<a href="#ref-li2022competitionlevel" role="doc-biblioref">Li et al. 2022</a>)</span>. Passing such tests doesn’t prove the logic of the code is valid, nor does the validity of checked behavior necessarily extend to untested behaviors.</p>
+<h3 id="beyond-exact-checks">Beyond exact checks</h3>
+<p>Exact checking is possible in only a few domains. Outside of those, we need to rely on verification with inherent flaws. In those cases, even if the candidate pool contains a correct candidate, we aren’t guaranteed to pick it. The served accuracy, defined above, can then be written as a sum over all possible outputs,</p>
+<p><span class="math display">\[
+a_{q_N}(x)
+=\sum_{y\in\mathcal Y}q_N(y\mid x)c(x,y).
+\]</span></p>
+<p>Under the standing <a href="#assumption-selection">selector assumption</a>, a served output can be correct only if the pool contained a correct candidate. It follows that</p>
+<p><span class="math display">\[
+a_{q_N}(x)\leq\operatorname{Cover}_N(x),
+\]</span></p>
+<p>and the gap has a direct interpretation:</p>
+<p><span class="math display">\[
+\operatorname{Cover}_N(x)-a_{q_N}(x)
+=\Pr\!\left(\exists i:c(x,Y_i)=1,\;c(x,Y^\star)=0\right).
+\]</span></p>
+<p>The bound also holds for dependent candidates, with candidate coverage computed under their joint distribution.</p>
+<details id="candidate-coverage-proof" class="technical-note"><summary><span class="technical-note-label">TECHNICAL NOTE</span><span class="technical-note-topic" hidden>CANDIDATE COVERAGE</span> <span class="technical-note-title">Why candidate coverage upper-bounds served accuracy</span></summary><div class="technical-note-body">
+<p>Another way to see this, which provides some insight, is the following. For a fixed prompt <span class="math inline">\(x\)</span> and candidates <span class="math inline">\(Y_1,\ldots,Y_N\stackrel{\mathrm{iid}}{\sim}\pi(\,\cdot\mid x)\)</span> define the events</p>
+<p><span class="math display">\[
+\begin{aligned}
+A&amp;=\{\exists i\leq N:c(x,Y_i)=1\}, \quad \mathrm{and} \\[1em]
+B&amp;=\{c(x,\operatorname{Sel}_N\!\left(x;Y_{1:N}\right))=1\}.
+\end{aligned}
+\]</span></p>
+<p>All probabilities in this note are taken over candidate generation, with <span class="math inline">\(x\)</span> held fixed. For the randomized extension described above, selector randomness is included too. Since the selector must return one of the candidates, <span class="math inline">\(B\subseteq A\)</span>. It also follows that <span class="math inline">\(\Pr(A\setminus B)=\Pr(A)-\Pr(B)\)</span>. Finally, by definition, <span class="math inline">\(\Pr(A)=\operatorname{Cover}_N(x)\)</span>.</p>
+<p>Consequently,</p>
+<p><span class="math display">\[
+\operatorname{Cover}_N(x)-a_{q_N}(x)
+=\Pr(A\setminus B)
+=\Pr\!\left(\exists i:c(x,Y_i)=1,\;c(x,Y^\star)=0\right).
+\]</span></p>
+<nav class="technical-note-footer" aria-label="Technical note navigation" hidden>
+<a href="#assumption-selection">Selector assumption</a> <a href="#resume-candidate-coverage">Resume argument ↓</a>
+</nav>
+</div></details>
+<p><span id="resume-candidate-coverage" tabindex="-1"></span></p>
+<p>We’ll use the term <em>loss</em> for two useful failure probabilities. <em>Selection loss</em> is the probability that a correct candidate was available but the selector served an incorrect one. <em>Generation loss</em> is the probability that generation failed to produce any correct candidate at the chosen budget. The served error probability decomposes as</p>
+<p><span class="math display">\[
+1-a_{q_N}(x)
+=\underbrace{1-\operatorname{Cover}_N(x)}_{\vphantom{\Huge A}\text{generation loss}}
++\underbrace{\operatorname{Cover}_N(x)-a_{q_N}(x)}_{\vphantom{\Huge A}\text{selection loss}}.
+\]</span></p>
+<p>The two losses describe different problems. More or better sampling can reduce generation loss by making a correct candidate more likely to appear. Better judgment can reduce selection loss by recognizing a correct candidate that’s already present, but it can’t create one.</p>
+<h3 id="summary">Summary</h3>
+<p>We’ve established exactly how repeated sampling improves candidate coverage, making a correct candidate more likely to appear. How quickly average candidate coverage improves depends on the distribution of problem difficulty within the problem set in question. Using the average single-sample accuracy can be misleading as it provides only bounds, and doesn’t uniquely determine the improvement.</p>
+<p>For the system to return a correct output requires success not only in sampling, but in selection, too. We saw a decomposition of the served error probability that splits into generation and selection loss. We know we can reduce generation loss using larger <span class="math inline">\(N\)</span>, but it isn’t exactly clear what the effect of larger <span class="math inline">\(N\)</span> is on selection. We’ll turn our attention to this in future posts.</p>
+<p><strong>Next time</strong>: consensus voting as a selection mechanism. When does it work, when does it fail, and why?</p>
+<div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden">
+
+</div>
+<div class="margin-note-footnotes" role="doc-endnotes" aria-label="Footnotes">
+<div id="margin-note-footnote-1" class="margin-note-footnote" role="doc-endnote">
+<div class="margin-note-footnote-marker">
+<a class="margin-note-backlink" href="#margin-note-ref-1" aria-label="Back to margin-note reference 1">[1]</a>
+</div>
+<div class="margin-note-footnote-body">
+<p>I’ll use the term <em>verifier</em> for any mechanism that scores candidate outputs. When the scorer is learned, the literature often calls it a reward model, and we’ll see a few examples later that use this terminology.</p>
+</div>
+</div>
+<div id="margin-note-footnote-2" class="margin-note-footnote" role="doc-endnote">
+<div class="margin-note-footnote-marker">
+<a class="margin-note-backlink" href="#margin-note-ref-2" aria-label="Back to margin-note reference 2">[2]</a>
+</div>
+<div class="margin-note-footnote-body">
+<p>Here, the generator is the LLM together with its decoding settings. ‘Policy’ is the corresponding reinforcement learning term.</p>
+</div>
+</div>
+<div id="margin-note-footnote-3" class="margin-note-footnote" role="doc-endnote">
+<div class="margin-note-footnote-marker">
+<a class="margin-note-backlink" href="#margin-note-ref-3" aria-label="Back to margin-note reference 3">[3]</a>
+</div>
+<div class="margin-note-footnote-body">
+<p>In case it feels a little hand-wavy, there are ways to make this rigorous. Let <span class="math inline">\(\mathcal{V}\)</span> denote the model’s token vocabulary. A complete output is a finite token string <span class="math inline">\(y=(y_1,\ldots,y_T)\)</span>, with stochastic length <span class="math inline">\(T\)</span>, so the space of possible outputs is <span class="math display">\[
+\mathcal{Y}=\bigcup_{\ell\geq 0}\mathcal{V}^{\ell},
+\]</span> commonly written <span class="math inline">\(\mathcal{V}^{\ast}\)</span> using the <a href="https://en.wikipedia.org/wiki/Kleene_star">Kleene star</a>. Generation stops at the first end-of-sequence (EOS) token, which is retained, or at the maximum length. Autoregressively, the probability of such a complete output is <span class="math display">\[
+\pi(y\mid x)
+=
+\prod_{t=1}^{T}
+\pi\!\left(y_t\mid x,y_{&lt;t}\right),
+\]</span> where <span class="math inline">\(y_{&lt;t}=(y_1,\ldots,y_{t-1})\)</span>, and the token probabilities include temperature scaling and any top-<span class="math inline">\(k\)</span> or top-<span class="math inline">\(p\)</span> truncation. All other strings have probability zero.</p>
+</div>
+</div>
+<div id="margin-note-footnote-4" class="margin-note-footnote" role="doc-endnote">
+<div class="margin-note-footnote-marker">
+<a class="margin-note-backlink" href="#margin-note-ref-4" aria-label="Back to margin-note reference 4">[4]</a>
+</div>
+<div class="margin-note-footnote-body">
+<p>If the selector includes some stochastic component(s), we can simply include its randomness as an independent random variable in the joint distribution and marginalize it out. Nothing changes in the subsequent arguments because, whatever the value of the random variable, the selector always returns one of the candidates.</p>
+</div>
+</div>
+<div id="margin-note-footnote-5" class="margin-note-footnote" role="doc-endnote">
+<div class="margin-note-footnote-marker">
+<a class="margin-note-backlink" href="#margin-note-ref-5" aria-label="Back to margin-note reference 5">[5]</a>
+</div>
+<div class="margin-note-footnote-body">
+<p>Note, this isn’t quite the <span class="math inline">\(N=1\)</span> and <span class="math inline">\(N=100\)</span> endpoints of the same experiment. Greedy decoding is different from taking one stochastic draw from the sampling law used to form the candidate pool. Here, greedy decoding used <span class="math inline">\(T=0\)</span>, while the 100 samples used <span class="math inline">\(T=0.7\)</span>.</p>
+</div>
+</div>
+</div>
+<h2 id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-aggarwal2023lets" class="csl-entry" role="listitem">
+Aggarwal, Pranjal, Aman Madaan, Yiming Yang, and Mausam. 2023. <span>“Let’s Sample Step by Step: <span>Adaptive</span>-Consistency for Efficient Reasoning and Coding with <span>LLMs</span>.”</span> In <em>Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing</em>, edited by Houda Bouamor, Juan Pino, and Kalika Bali. Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/2023.emnlp-main.761">https://doi.org/10.18653/v1/2023.emnlp-main.761</a>.
+</div>
+<div id="ref-brown2024large" class="csl-entry" role="listitem">
+Brown, Bradley, Jordan Juravsky, Ryan Ehrlich, et al. 2024. <em>Large <span>Language Monkeys</span>: <span>Scaling Inference Compute</span> with <span>Repeated Sampling</span></em>. arXiv:2407.21787. arXiv. <a href="https://doi.org/10.48550/arXiv.2407.21787">https://doi.org/10.48550/arXiv.2407.21787</a>.
+</div>
+<div id="ref-chen2021evaluating" class="csl-entry" role="listitem">
+Chen, Mark, Jerry Tworek, Heewoo Jun, et al. 2021. <em>Evaluating <span>Large</span> <span>Language</span> <span>Models</span> <span>Trained</span> on <span>Code</span></em>. arXiv. <a href="https://doi.org/10.48550/arXiv.2107.03374">https://doi.org/10.48550/arXiv.2107.03374</a>.
+</div>
+<div id="ref-cobbe2021training" class="csl-entry" role="listitem">
+Cobbe, Karl, Vineet Kosaraju, Mohammad Bavarian, et al. 2021. <em>Training <span>Verifiers</span> to <span>Solve Math Word Problems</span></em>. arXiv:2110.14168. arXiv. <a href="https://doi.org/10.48550/arXiv.2110.14168">https://doi.org/10.48550/arXiv.2110.14168</a>.
+</div>
+<div id="ref-jiang2023llmblender" class="csl-entry" role="listitem">
+Jiang, Dongfu, Xiang Ren, and Bill Yuchen Lin. 2023. <span>“<span>LLM</span>-Blender: <span>Ensembling</span> Large Language Models with Pairwise Ranking and Generative Fusion.”</span> In <em>Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: <span>Long</span> Papers)</em>, edited by Anna Rogers, Jordan Boyd-Graber, and Naoaki Okazaki. Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/2023.acl-long.792">https://doi.org/10.18653/v1/2023.acl-long.792</a>.
+</div>
+<div id="ref-li2022competitionlevel" class="csl-entry" role="listitem">
+Li, Yujia, David Choi, Junyoung Chung, et al. 2022. <span>“Competition-Level Code Generation with <span>AlphaCode</span>.”</span> <em>Science</em> 378 (6624): 1092–97. <a href="https://doi.org/10.1126/science.abq1158">https://doi.org/10.1126/science.abq1158</a>.
+</div>
+<div id="ref-madaan2023selfrefine" class="csl-entry" role="listitem">
+Madaan, Aman, Niket Tandon, Prakhar Gupta, et al. 2023. <em>Self-<span>Refine</span>: <span>Iterative</span> <span>Refinement</span> with <span>Self</span>-<span>Feedback</span></em>. arXiv. <a href="https://doi.org/10.48550/arXiv.2303.17651">https://doi.org/10.48550/arXiv.2303.17651</a>.
+</div>
+<div id="ref-puri2025rollout" class="csl-entry" role="listitem">
+Puri, Isha, Shivchander Sudalairaj, Guangxuan Xu, Kai Xu, and Akash Srivastava. 2025. <em>Rollout <span>Roulette</span>: <span>A Probabilistic Inference Approach</span> to <span>Inference-Time Scaling</span> of <span>LLMs</span> Using <span>Particle-Based Monte Carlo Methods</span></em>. arXiv:2502.01618. arXiv. <a href="https://doi.org/10.48550/arXiv.2502.01618">https://doi.org/10.48550/arXiv.2502.01618</a>.
+</div>
+<div id="ref-shinn2023reflexion" class="csl-entry" role="listitem">
+Shinn, Noah, Federico Cassano, Edward Berman, Ashwin Gopinath, Karthik Narasimhan, and Shunyu Yao. 2023. <em>Reflexion: <span>Language</span> <span>Agents</span> with <span>Verbal</span> <span>Reinforcement</span> <span>Learning</span></em>. arXiv. <a href="https://doi.org/10.48550/arXiv.2303.11366">https://doi.org/10.48550/arXiv.2303.11366</a>.
+</div>
+<div id="ref-snell2024scaling" class="csl-entry" role="listitem">
+Snell, Charlie, Jaehoon Lee, Kelvin Xu, and Aviral Kumar. 2024. <em>Scaling <span>LLM Test-Time Compute Optimally</span> Can Be <span>More Effective</span> Than <span>Scaling Model Parameters</span></em>. arXiv:2408.03314. arXiv. <a href="https://doi.org/10.48550/arXiv.2408.03314">https://doi.org/10.48550/arXiv.2408.03314</a>.
+</div>
+<div id="ref-wang2024mixtureofagents" class="csl-entry" role="listitem">
+Wang, Junlin, Jue Wang, Ben Athiwaratkun, Ce Zhang, and James Zou. 2024. <em>Mixture-of-Agents Enhances Large Language Model Capabilities</em>. <a href="https://doi.org/10.48550/arXiv.2406.04692">https://doi.org/10.48550/arXiv.2406.04692</a>.
+</div>
+<div id="ref-wu2024inference" class="csl-entry" role="listitem">
+Wu, Yangzhen, Zhiqing Sun, Shanda Li, Sean Welleck, and Yiming Yang. 2024. <em>Inference <span>Scaling Laws</span>: <span>An Empirical Analysis</span> of <span>Compute-Optimal Inference</span> for <span>Problem-Solving</span> with <span>Language Models</span></em>. arXiv:2408.00724. arXiv. <a href="https://doi.org/10.48550/arXiv.2408.00724">https://doi.org/10.48550/arXiv.2408.00724</a>.
+</div>
+<div id="ref-yao2023tree" class="csl-entry" role="listitem">
+Yao, Shunyu, Dian Yu, Jeffrey Zhao, et al. 2023. <em>Tree of <span>Thoughts</span>: <span>Deliberate Problem Solving</span> with <span>Large Language Models</span></em>. arXiv:2305.10601. arXiv. <a href="https://doi.org/10.48550/arXiv.2305.10601">https://doi.org/10.48550/arXiv.2305.10601</a>.
+</div>
+<div id="ref-zhang2025surveya" class="csl-entry" role="listitem">
+Zhang, Qiyuan, Fuyuan Lyu, Zexu Sun, et al. 2025. <em>A <span>Survey</span> on <span>Test-Time Scaling</span> in <span>Large Language Models</span>: <span>What</span>, <span>How</span>, <span>Where</span>, and <span>How Well</span>?</em> arXiv:2503.24235. arXiv. <a href="https://doi.org/10.48550/arXiv.2503.24235">https://doi.org/10.48550/arXiv.2503.24235</a>.
+</div>
+<div id="ref-zhao2024probabilistic" class="csl-entry" role="listitem">
+Zhao, Stephen, Rob Brekelmans, Alireza Makhzani, and Roger Baker Grosse. 2024. <span>“Probabilistic Inference in Language Models via Twisted Sequential <span>Monte</span> <span>Carlo</span>.”</span> <em>Proceedings of the 41st International Conference on Machine Learning</em>, Proceedings of machine learning research, vol. 235 (July): 60704–48. <a href="https://proceedings.mlr.press/v235/zhao24c.html">https://proceedings.mlr.press/v235/zhao24c.html</a>.
+</div>
+</div>
