@@ -7,6 +7,8 @@ layout: default
     {% include site-nav.html date=page.date %}
 
     <header class="article-header">
+      <div class="article-title-row">
+      <div class="article-title-copy">
       <h1 class="post-title">{{ page.display-title | default: page.title | escape }}</h1>
       {% if page.subtitle %}
       <p class="article-subtitle">{{ page.subtitle | escape }}</p>
@@ -14,6 +16,9 @@ layout: default
       {% if page.reading_time %}
       <p class="article-meta"><span class="article-meta-reading">{{ page.reading_time | escape }}</span></p>
       {% endif %}
+      </div>
+      {% include ginkgo-header.html %}
+      </div>
       {{ page.article_abstract }}
     </header>
 
