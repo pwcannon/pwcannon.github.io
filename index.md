@@ -50,7 +50,7 @@ body_class: home-page
 
   {% if site.posts.size > 0 %}
   <footer class="home-footer">
-    <a href="{{ "/blog/" | relative_url }}">All writing <span class="writing-link-arrow" aria-hidden="true">→</span></a>
+    <a href="{{ "/writing/" | relative_url }}">All writing <span class="writing-link-arrow" aria-hidden="true">→</span></a>
   </footer>
   {% endif %}
 

@@ -2,7 +2,7 @@
 
 Personal research website. Jekyll, published by GitHub Pages from `master`.
 
-Last updated: 2026-09-25
+Last updated: 2026-10-03
 
 ## Build and release
 
@@ -22,7 +22,7 @@ The shared exporter generates each post's body and metadata; reading time is
 computed during the Quarto render. A full `title` remains available for listings
 and search metadata; `display-title` and `subtitle` control the visible heading.
 
-All posts use `_layouts/post.html`, `assets/css/spacing.css`,
+Text articles use `_layouts/post.html`, `assets/css/spacing.css`,
 `assets/css/article.css` and `assets/js/article.js`. The CSS and JavaScript are generated from the private
 shared presentation; change those sources and regenerate both assets rather than
 editing website copies. Margin notes, responsive footnotes, technical notes,
@@ -67,3 +67,9 @@ the award label’s metadata row for the first 30 days after
 publication. Internal blog links inherit the post date; other entries can set
 `date: YYYY-MM-DD`. The homepage script checks recency on page load, so labels
 expire without rebuilding. Undated and future-dated entries receive no label.
+
+## Simulation art and Writing
+
+The Writing index is `/writing/`; `/blog/` redirects there. Existing article URLs remain unchanged. The index uses each post's `format` metadata, defaulting to Article, with the same `work-format` badge as Selected work.
+
+Simulation art uses the default site shell and opt-in `simulation_art` styles, without the text-article layout. Study I: transience is dated 26 September 2026 and displays four uncropped plates. Its editable source and integration script remain in the private blog's `draft-study-1-filaments` folder; only the four displayed images are published. Gallery CSS and JavaScript use the shared asset-version helper.

@@ -13,6 +13,9 @@
     {% if page.layout == "post" %}
     <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/article.css" %}">
     {% endif %}
+    {% if page.simulation_art %}
+    <link rel="stylesheet" href="{% include asset-url.html path="/assets/art/study-1/gallery.css" %}">
+    {% endif %}
     {% if page.closing_quote %}
     <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/closing-quote.css" %}">
     {% endif %}

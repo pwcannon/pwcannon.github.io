@@ -1,0 +1,23 @@
+/* Private source for the art-series preview. All rules scoped to this page. */
+.specimen-shell {width:calc(100% - 96px);max-width:1800px;margin:0 auto;padding:40px 0 24px}
+.specimen-heading {margin:64px 0 48px}
+.series {font-size:11px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--secondary);margin:0 0 24px}
+.specimen-heading h1 {font-family:var(--serif);font-size:clamp(32px,3.2vw,54px);line-height:1.09;font-weight:400;letter-spacing:-.025em;margin:0}
+.study-number {display:block;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--secondary);margin-bottom:16px}
+.catalogue {font-size:12px;font-weight:400;color:var(--secondary);margin:24px 0 0}
+.plates {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.plates figure {margin:0;min-width:0}
+.plate {display:block;cursor:zoom-in}
+.plate img {display:block;width:100%;height:auto}
+.plate:focus-visible {outline:2px solid var(--name-blue);outline-offset:5px}
+.plates figcaption {display:flex;justify-content:space-between;margin-top:12px;font-family:var(--serif);font-size:12px;font-weight:400;color:var(--secondary)}
+.plates figcaption span:last-child {font-family:var(--sans);font-size:10px;font-variant-numeric:tabular-nums;letter-spacing:.08em;color:var(--muted)}
+.after-plates {display:flex;justify-content:space-between;align-items:baseline;gap:32px;margin-top:32px;color:var(--secondary);font-size:12px;font-weight:400}
+.process {max-width:370px;margin-left:auto}.process summary {cursor:pointer;list-style:none;text-align:right}.process summary::after {content:' +';margin-left:8px}.process[open] summary::after {content:' −'}.process summary::-webkit-details-marker {display:none}.process p {line-height:1.7;margin:16px 0 0}
+.specimen-footer {display:flex;justify-content:space-between;margin-top:80px;padding-top:16px;border-top:1px solid var(--rule);font-size:11px;font-weight:400;color:var(--muted)}
+.plate-viewer {width:100vw;max-width:none;height:100dvh;max-height:none;margin:0;padding:20px 32px;border:0;background:#f7f7f4;color:var(--text)}
+.plate-viewer[open] {display:flex;flex-direction:column;align-items:center;gap:16px}.plate-viewer::backdrop {background:#f7f7f4}
+.viewer-bar,.viewer-controls {display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;flex-shrink:0;font-size:12px}.viewer-bar p{margin:0}.plate-viewer button{border:0;background:transparent;color:inherit;font:inherit;padding:12px;cursor:pointer}.plate-viewer button:disabled{opacity:.3;cursor:default}.plate-viewer button:focus-visible{outline:1px solid currentColor}.viewer-image{display:block;min-height:0;flex:1;max-width:100%;object-fit:contain}.viewer-controls>span{color:var(--muted)}
+@media(min-width:1900px){.specimen-heading{margin-top:80px}.desktop-break{display:none}}
+@media(max-width:760px){.specimen-shell{width:calc(100% - 40px);padding-top:24px}.specimen-heading{margin:40px 0}.specimen-heading h1{font-size:36px}.series{font-size:9px;letter-spacing:.12em}.plates{grid-template-columns:1fr;gap:40px}.plates figure{width:100%;max-width:520px;margin:auto}.after-plates{display:block;margin-top:40px}.process{margin-top:24px;max-width:100%}.process summary{text-align:left}.specimen-footer{margin-top:56px}.plate-viewer{padding:12px}.desktop-break{display:none}}
+@media(prefers-reduced-motion:no-preference){.plate img{transition:filter .15s}.plate:hover img{filter:brightness(1.04)}}

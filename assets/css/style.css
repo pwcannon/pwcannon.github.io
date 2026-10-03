@@ -665,3 +665,7 @@ body {
   .article-title-row { display: block; }
   .article-header-artwork { display: none; }
 }
+
+/* Writing uses the same .work-meta / .work-format badges as Selected work. */
+.writing-copy, .writing-title { display: block; min-width: 0; }
+.writing-copy .work-meta { font-family: var(--sans); }
