@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/article.css" %}">
     {% endif %}
     {% if page.simulation_art %}
-    <link rel="stylesheet" href="{% include asset-url.html path="/assets/art/study-1/gallery.css" %}">
+    {% assign gallery_css = page.gallery_css | default: "/assets/art/study-1/gallery.css" %}
+    <link rel="stylesheet" href="{% include asset-url.html path=gallery_css %}">
     {% endif %}
     {% if page.closing_quote %}
     <link rel="stylesheet" href="{% include asset-url.html path="/assets/css/closing-quote.css" %}">
