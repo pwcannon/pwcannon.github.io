@@ -2,7 +2,11 @@
   <a href="{{ "/" | relative_url }}">Home</a>
   {% unless page.url == "/writing/" %}
   <span aria-hidden="true">·</span>
+  {% if page.collection == "posts" %}
+  {% include writing-link.html %}
+  {% else %}
   <a href="{{ "/writing/" | relative_url }}">Writing</a>
+  {% endif %}
   {% endunless %}
   {% if include.date %}<time class="article-nav-date" datetime="{{ include.date | date_to_xmlschema }}">{{ include.date | date: "%-d %B %Y" }}</time>{% endif %}
 </nav>

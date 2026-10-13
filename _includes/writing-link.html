@@ -1,0 +1,3 @@
+{%- capture category -%}{%- include writing-category.html post=page -%}{%- endcapture -%}
+{%- assign category = category | strip -%}
+<a href="{{ '/writing/' | relative_url }}?type={{ category }}">{%- if include.more -%}More {% endif -%}{%- case category -%}{%- when 'art' -%}{% if include.more %}art{% else %}Art{% endif %}{%- when 'essays' -%}{% if include.more %}essays{% else %}Essays{% endif %}{%- else -%}{% if include.more %}technical writing{% else %}Technical writing{% endif %}{%- endcase -%}{% if include.more %} <span aria-hidden="true">→</span>{% endif %}</a>

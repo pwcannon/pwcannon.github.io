@@ -2,7 +2,7 @@
 
 Personal research website. Jekyll, published by GitHub Pages from `master`.
 
-Last updated: 2026-10-03
+Last updated: 2026-10-13
 
 ## Build and release
 
@@ -70,6 +70,28 @@ expire without rebuilding. Undated and future-dated entries receive no label.
 
 ## Simulation art and Writing
 
-The Writing index is `/writing/`; `/blog/` redirects there. Existing article URLs remain unchanged. The index uses each post's `format` metadata, defaulting to Article, with the same `work-format` badge as Selected work.
+The Writing index is `/writing/`; `/blog/` redirects there. Existing article URLs remain unchanged. The index shows each post's category, using the same badge styling as Selected work. Selected work retains its separate format labels (Paper, Preprint, Article).
 
 Simulation art uses the default site shell and opt-in `simulation_art` styles, without the text-article layout. Study I: transience is dated 26 September 2026 and displays four uncropped plates. Its editable source and integration script remain in the private blog's `draft-study-1-filaments` folder; only the four displayed images are published. Gallery CSS and JavaScript use the shared asset-version helper.
+
+## Writing categories and navigation
+
+`_data/writing_categories.yml` assigns a category by published URL: `technical`,
+`essays` or `art`. Unlisted posts default to technical, including new Reliable
+Reasoning instalments. Add an entry when publishing an essay or artwork; keep
+classification here so article re-exports cannot overwrite it.
+
+The Writing index keeps the chronological list and offers exclusive filters.
+Exactly one of All, Technical, Essay or Art is active. Clicking the active filter
+leaves it selected; All shows every post. `/writing/` shows All, while
+`?type=technical`, `?type=essays` and `?type=art` select individual categories.
+Unrecognised values, including old combined or empty selections, display All.
+`_data/writing_labels.yml` supplies the identical Technical, Essay and Art labels
+for filters and archive badges. Filter changes preserve other URL parameters and
+support reloads and browser history. With JavaScript disabled, the complete
+archive remains available. An empty category has an explicit message.
+
+The homepage has one Technical writing link in the original position below Selected work.
+Essay and Art remain accessible through the Writing filters. Shared text-article navigation
+uses the category map; art footer links live in the private study sources and
+must be regenerated when changed. Keep the art source and website export aligned.

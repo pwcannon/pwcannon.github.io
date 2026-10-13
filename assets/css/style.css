@@ -611,6 +611,7 @@ body {
 
 .article-nav {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-start;
   align-items: baseline;
   gap: var(--space-sm);
@@ -669,3 +670,45 @@ body {
 /* Writing uses the same .work-meta / .work-format badges as Selected work. */
 .writing-copy, .writing-title { display: block; min-width: 0; }
 .writing-copy .work-meta { font-family: var(--sans); }
+
+/* Writing filters retain the archive's quiet text-link treatment. */
+.writing-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin: -24px 0 24px;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+.writing-filters button {
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  padding: 10px 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  line-height: 24px;
+  cursor: pointer;
+}
+.writing-filters button[aria-pressed="true"] {
+  border-bottom-color: currentColor;
+  color: var(--name-blue);
+}
+.writing-filters button:hover { color: var(--text); }
+.writing-filters button:focus-visible {
+  outline: 2px solid var(--name-blue);
+  outline-offset: 4px;
+}
+.writing-filter-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.writing-filters[hidden], .writing-item[hidden],
+.writing-year[hidden], .writing-filter-empty[hidden] { display: none; }

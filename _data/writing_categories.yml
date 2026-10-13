@@ -1,0 +1,6 @@
+# URL-based classification survives regenerated article exports.
+# Categories: technical, essays, art. Unlisted posts default to technical.
+/blog/training-for-reasoning/: technical
+/blog/reliable-reasoning-part-1/: technical
+/blog/study-1-filaments/: art
+/blog/study-2-growth/: art
