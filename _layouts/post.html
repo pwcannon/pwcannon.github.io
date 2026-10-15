@@ -14,7 +14,7 @@ layout: default
       {% endif %}
       <h1 class="post-title">{{ page.display-title | default: page.title | escape }}</h1>
       {% if page.subtitle %}
-      <p class="article-subtitle">{{ page.subtitle | escape }}</p>
+      <p class="article-subtitle"{% if page.subtitle-scale %} style="--subtitle-scale: {{ page.subtitle-scale | escape }};"{% endif %}>{{ page.subtitle | escape }}</p>
       {% endif %}
       {% if page.reading_time %}
       <p class="article-meta"><span class="article-meta-reading">{{ page.reading_time | escape }}</span></p>

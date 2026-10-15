@@ -1,0 +1,51 @@
+---
+layout: "post"
+title: "Reliable Reasoning: standing assumptions and notation"
+display-title: "Reliable Reasoning"
+subtitle: "Standing assumptions and notation"
+reading_time: "~1 minute"
+date: "2026-10-15"
+permalink: "/blog/reliable-reasoning-standing-assumptions-and-notation/"
+mathjax: true
+subtitle-scale: 0.85
+article_abstract: |
+article_margin_notes: |
+---
+<p>In general we will fix a prompt <span class="math inline">\(x\)</span> and generator <span class="math inline">\(\pi\)</span>, which includes any decoding and stopping settings. Each output <span class="math inline">\(Y\)</span> is assumed to include its reasoning and final answer, and the function <span class="math inline">\(g(Y)\)</span> extracts that answer.</p>
+<div class="standing-assumption reference-assumptions">
+<div id="series-assumption-sampling" class="assumption" data-label="SAMPLING ASSUMPTION">
+<p>We draw <span class="math inline">\(N\)</span> candidates independently from the generator: <span class="math display">\[
+Y_1,\ldots,Y_N\stackrel{\mathrm{iid}}{\sim}\pi(\cdot\mid x),
+\qquad N\geq1\text{ fixed before sampling}.
+\]</span></p>
+<p>Write <span class="math inline">\(Y_{1:N}=(Y_1,\ldots,Y_N)\)</span> for the overall candidate pool.</p>
+</div>
+<div id="series-assumption-selection" class="assumption" data-label="SELECTOR ASSUMPTION">
+<p>The selector returns <em>one</em> candidate unchanged: <span class="math display">\[
+Y^\star=\operatorname{Sel}_N(x;Y_{1:N})\in\{Y_1,\ldots,Y_N\},
+\]</span></p>
+<p>and we write the <em>served-output distribution</em> as <span class="math inline">\(Y^\star\sim q_N(\cdot\mid x)\)</span> where <span class="math inline">\(q_N\)</span> includes any selector randomness.</p>
+</div>
+<div id="series-assumption-correctness" class="assumption" data-label="CORRECTNESS ASSUMPTION">
+<p>Correctness <span class="math inline">\(c(x,y)\in\{0,1\}\)</span> is fixed independently of the model or verifier and depends on <span class="math inline">\(y\)</span> only through <span class="math inline">\(g(y)\)</span>. A correct answer need not have valid reasoning. The selector need not know <span class="math inline">\(c\)</span>.</p>
+</div>
+</div>
+<p><strong>Accuracy and coverage.</strong> For any output law <span class="math inline">\(\mu\)</span>, define <span class="math display">\[
+\begin{aligned}
+a_\mu(x)&amp;:=\mathbb E_{Y\sim\mu(\cdot\mid x)}[c(x,Y)],\\[0.5em]
+\operatorname{Cover}_N(x)&amp;:=\Pr\!\left(\exists i\leq N:c(x,Y_i)=1\right)\\
+&amp;=1-[1-a_\pi(x)]^N.
+\end{aligned}
+\]</span> Thus <span class="math inline">\(a_\pi\)</span> is generator accuracy and <span class="math inline">\(a_{q_N}\)</span> is served accuracy. All probabilities condition on <span class="math inline">\(x\)</span>.</p>
+<p><strong>Error decomposition.</strong> <span class="math display">\[
+1-a_{q_N}(x)=\underbrace{1-\operatorname{Cover}_N(x)}_{\text{generation loss}}+\underbrace{\operatorname{Cover}_N(x)-a_{q_N}(x)}_{\text{selection loss}\;\geq\;0}.
+\]</span></p>
+<p><strong>Population averages.</strong> For prompts <span class="math inline">\(X\sim\mathcal D\)</span> and a common budget <span class="math inline">\(N\)</span>, <span class="math display">\[
+\begin{aligned}
+\operatorname{pass@N}&amp;:=\mathbb E_{X\sim\mathcal D}[\operatorname{Cover}_N(X)],\\
+\text{served accuracy}&amp;:=\mathbb E_{X\sim\mathcal D}[a_{q_N}(X)].
+\end{aligned}
+\]</span></p>
+<div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden">
+
+</div>

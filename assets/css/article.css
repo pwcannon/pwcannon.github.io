@@ -913,7 +913,7 @@
   margin: var(--space-sm) 0 0;
   color: var(--secondary);
   font-family: var(--serif);
-  font-size: clamp(28px, 4vw, 34px);
+  font-size: calc(clamp(28px, 4vw, 34px) * var(--subtitle-scale, 1));
   font-weight: 400;
   line-height: 1.3;
   letter-spacing: 0;
@@ -1522,5 +1522,46 @@
 
 :where(.article-shell) .article-content .standing-assumption > .assumption > :first-child {
     grid-row: auto;
+  }
+}
+
+:where(.article-shell) .article-content .reference-assumptions {
+  margin-block: var(--space-lg);
+}
+
+:where(.article-shell) .article-content .reference-assumptions > .assumption {
+  padding-block: var(--space-md);
+  border-top: 1px solid var(--rule);
+}
+
+:where(.article-shell) .article-content .reference-assumptions > .assumption + .assumption {
+  margin-top: 0;
+}
+
+:where(.article-shell) .article-content .reference-assumptions > .assumption:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+:where(.article-shell) .article-content #series-assumption-sampling mjx-container[display="true"],
+:where(.article-shell) .article-content #series-assumption-selection mjx-container[display="true"] {
+  margin-top: 1em;
+}
+
+@media (max-width: 900px) {
+:where(.article-shell) .article-content .reference-assumptions .math.display {
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+:where(.article-shell) .article-content .reference-assumptions mjx-container[display="true"] {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+  }
+
+:where(.article-shell) .article-content .reference-assumptions > .assumption::before {
+    margin-bottom: var(--space-sm);
+    text-align: left;
   }
 }

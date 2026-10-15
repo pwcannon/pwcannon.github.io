@@ -2,7 +2,7 @@
 
 Personal research website. Jekyll, published by GitHub Pages from `master`.
 
-Last updated: 2026-10-13
+Last updated: 2026-10-15
 
 ## Build and release
 
@@ -20,7 +20,9 @@ Article prose and maths are edited in the separate private Quarto blog repositor
 not in `_posts`. Its `PUBLICATION-WORKFLOW.md` documents rendering and export.
 The shared exporter generates each post's body and metadata; reading time is
 computed during the Quarto render. A full `title` remains available for listings
-and search metadata; `display-title` and `subtitle` control the visible heading.
+and search metadata; `display-title` and `subtitle` control the visible heading. Optional
+`subtitle-scale` scales the responsive subtitle size; omitted values retain the
+existing size. The assumptions-and-notation reference uses `0.85`.
 
 Text articles use `_layouts/post.html`, `assets/css/spacing.css`,
 `assets/css/article.css` and `assets/js/article.js`. The CSS and JavaScript are generated from the private
