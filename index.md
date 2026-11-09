@@ -36,9 +36,16 @@ body_class: home-page
   <section class="introduction" aria-label="About">
     <p>I'm an AI researcher funded by <a href="https://bluedot.org/">BlueDot Impact</a>. My work focuses on scalable oversight for language models. I study when learned verifiers become unreliable under test-time search pressure and how to reduce reward hacking during reinforcement learning with imperfect monitors.</p>
 
-    <p>I have a PhD in statistics from the University of Bristol, where I worked on particle MCMC for population genetics with <a href="https://scholar.google.co.uk/citations?hl=en&amp;user=kcsbLrAAAAAJ&amp;view_op=list_works">Christophe Andrieu</a> and <a href="https://scholar.google.co.uk/citations?hl=en&amp;user=2K3F0MMAAAAJ">Mark Beaumont</a>.</p>
+    <details class="bio-details">
+      <summary>
+        <span class="bio-read">more</span>
+        <span class="bio-hide">less</span>
+        <span class="bio-mark" aria-hidden="true"></span>
+      </summary>
+      <p>I have a PhD in statistics from the University of Bristol, where I worked on particle MCMC for population genetics with <a href="https://scholar.google.co.uk/citations?hl=en&amp;user=kcsbLrAAAAAJ&amp;view_op=list_works">Christophe Andrieu</a> and <a href="https://scholar.google.co.uk/citations?hl=en&amp;user=2K3F0MMAAAAJ">Mark Beaumont</a>.</p>
 
-    <p>At <a href="https://www.improbable.io/">Improbable</a>, I developed methods for calibrating large multi-agent simulations against real-world data. I later co-founded a computer-vision startup building large-scale 3D representations with neural radiance fields and Gaussian splats, before joining <a href="https://amazon.jobs/content/en-gb/teams/agi">Amazon AGI</a> to work on multimodal foundation models for speech and audio.</p>
+      <p>At <a href="https://www.improbable.io/">Improbable</a>, I developed methods for calibrating large multi-agent simulations against real-world data. I later co-founded a computer-vision startup building large-scale 3D representations with neural radiance fields and Gaussian splats, before joining <a href="https://amazon.jobs/content/en-gb/teams/agi">Amazon AGI</a> to work on multimodal foundation models for speech and audio.</p>
+    </details>
   </section>
 
   <section class="work" aria-labelledby="work-heading">

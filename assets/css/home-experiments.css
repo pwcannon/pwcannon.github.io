@@ -21,6 +21,58 @@
   }
 }
 
+.bio-details {
+  margin-top: 8px;
+}
+
+.bio-details > summary {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  gap: 3px;
+  min-height: 32px;
+  color: #183f75;
+  font: 500 13px/1.4 var(--sans);
+  list-style: none;
+  cursor: pointer;
+}
+
+.bio-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.bio-details > summary:hover .bio-read,
+.bio-details > summary:hover .bio-hide {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.bio-details > summary:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.bio-mark::before {
+  content: "+";
+}
+
+.bio-details[open] .bio-mark::before {
+  content: "−";
+}
+
+.bio-hide,
+.bio-details[open] .bio-read {
+  display: none;
+}
+
+.bio-details[open] .bio-hide {
+  display: inline;
+}
+
+.bio-details > summary + p {
+  margin-top: 14px;
+}
+
 /* A short closing rule marks the end of the selected work. */
 .work-end {
   width: 30px;

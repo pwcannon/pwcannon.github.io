@@ -298,9 +298,6 @@ summary:focus-visible {
 }
 
 .work-format {
-  padding: 0 4px;
-  border: 1px solid rgb(39 36 31 / 17%);
-  border-radius: 2px;
   color: #767775;
   font-size: 8px;
   font-weight: 600;
@@ -347,7 +344,6 @@ summary:focus-visible {
 
 .work-safety .work-format {
   color: #496f99;
-  border-color: #d1dbe5;
 }
 
 .work-item .work-format + .work-meta-separator {
@@ -706,7 +702,12 @@ body {
   .article-header-artwork { display: none; }
 }
 
-/* Writing uses the same .work-meta / .work-format badges as Selected work. */
+.writing-item .work-format {
+  padding: 0 4px;
+  border: 1px solid rgb(39 36 31 / 17%);
+  border-radius: 2px;
+}
+
 .writing-copy, .writing-title { display: block; min-width: 0; }
 .writing-copy .work-meta { font-family: var(--sans); }
 
