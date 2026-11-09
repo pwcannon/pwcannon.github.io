@@ -64,7 +64,7 @@ remain separate. Regenerate the spacing stylesheet along with article CSS/JS.
 
 ## Selected work
 
-Selected work uses `_data/selected_work.yml`. Posts inherit their date and writing category. All entries display their category or format badge on the right. Safety research entries use a pale tint of the homepage inkblot blue, with a full-width rule between consecutive entries.
+Selected work uses `_data/selected_work.yml`. Posts inherit their date and writing category. Each entry aligns its category or format label with the first title line on the right. Safety research titles use ink blue. All entries have the same spacing.
 
 ## Simulation art and Writing
 

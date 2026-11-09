@@ -259,13 +259,17 @@ summary:focus-visible {
   line-height: 15px;
 }
 
-.work-copy,
-.work-title {
-  display: block;
+.work-copy {
+  display: grid;
   min-width: 0;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: first baseline;
+  column-gap: 16px;
 }
 
 .work-title {
+  grid-area: 1 / 1;
+  min-width: 0;
   font-family: var(--serif);
   font-size: 17px;
   font-weight: 400;
@@ -311,44 +315,48 @@ summary:focus-visible {
   color: #747577;
 }
 
-/* Tints of the homepage inkblot blue (#396290) identify safety research. */
-.work-safety {
-  padding-block: 10px;
-}
-
 .work-safety::before {
-  inset: 0 -10px;
-  border: 0;
-  background: #f6f8fa;
-  opacity: 1;
+  display: none;
 }
 
-.work-safety:hover::before,
-.work-safety:focus-visible::before {
-  background: #eff2f6;
+.work-safety .work-title {
+  color: #36577d;
 }
 
-.work-safety + .work-safety {
-  margin-top: 0;
-}
-
-.work-safety + .work-safety::before {
-  border-top: 1px solid #e3e9ef;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+.work-safety:is(:hover, :focus-visible) .work-title {
+  color: #243f60;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
 }
 
 .work-item .work-format {
-  order: 1;
-  margin-inline-start: auto;
+  grid-area: 1 / 2;
+  justify-self: end;
+  white-space: nowrap;
 }
 
 .work-safety .work-format {
   color: #496f99;
 }
 
-.work-item .work-format + .work-meta-separator {
-  display: none;
+.work-copy > .work-meta {
+  grid-area: 2 / 1 / auto / -1;
+}
+
+@media (max-width: 500px) {
+  .work-item {
+    grid-template-columns: 16px minmax(0, 1fr);
+    column-gap: 7px;
+  }
+
+  .work-copy {
+    column-gap: 8px;
+  }
+
+  .work-title {
+    text-wrap: pretty;
+  }
 }
 
 .work-distinction {

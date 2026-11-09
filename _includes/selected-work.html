@@ -17,18 +17,17 @@
     <span class="work-index" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
     <span class="work-copy">
       <span class="work-title">{% include listing-title.html title=item.title %}</span>
+      <span class="work-format">{{ badge | escape }}</span>
       <span class="work-meta">
-        <span class="work-format">{{ badge | escape }}</span>
         {% if selected_post %}
-        <span class="work-meta-separator" aria-hidden="true">·</span>
         <time class="work-context" datetime="{{ selected_post.date | date: '%Y-%m-%d' }}">{{ selected_post.date | date: "%-d %b %Y" }}</time>
         {% endif %}
         {% if item.context %}
-        <span class="work-meta-separator" aria-hidden="true">·</span>
+          {% if selected_post %}<span class="work-meta-separator" aria-hidden="true">·</span>{% endif %}
         <span class="work-context">{{ item.context | escape }}</span>
         {% endif %}
         {% if item.distinction %}
-        <span class="work-meta-separator" aria-hidden="true">·</span>
+          {% if selected_post or item.context %}<span class="work-meta-separator" aria-hidden="true">·</span>{% endif %}
         <span class="work-distinction">{{ item.distinction }}</span>
         {% endif %}
       </span>
