@@ -14,7 +14,11 @@
     {% assign badge = item.format %}
   {% endif %}
   <a class="work-item{% if selected_post and category == 'safety-research' %} work-safety{% endif %}" href="{{ item_url }}">
-    <span class="work-index" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+    {% if item.recent %}
+    <span class="work-marker recent-dot" role="img" aria-label="Recent work" title="Recent work"></span>
+    {% else %}
+    <span class="work-marker" aria-hidden="true"></span>
+    {% endif %}
     <span class="work-copy">
       <span class="work-title">{% include listing-title.html title=item.title %}</span>
       <span class="work-format">{{ badge | escape }}</span>

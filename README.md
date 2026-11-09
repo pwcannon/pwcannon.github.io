@@ -64,7 +64,7 @@ remain separate. Regenerate the spacing stylesheet along with article CSS/JS.
 
 ## Selected work
 
-Selected work uses `_data/selected_work.yml`. Posts inherit their date and writing category. Each entry aligns its category or format label with the first title line on the right. Safety research titles use ink blue. All entries have the same spacing.
+Selected work uses `_data/selected_work.yml`. Posts inherit their date and writing category. Each entry aligns its category or format label with the first title line on the right. Set `recent: true` on an entry to show a solid blue dot. Other entries have a hollow grey ring. Safety research labels are blue. All entries have the same spacing.
 
 ## Simulation art and Writing
 

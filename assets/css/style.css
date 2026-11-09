@@ -248,15 +248,19 @@ summary:focus-visible {
   outline-offset: 7px;
 }
 
-.work-index {
+.work-marker {
+  width: 6px;
+  height: 6px;
+  justify-self: start;
   align-self: start;
-  padding-top: 4px;
-  color: var(--faint);
-  font-size: 9px;
-  font-variant-numeric: tabular-nums;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  line-height: 15px;
+  margin-top: 9px;
+  border: 1px solid var(--faint);
+  border-radius: 50%;
+}
+
+.work-marker.recent-dot {
+  border: 0;
+  background: #345e94;
 }
 
 .work-copy {
@@ -315,21 +319,6 @@ summary:focus-visible {
   color: #747577;
 }
 
-.work-safety::before {
-  display: none;
-}
-
-.work-safety .work-title {
-  color: #36577d;
-}
-
-.work-safety:is(:hover, :focus-visible) .work-title {
-  color: #243f60;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
-}
-
 .work-item .work-format {
   grid-area: 1 / 2;
   justify-self: end;
@@ -360,7 +349,7 @@ summary:focus-visible {
 }
 
 .work-distinction {
-  color: var(--name-blue);
+  color: var(--secondary);
   font-weight: 600;
 }
 

@@ -5,9 +5,11 @@
 
 - title: "Does GRAFT work with an LLM judge?"
   url: /blog/graft-and-reward-penalties/
+  recent: true
 
 - title: "Reliable Reasoning, Part 1"
   url: /blog/reliable-reasoning-part-1/
+  recent: true
 
 - title: Approximate Bayesian Computation with Path Signatures
   url: https://arxiv.org/abs/2106.12555

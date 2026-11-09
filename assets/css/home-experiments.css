@@ -31,7 +31,7 @@
   width: fit-content;
   gap: 3px;
   min-height: 32px;
-  color: #183f75;
+  color: var(--text);
   font: 500 13px/1.4 var(--sans);
   list-style: none;
   cursor: pointer;
