@@ -9,10 +9,11 @@ layout: default
     {% assign header_artwork = site.data.article_artwork[page.url] %}
     <header class="article-header">
       {% if header_artwork %}
-      <div class="article-title-row">
+      <div class="article-title-row"{% if header_artwork.display_size %} style="--artwork-size: {{ header_artwork.display_size }}px"{% endif %}>
       <div class="article-title-copy">
       {% endif %}
-      <h1 class="post-title">{{ page.display-title | default: page.title | escape }}</h1>
+      {% assign display_title = page.display-title | default: page.title %}
+      <h1 class="post-title">{% include listing-title.html title=display_title %}</h1>
       {% if page.subtitle %}
       <p class="article-subtitle"{% if page.subtitle-scale %} style="--subtitle-scale: {{ page.subtitle-scale | escape }};"{% endif %}>{{ page.subtitle | escape }}</p>
       {% endif %}

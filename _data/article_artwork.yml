@@ -3,3 +3,9 @@
   src: /assets/img/ginkgo/leaf-174-1x.png
   src_2x: /assets/img/ginkgo/leaf-174-2x.png
   src_3x: /assets/img/ginkgo/leaf-174-3x.png
+
+/blog/graft-and-reward-penalties/:
+  display_size: 191.4
+  src: /assets/img/graft-and-reward-penalties/notched-disc-1x.png
+  src_2x: /assets/img/graft-and-reward-penalties/notched-disc-2x.png
+  src_3x: /assets/img/graft-and-reward-penalties/notched-disc-3x.png

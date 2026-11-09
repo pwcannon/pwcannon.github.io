@@ -275,7 +275,8 @@ summary:focus-visible {
 }
 
 .work-title .acronym,
-.writing-title .acronym {
+.writing-title .acronym,
+.post-title .acronym {
   font-size: 0.88em;
   letter-spacing: 0.025em;
 }
@@ -693,10 +694,10 @@ body {
 
 .legacy-content button { justify-self:start; padding:8px 20px; font:inherit; background:var(--name-blue); color:white; border:0; cursor:pointer; }
 
-/* Botanical header engraving; use the supersampled assets at their intended size. */
-.article-title-row { display: grid; grid-template-columns: minmax(0, 1fr) 174px; gap: 24px; align-items: start; }
+/* Article header artwork */
+.article-title-row { display: grid; grid-template-columns: minmax(0, 1fr) var(--artwork-size, 174px); gap: 24px; align-items: start; }
 .article-header-artwork { display: block; justify-self: end; position: relative; top: -13px; }
-.article-header-artwork img { display: block; width: 174px; height: 174px; mix-blend-mode: multiply; }
+.article-header-artwork img { display: block; width: var(--artwork-size, 174px); height: auto; mix-blend-mode: multiply; }
 @media (max-width: 600px) {
   .article-title-row { display: block; }
   .article-header-artwork { display: none; }
