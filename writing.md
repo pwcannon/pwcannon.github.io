@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: Writing
-description: "Technical writing, essays and art by Patrick Cannon."
+description: "Safety research, essays and art by Patrick Cannon."
 permalink: /writing/
 ---
 
@@ -27,7 +27,7 @@ permalink: /writing/
     {% capture writing_category %}{% include writing-category.html post=post %}{% endcapture %}
     {% assign writing_category = writing_category | strip %}
     <a class="writing-item" data-writing-category="{{ writing_category }}" href="{{ post.url | relative_url }}">
-      <span class="writing-copy"><span class="writing-title">{{ post.title }}</span><span class="work-meta"><span class="work-format">{{ site.data.writing_labels[writing_category] | escape }}</span></span></span>
+      <span class="writing-copy"><span class="writing-title">{% include listing-title.html title=post.title %}</span><span class="work-meta"><span class="work-format">{{ site.data.writing_labels[writing_category] | escape }}</span></span></span>
       <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%-d %b" }}</time>
     </a>
     {% endfor %}

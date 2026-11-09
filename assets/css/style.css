@@ -211,7 +211,10 @@ summary:focus-visible {
   display: flex;
   margin-top: 26px;
   flex-direction: column;
-  gap: 23px;
+}
+
+.work-item + .work-item {
+  margin-top: 23px;
 }
 
 .work-item {
@@ -271,6 +274,12 @@ summary:focus-visible {
   text-wrap: balance;
 }
 
+.work-title .acronym,
+.writing-title .acronym {
+  font-size: 0.88em;
+  letter-spacing: 0.025em;
+}
+
 .work-meta {
   display: flex;
   margin-top: 5px;
@@ -304,15 +313,45 @@ summary:focus-visible {
   color: #747577;
 }
 
-.work-recency:not([hidden]) {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+/* Tints of the homepage inkblot blue (#396290) identify safety research. */
+.work-safety {
+  padding-block: 10px;
 }
 
-.work-new {
-  color: #8752b3;
-  font-weight: 400;
+.work-safety::before {
+  inset: 0 -10px;
+  border: 0;
+  background: #f6f8fa;
+  opacity: 1;
+}
+
+.work-safety:hover::before,
+.work-safety:focus-visible::before {
+  background: #eff2f6;
+}
+
+.work-safety + .work-safety {
+  margin-top: 0;
+}
+
+.work-safety + .work-safety::before {
+  border-top: 1px solid #e3e9ef;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.work-item .work-format {
+  order: 1;
+  margin-inline-start: auto;
+}
+
+.work-safety .work-format {
+  color: #496f99;
+  border-color: #d1dbe5;
+}
+
+.work-item .work-format + .work-meta-separator {
+  display: none;
 }
 
 .work-distinction {

@@ -1,0 +1,76 @@
+---
+layout: "post"
+title: "Does GRAFT work with an LLM judge?"
+display-title: "Does GRAFT work with an LLM judge?"
+subtitle: "Preliminary research"
+reading_time: "~5 minutes"
+date: "2026-11-09"
+permalink: "/blog/graft-and-reward-penalties/"
+mathjax: true
+article_abstract: |
+article_margin_notes: |
+  <div id="margin-note-1" class="margin-note margin-note-right" data-ref="margin-note-ref-1" data-endnote="margin-note-footnote-1" role="note" tabindex="-1">
+  <div class="margin-note-number">
+  <a href="#margin-note-ref-1" aria-label="Back to reference 1">[1]</a>
+  </div>
+  <div class="margin-note-body">
+  <p>On the show, players combine six number tiles using addition, subtraction, multiplication or division to get as close as possible to a target. They may use each tile at most once. In Countdown-Code, a solution must use every supplied number exactly once and hit the target exactly.</p>
+  </div>
+  </div>
+---
+<p><em>Reward hacking</em> in reinforcement learning (<span class="acronym">RL</span>) for large language models is a problem for both safety and the capabilities we want models to develop. A simple example is coding, where a model can learn during <span class="acronym">RL</span> to alter its unit tests to pass trivially, rather than solve the harder coding problem the user intended for it to solve.</p>
+<p>We’d like to perfectly design reward functions to preclude reward hacking, but in practice this is rarely feasible. <em>Reward specification</em> is typically challenging <span class="citation" data-cites="amodei2016concrete">(<a href="#ref-amodei2016concrete" role="doc-biblioref">Amodei et al. 2016</a>)</span> and practitioners often use <em>monitors</em> to improve or ‘shape’ the reward function. One strategy is to design the monitor to flag known reward hacks and subtract a penalty from the reward for flagged trajectories. This can offer an improvement but, like the original reward function, the monitor is often imperfect and the derived penalty can encourage the model to learn reward-hacking strategies that evade the monitor <span class="citation" data-cites="baker2025monitoring">(<a href="#ref-baker2025monitoring" role="doc-biblioref">Baker et al. 2025</a>)</span>.</p>
+<p><span class="citation" data-cites="ward2026gradient">Ward et al. (<a href="#ref-ward2026gradient" role="doc-biblioref">2026</a>)</span> developed Gradient Routing Adapter Fine Tuning (<span class="acronym">GRAFT</span>) to combat this (I recommend their <a href="https://alignment.anthropic.com/2026/graft/">introductory blog</a>). It employs the typical reward function and monitor setup, but in a novel way. Rather than using the monitor to penalize reward hacking behavior, the monitor’s role during training is to route gradient updates on reward-hacking trajectories into a particular set of sacrificial neurons – the <span class="acronym">FORGET</span> adapter – which are then entirely ablated from the model at inference time. A second, identical, sub-network – the <span class="acronym">RETAIN</span> adapter – is not trained on monitor-flagged behaviors, but is trained on non-flagged trajectories as well as a LeetCode ‘anchor’ task. Remarkably, removing the <span class="acronym">FORGET</span> adapter at inference time was shown to sharply reduce reward hacking in <span class="acronym">RL</span>, compared to a simple reward penalty, only sacrificing a little task performance. Note that this is observed despite the fact that the <span class="acronym">RETAIN</span> adapter still receives routed updates on all reward-hacking, monitor-unflagged trajectories!</p>
+<p>One of the key limitations of that work was the monitor in question, which was rule-based and flagged only one type of reward hack (trivial test substitutions), permitting all others. The authors therefore left open an interesting question: how does <span class="acronym">GRAFT</span> compare with reward penalties when the role of the monitor is performed by an <span class="acronym">LLM</span> judge?</p>
+<p>A central example in the original work is <a href="https://github.com/zohaib-khan5040/Countdown-Code">Countdown-Code</a>, an <span class="acronym">RL</span> environment based on the mathematics task in the game show <a href="https://en.wikipedia.org/wiki/Countdown_(game_show)">Countdown</a><sup id="margin-note-ref-1" class="margin-note-ref" data-note="margin-note-1"><a href="#margin-note-1" aria-label="Margin note 1" aria-describedby="margin-note-1">[1]</a></sup>. I trained a Qwen3-8B model with a frozen Qwen3-4B judge to test this. As in the original work, the <span class="acronym">GRAFT</span> algorithm used the judge’s flags to route learning to a <span class="acronym">FORGET</span> adapter. In contrast, the reward penalty method subtracted two reward points for each flag from the <span class="acronym">LLM</span> judge.</p>
+<p>A successful hack was defined as an answer that passed the (editable) test but failed on a protected check against the original rules. To get a clean measure of task performance, the model was finally tested on a version of Countdown where it could only submit an expression.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img role="img" aria-label="At 1,536 tokens, penalty models trained with the rule-based detector averaged 36.6% hacking and 66.1% clean solves. With the LLM judge they averaged 0% and 85.8%. Deployed GRAFT averaged 2.6% and 80.7% with the LLM judge. The single rule-based GRAFT run had 0.4% hacking and 80.1–80.5% clean solves." src="/assets/img/graft-and-reward-penalties/countdown-monitor-comparison.png" style="width:100.0%" alt="At 1,536 tokens, penalty models trained with the rule-based detector averaged 36.6% hacking and 66.1% clean solves. With the LLM judge they averaged 0% and 85.8%. Deployed GRAFT averaged 2.6% and 80.7% with the LLM judge. The single rule-based GRAFT run had 0.4% hacking and 80.1–80.5% clean solves."></p>
+<figcaption>Follow-up runs at the learning rates used for each method in the original paper (<span class="acronym">GRAFT</span> 1.67 × 10⁻⁴, penalty 5 × 10⁻⁴). Large filled points are three-seed means. Faint points are individual seeds. The open diamond is a separate <span class="acronym">GRAFT</span> run on the original 256 reference problems, with one unresolved clean answer. All <span class="acronym">GRAFT</span> points show the deployed model with the forget adapter removed.</figcaption>
+</figure>
+</div>
+<h2 id="what-the-experiments-showed">What the experiments showed</h2>
+<ul>
+<li>Using an <span class="acronym">LLM</span> judge as the monitor, the reward penalty model hacked <strong>less</strong> and solved <strong>more</strong> clean problems. This held for all three paired training seeds at both learning rates.</li>
+<li>Switching the penalty runs back to the original rule-based monitor brought back the same shortcut. At the higher learning rate and a 1,536-token limit, the <span class="acronym">LLM</span>-penalty models produced zero hacks in 3,072 attempts. The matched rule-based runs hacked on 31.6%, 38.2% and 39.9% of attempts. Of their 1,124 total hacks, 1,116 weakened the arithmetic constraints (by, for example, changing the test to no longer require the use of all provided numbers). The rule-based monitor missed all 1,116 such hacks.</li>
+<li>Using a longer response budget revealed some penalty hacking. I noticed during initial experiments that a surprisingly high proportion of responses from the model were being truncated and that the proportion of responses being truncated was increasing throughout <span class="acronym">RL</span> training. To investigate, I continued each cut-off answer once, up to 6,144 tokens. At the lower learning rate, the penalty models produced 32 confirmed hacks in 3,072 attempts, compared with 262 for deployed <span class="acronym">GRAFT</span>. The hacking rates were 1.0–1.2% and 8.5–9.4%, allowing for unresolved labels. Confirmed clean solve rates were 92.2% and 84.6%, respectively.</li>
+</ul>
+<h2 id="what-remains-uncertain">What remains uncertain</h2>
+<p>I found that the <span class="acronym">LLM</span> judge caught more hacks and missed different ones. The structure of the errors could be important to the problem, but it’s not yet clear exactly how. The separate rule-based <span class="acronym">GRAFT</span> run reproduced the effect of removing the forget adapter. Hacking fell from about 29% to one answer in 256. It used a different seed and evaluation set, so the figure can’t tell us exactly how much switching monitors changes <span class="acronym">GRAFT</span>’s advantage over penalties. With one task and three matched seeds, the size and generality of the penalty advantage also remain uncertain.</p>
+<h2 id="what-id-test-next">What I’d test next</h2>
+<ol type="1">
+<li>Hold the detection rate fixed and change which reward hacks are missed. Calibrate two monitors to catch the same fraction of hacks on a common set of answers, but have one consistently miss a repeatable strategy and the other miss occasional examples across all strategies. Train both methods under both monitors. My hypothesis is that concentrating the misses changes which method works better and, in particular, <span class="acronym">GRAFT</span> works better in cases of systematic failure on one or more reward hack types. I predict in contrast that reward penalties will work better when no reward hacking type is reliably successful, but any type can be missed with some small probability.</li>
+<li>Complete the comparison with the original detector. Train rule-based <span class="acronym">GRAFT</span> on the same seeds and evaluate it on the same problems as the other follow-up runs. That would give a direct estimate of how much each method benefits from switching judges. It wasn’t included in the work so far because I had assumed I started from the same Qwen3-8B countdown <span class="acronym">SFT</span> checkpoint as the original study did, but I found I wasn’t able to closely recreate their numbers, which I believe is due to the checkpoints differing.</li>
+</ol>
+<div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden">
+
+</div>
+<div class="margin-note-footnotes" role="doc-endnotes" aria-label="Footnotes">
+<div id="margin-note-footnote-1" class="margin-note-footnote" role="doc-endnote">
+<div class="margin-note-footnote-marker">
+<a class="margin-note-backlink" href="#margin-note-ref-1" aria-label="Back to margin-note reference 1">[1]</a>
+</div>
+<div class="margin-note-footnote-body">
+<p>On the show, players combine six number tiles using addition, subtraction, multiplication or division to get as close as possible to a target. They may use each tile at most once. In Countdown-Code, a solution must use every supplied number exactly once and hit the target exactly.</p>
+</div>
+</div>
+</div>
+<h2 id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-amodei2016concrete" class="csl-entry" role="listitem">
+Amodei, Dario, Chris Olah, Jacob Steinhardt, Paul Christiano, John Schulman, and Dan Mané. 2016. <em>Concrete Problems in <span>AI</span> Safety</em>. arXiv. <a href="https://arxiv.org/abs/1606.06565">https://arxiv.org/abs/1606.06565</a>.
+</div>
+<div id="ref-baker2025monitoring" class="csl-entry" role="listitem">
+Baker, Bowen, Joost Huizinga, Leo Gao, et al. 2025. <em>Monitoring <span>Reasoning Models</span> for <span>Misbehavior</span> and the <span>Risks</span> of <span>Promoting Obfuscation</span></em>. arXiv:2503.11926. arXiv. <a href="https://doi.org/10.48550/arXiv.2503.11926">https://doi.org/10.48550/arXiv.2503.11926</a>.
+</div>
+<div id="ref-hu2026reducing" class="csl-entry" role="listitem">
+Hu, Shawn, Jake Ward, Aria Wong, et al. 2026. <span>‘Reducing Reward Hacking by Localizing Bad Behavior Instead of Penalizing It’</span>. Anthropic Alignment Science Blog, October 19. <a href="https://alignment.anthropic.com/2026/graft/">https://alignment.anthropic.com/2026/graft/</a>.
+</div>
+<div id="ref-khalifa2026countdowncode" class="csl-entry" role="listitem">
+Khalifa, Muhammad, Zohaib Khan, Omer Tafveez, Hao Peng, and Lu Wang. 2026. <span>‘<span>Countdown-Code</span>’</span>. GitHub. <a href="https://github.com/zohaib-khan5040/Countdown-Code">https://github.com/zohaib-khan5040/Countdown-Code</a>.
+</div>
+<div id="ref-ward2026gradient" class="csl-entry" role="listitem">
+Ward, Jake, Shawn Hu, Aria Wong, et al. 2026. <em>Gradient Routing Localizes and Removes Unintended Behaviors in <span>RL</span></em>. arXiv. <a href="https://arxiv.org/abs/2610.17062v1">https://arxiv.org/abs/2610.17062v1</a>.
+</div>
+</div>

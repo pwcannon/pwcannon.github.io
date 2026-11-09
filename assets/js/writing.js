@@ -10,7 +10,8 @@
   const empty = document.querySelector('.writing-filter-empty');
 
   function render() {
-    const type = new URL(window.location.href).searchParams.get('type');
+    const requested = new URL(window.location.href).searchParams.get('type');
+    const type = requested === 'technical' ? 'safety-research' : requested;
     const selected = categories.includes(type) ? type : 'all';
     let count = 0;
     items.forEach(item => {

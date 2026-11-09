@@ -6,17 +6,26 @@
     {% assign item_url = item.url | relative_url %}
   {% endif %}
   {% assign selected_post = site.posts | where: "url", item.url | first %}
-  {% assign published_date = selected_post.date | default: item.date %}
-  <a class="work-item" href="{{ item_url }}">
+  {% if selected_post %}
+    {% capture category %}{% include writing-category.html post=selected_post %}{% endcapture %}
+    {% assign category = category | strip %}
+    {% assign badge = site.data.writing_labels[category] %}
+  {% else %}
+    {% assign badge = item.format %}
+  {% endif %}
+  <a class="work-item{% if selected_post and category == 'safety-research' %} work-safety{% endif %}" href="{{ item_url }}">
     <span class="work-index" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
     <span class="work-copy">
-      <span class="work-title">{{ item.title }}</span>
+      <span class="work-title">{% include listing-title.html title=item.title %}</span>
       <span class="work-meta">
-        <span class="work-format">{{ item.format }}</span>
+        <span class="work-format">{{ badge | escape }}</span>
+        {% if selected_post %}
         <span class="work-meta-separator" aria-hidden="true">·</span>
-        <span class="work-context">{{ item.context }}</span>
-        {% if published_date %}
-        <span class="work-recency" data-published="{{ published_date | date: '%Y-%m-%d' }}" hidden><span class="work-meta-separator" aria-hidden="true">·</span> <span class="work-new">new</span></span>
+        <time class="work-context" datetime="{{ selected_post.date | date: '%Y-%m-%d' }}">{{ selected_post.date | date: "%-d %b %Y" }}</time>
+        {% endif %}
+        {% if item.context %}
+        <span class="work-meta-separator" aria-hidden="true">·</span>
+        <span class="work-context">{{ item.context | escape }}</span>
         {% endif %}
         {% if item.distinction %}
         <span class="work-meta-separator" aria-hidden="true">·</span>
@@ -27,5 +36,3 @@
   </a>
   {% endfor %}
 </div>
-
-<script defer src="{% include asset-url.html path="/assets/js/selected-work.js" %}"></script>
