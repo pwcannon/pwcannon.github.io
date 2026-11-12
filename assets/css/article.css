@@ -1163,6 +1163,10 @@
   padding-block: 1lh;
 }
 
+:where(.article-shell) .article-content .quarto-figure:has(picture.cel-plot):has(+ h2) {
+  padding-block-end: 0;
+}
+
 :where(.article-shell) .article-content .quarto-figure:has(picture.cel-plot) figure {
   background: transparent;
   padding: 0;
