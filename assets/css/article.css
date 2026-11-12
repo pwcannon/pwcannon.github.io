@@ -1152,6 +1152,7 @@
 
 :where(.article-shell) #refs.hanging-indent .csl-entry { margin-left: 1.5em; text-indent: -1.5em; }
 
+:where(.article-shell) .article-header .acronym,
 :where(.article-shell) .article-content .acronym,
 :where(.article-shell) .margin-note .acronym {
   font-size: 0.88em;
