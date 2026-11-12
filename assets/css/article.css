@@ -330,6 +330,14 @@
   padding-left: 1.35em;
 }
 
+:where(.article-shell) .article-content .research-questions > ol > li {
+  padding-inline-start: 0.3em;
+}
+
+:where(.article-shell) .article-content .research-questions > ol > li::marker {
+  font-style: italic;
+}
+
 :where(.article-shell) .article-content li + li {
   margin-top: var(--space-sm);
 }
