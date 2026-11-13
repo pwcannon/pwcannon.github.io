@@ -29,7 +29,332 @@ article_margin_notes: |
 <p>We’d like to perfectly design reward functions to capture our true preferences, but in practice this is rarely feasible. A misspecified reward function can lead to <em>reward hacking</em>, where the model finds a way to earn reward without succeeding on the intended task. An example is coding, where a model can learn during <span class="acronym">RL</span> to alter its unit tests to pass trivially, rather than solve the harder coding problem the user intended for it to solve. <em>Reward specification</em> is typically challenging <span class="citation" data-cites="amodei2016concrete">(<a href="#ref-amodei2016concrete" role="doc-biblioref">Amodei et al. 2016</a>)</span> and practitioners often use <em>monitors</em> to improve or ‘shape’ the reward function. A common strategy is to design the monitor to detect known classes of reward hack, using it to flag offending trajectories whose reward is then penalized during training. While this can reduce reward hacking, the monitor is itself usually imperfect, which can encourage the policy to learn reward-hacking strategies that evade the monitor <span class="citation" data-cites="baker2025monitoring">(<a href="#ref-baker2025monitoring" role="doc-biblioref">Baker et al. 2025</a>)</span>.</p>
 <p><span class="citation" data-cites="ward2026gradient">Ward et al. (<a href="#ref-ward2026gradient" role="doc-biblioref">2026</a>)</span> developed Gradient Routing Adapter Fine Tuning (<span class="acronym">GRAFT</span>) to combat this (I recommend their excellent <a href="https://alignment.anthropic.com/2026/graft/">introductory blog</a>). Their method employs the usual ingredients, a reward function and monitor, but in a novel way. When the monitor flags a trajectory in <span class="acronym">GRAFT</span>, rather than directly penalizing the reward, <span class="acronym">GRAFT</span> routes its gradient to the <span class="acronym">FORGET</span> adapter alone (and doubles the gradient). This adapter can be thought of as an additional, sacrificial set of neurons; in their paper this role is played by a small <span class="acronym">MLP</span> added to the residual stream of each transformer block. At deployment, the <span class="acronym">FORGET</span> adapter is removed entirely.</p>
 <p>A second, identical, sub-network – the <span class="acronym">RETAIN</span> adapter – is also present. Both adapters can receive updates from unflagged trajectories, including hacks the monitor missed. The <span class="acronym">RETAIN</span> adapter also trains on a separate <em>anchor</em> task (LeetCode in their main example) with <span class="acronym">FORGET</span> switched off.</p>
-<p>Remarkably, removing the <span class="acronym">FORGET</span> adapter at inference time was shown to sharply reduce reward hacking in <span class="acronym">RL</span>, compared to a simple reward penalty, only sacrificing a little task performance in their main experiment. This is despite the fact that the <span class="acronym">RETAIN</span> adapter can still receive updates from reward-hacking, monitor-unflagged trajectories! In other words, somewhat miraculously, even when the monitor still allows some reward hacking, the deployed model rarely exhibits those missed behaviors. On Countdown, they were already rare before the adapter was removed.</p>
+<section id="graft-gradient-routing">
+<style>
+#graft-gradient-routing * { box-sizing:border-box; }
+#graft-gradient-routing .widget-figure { margin:0 auto; width:100%; max-width:676px; padding:0; }
+#graft-gradient-routing .panel { border:1px solid #dcdee3; border-radius:12px; overflow:hidden; background:#f9f9f9; }
+#graft-gradient-routing .widget-header { padding:20px 22px 0; }
+#graft-gradient-routing .controls { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+#graft-gradient-routing .training-note { font-size:.70em; font-weight:400; letter-spacing:-.02em; white-space:nowrap; color:#575e68; }
+#graft-gradient-routing .choices { display:flex; flex-wrap:wrap; align-items:center; column-gap:20px; row-gap:0; }
+#graft-gradient-routing .choices button { position:relative; appearance:none; border:0; background:transparent; color:#575e68; font:500 14px/1.25 Arial,sans-serif; min-height:36px; padding:4px 1px; white-space:nowrap; }
+#graft-gradient-routing .choices button::after { content:''; position:absolute; left:1px; right:1px; bottom:2px; height:2px; background:transparent; }
+#graft-gradient-routing .choices button:hover, #graft-gradient-routing .choices button[aria-pressed="true"] { color:#232634; }
+#graft-gradient-routing .choices button:hover::after { background:#c6ccd3; }
+#graft-gradient-routing .choices button[aria-pressed="true"]::after { background:#1685f8; }
+#graft-gradient-routing button { font:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+#graft-gradient-routing button:focus-visible, #graft-gradient-routing a:focus-visible { outline:3px solid #1685f8; outline-offset:2px; }
+#graft-gradient-routing canvas { display:block; width:100%; height:auto; aspect-ratio:640/285; }
+#graft-gradient-routing .caption { border-top:1px solid #dcdee3; padding:11px 22px 13px; background:#fff; }
+#graft-gradient-routing .caption strong { color:#183f75; font-size:14px; }
+#graft-gradient-routing .caption p { margin:3px 0 0; font:400 17px/26px var(--serif, Times), "Times New Roman", serif; }
+#graft-gradient-routing .acronym { font-size:.88em; letter-spacing:.025em; }
+#graft-gradient-routing #graft-playback { flex:none; background:transparent; color:#183f75; border:1px solid #c6ccd3; border-radius:5px; min-height:28px; padding:3px 9px; font-size:13px; }
+#graft-gradient-routing #graft-playback[hidden] { display:none; }
+#graft-gradient-routing .widget-credit { margin:8px 2px 0; color:#5f5c57; font:13px/1.5 Arial,sans-serif; }
+#graft-gradient-routing a { color:#183f75; }
+@media(max-width:540px) { #graft-gradient-routing canvas{aspect-ratio:360/378;}
+#graft-gradient-routing .widget-header {padding:16px 12px 0;}
+#graft-gradient-routing .caption {padding:10px 12px 12px;}
+#graft-gradient-routing .choices {column-gap:clamp(7px,3vw,16px);} }
+#graft-gradient-routing { display:block; margin:24px auto; font:16px/1.35 Arial,sans-serif; color:#27241f; }
+#graft-gradient-routing .widget-title {margin:0 0 8px;font:550 clamp(23px,4.4vw,30px)/1.15 Arial,sans-serif;letter-spacing:-.045em;color:#232634;}
+@media(max-width:375px) {
+#graft-gradient-routing .controls {gap:4px;}
+#graft-gradient-routing .choices {column-gap:6px;}
+#graft-gradient-routing .choices button {font-size:13px;}
+#graft-gradient-routing #graft-playback {padding-inline:5px;}
+}
+</style>
+<div class="widget-figure" role="group" aria-labelledby="graft-routing-title">
+  <div class="panel">
+    <div class="widget-header"><div role="heading" aria-level="3" class="widget-title" id="graft-routing-title">GRAFT gradient-routing <span class="training-note">(during training)</span></div>
+      <div class="controls">
+      <div class="choices" role="group" aria-label="Play a scenario">
+        <button type="button" data-scenario="unflagged" aria-pressed="false">Unflagged</button>
+        <button type="button" data-scenario="flagged" aria-pressed="false">Flagged</button>
+        <button type="button" data-scenario="anchor" aria-pressed="false">Anchor task</button>
+      </div>
+      <button type="button" id="graft-playback" hidden>Pause</button>
+      </div>
+    </div>
+    <canvas width="1280" height="570" role="img" aria-label="One MLP block with a frozen base, parallel RETAIN and FORGET adapters and a monitor at the output."></canvas>
+    <div class="caption">
+      <div role="status" aria-live="polite" aria-atomic="true"><strong id="graft-phase">Choose a scenario</strong><p id="graft-explanation">Follow a response through training.</p></div>
+    </div>
+<noscript><p>On an unflagged response, RETAIN and FORGET both receive gradients. A flag routes twice the usual gradient to FORGET alone. On the anchor task, FORGET is disabled and RETAIN receives the gradient.</p></noscript>
+  </div>
+  <div class="widget-credit">The base MLP is frozen throughout. Dots represent the forward pass. Gradient arrows are red for flagged responses and blue for unflagged and anchor responses. Adapted from <a href="https://arxiv.org/html/2610.17062v1#S0.F1">Ward et al., Fig. 1</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>).</div>
+</div>
+<script>
+/* Shared drawing for the interactive figure and its GIF / MP4 exports. */
+(function (root) {
+  'use strict';
+  const ink = '#232634', navy = '#183f75', blue = '#1685f8', paper = '#f9f9f9';
+  const grey = '#565e68', rail = '#a5aab1', white = '#ffffff', pale = '#e8f2ff';
+  const blueSignal = {line: blue, edge: navy, tint: pale};
+  const redSignal = {line: '#dc6152', edge: '#943a30', tint: '#fff0eb'};
+  const frost = {edge: '#719298', ink: '#466b72', fill: '#f0f5f5'};
+  const cases = {
+    unflagged: { title: 'Unflagged', weights: [0, 1, 1], duration: 11 },
+    flagged: { title: 'Flagged', weights: [0, 0, 2], duration: 11 },
+    anchor: { title: 'Anchor task', weights: [0, 1, 0], duration: 8 }
+  };
+  function phase(kind, t) {
+    if (!kind) return 'idle';
+    if (t < 4.15) return 'forward';
+    if (kind === 'anchor') return t < 5 ? 'anchor' : 'gradient';
+    if (t < 6.05) return 'thinking';
+    return t < 7.55 ? 'verdict' : 'gradient';
+  }
+  function caption(kind, t, compact=false) {
+    const anchor=kind==='anchor', flag=kind==='flagged';
+    switch (phase(kind, t)) {
+      case 'idle': return ['Choose a scenario', 'Follow a response through training.'];
+      case 'forward':
+        if (anchor) return ['Forward pass', compact ? 'Only the base and RETAIN run.' : 'The base and RETAIN produce the anchor response. FORGET is switched off.'];
+        return ['Forward pass', compact ? 'Base, RETAIN and FORGET all run.' : 'The base, RETAIN and FORGET all contribute to the target response.'];
+      case 'thinking': return ['Monitor reads the response', compact ? 'The monitor checks for a hack.' : 'The monitor checks the completed response for signs of reward hacking.'];
+      case 'verdict':
+        if (flag) return ['Monitor raises a flag', compact ? 'The flag masks RETAIN’s gradient.' : 'The flag blocks the gradient to RETAIN.'];
+        return ['Monitor returns no flag', compact ? 'Missed hacks take this route too.' : 'Both routes stay open. This includes genuine hacks missed by the monitor.'];
+      case 'anchor': return ['Anchor objective', compact ? 'The anchor task supplies the loss.' : 'The separate anchor task supplies its own training signal.'];
+      default:
+        if (anchor) return ['Parameter gradients', compact ? 'Only RETAIN receives a gradient.' : 'Only RETAIN receives the anchor gradient.'];
+        if (flag) return ['Parameter gradients', compact ? 'FORGET gets 2×. RETAIN gets 0×.' : 'FORGET receives twice its usual gradient. RETAIN receives zero.'];
+        return ['Parameter gradients', compact ? 'Both adapters receive a gradient.' : 'RETAIN and FORGET each receive their usual gradient from this response.'];
+    }
+  }
+  // Match the article's acronym style in raster exports and canvas labels.
+  function adapterText(c, s, x, y, size, family, weight, paint=true) {
+    c.save();
+    let width=0;
+    for(const run of s.split(/\b(RETAIN|FORGET)\b/)) {
+      if (!run) continue;
+      const small=run==='RETAIN'||run==='FORGET', em=small?size*.88:size;
+      c.font=`${weight} ${em}px ${family}`;
+      c.letterSpacing=small?`${em*.025}px`:'0px';
+      if(paint)c.fillText(run,x+width,y);
+      width+=c.measureText(run).width;
+    }
+    c.restore();
+    return width;
+  }
+  const frac = (t,a,b) => Math.max(0,Math.min(1,(t-a)/(b-a)));
+  const ease = p => p*p*(3-2*p);
+  // Sample cubic bends by distance so dots and return arrows follow the same rails.
+  function path(start, ...commands) {
+    const points = [start], lengths = [0];
+    function add(p) { const q=points.at(-1); lengths.push(lengths.at(-1)+Math.hypot(p[0]-q[0],p[1]-q[1])); points.push(p); }
+    for (const cmd of commands) {
+      if(cmd.length===2) { add(cmd); continue; }
+      const [x,y]=points.at(-1), [a,b,c,d,e,f]=cmd;
+      for(let i=1;i<=24;i++) { const v=i/24,u=1-v; add([u*u*u*x+3*u*u*v*a+3*u*v*v*c+v*v*v*e,u*u*u*y+3*u*u*v*b+3*u*v*v*d+v*v*v*f]); }
+    }
+    return {points,lengths,total:lengths.at(-1)};
+  }
+  function at(route,p) {
+    const length = route.total*Math.min(1,Math.max(0,p)); let i=1;
+    while(i<route.lengths.length-1 && route.lengths[i]<length)i++;
+    const a=route.points[i-1],b=route.points[i],k=(length-route.lengths[i-1])/(route.lengths[i]-route.lengths[i-1]);
+    return [a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k];
+  }
+  const layouts = {};
+  function layout(narrow) {
+    if(layouts[narrow]) return layouts[narrow];
+    const w=narrow?360:640, h=narrow?378:285, cy=narrow?126:151;
+    const x0=narrow?18:19, fork=narrow?44:51, l=narrow?91:120, r=narrow?245:319, sum=narrow?288:397, port=narrow?323:446;
+    const ys=[cy-57,cy,cy+57], robot=narrow?[235,286]:[551,149];
+    function branch(x,y,end,yy){const dx=end-x;return path([x,y],[x+.42*dx,y,end-.50*dx,yy,end-.20*dx,yy],[end,yy]);}
+    const left=ys.map(y=>branch(fork,cy,l,y)), right=ys.map(y=>branch(sum,cy,r,y));
+    const top=narrow?28:49;
+    const residual=path([fork,cy],[fork+9,cy,fork+10,cy-13,fork+10,cy-26],[fork+10,top+16],
+      [fork+10,top+5,fork+15,top,fork+26,top],[sum-26,top],[sum-15,top,sum-10,top+5,sum-10,top+16],
+      [sum-10,cy-26],[sum-10,cy-12,sum-9,cy,sum,cy]);
+    const delivery=narrow?path([port,cy],[port+10,cy,port+15,cy+5,port+15,cy+15],[port+15,robot[1]-16],
+      [port+15,robot[1]-6,port+10,robot[1],port,robot[1]],[robot[0]+49,robot[1]]):path([port,cy],[robot[0]-49,cy]);
+    return layouts[narrow]={w,h,cy,top,x0,fork,l,r,sum,port,ys,robot,left,right,residual,delivery,
+      inlet:path([x0,cy],[fork,cy]),outlet:path([sum,cy],[port,cy])};
+  }
+  function draw(c,kind,t,options={}) {
+    const g=layout(!!options.narrow), anchor=kind==='anchor', reduced=!!options.reduced;
+    const sans=options.sans||'Arial', mono=options.mono||'monospace';
+    const weights=(cases[kind]||cases.unflagged).weights;
+    const signal=kind==='flagged'?redSignal:blueSignal;
+    const stage=phase(kind,t), grade=stage==='gradient', start=anchor?5:7.55;
+    c.save();c.fillStyle=paper;c.fillRect(0,0,g.w,g.h);c.lineCap='round';c.lineJoin='round';
+    function stroke(coords,colour,width=1.5) {
+      c.beginPath();c.moveTo(coords[0],coords[1]);for(let i=2;i<coords.length;i+=2)c.lineTo(coords[i],coords[i+1]);
+      c.strokeStyle=colour;c.lineWidth=width;c.stroke();
+    }
+    function circ(x,y,r,fill,edge=null,sw=1) { c.beginPath();c.arc(x,y,r,0,2*Math.PI);c.fillStyle=fill;c.fill();if(edge){c.strokeStyle=edge;c.lineWidth=sw;c.stroke();} }
+    function box(x,y,w,h,r,fill,edge=null,sw=1) {c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill();if(edge){c.strokeStyle=edge;c.lineWidth=sw;c.stroke();}}
+    function txt(s,x,y,size,colour=ink,weight=400,align='left',font=sans) {c.font=`${weight} ${size}px ${font}`;c.fillStyle=colour;c.textAlign=align;c.textBaseline='middle';c.fillText(s,x,y);}
+    function trace(route,a,b,colour,width) {
+      if (b<=a) return; c.beginPath();c.moveTo(...at(route,a));
+      for(let i=1;i<route.points.length-1;i++)if(route.lengths[i]>a*route.total&&route.lengths[i]<b*route.total)c.lineTo(...route.points[i]);
+      c.lineTo(...at(route,b));c.strokeStyle=colour;c.lineWidth=width;c.stroke();
+    }
+    function dot(route,p){circ(...at(route,p),4.4,ink,white,1);}
+    function arrow(route,p,amplified) {
+      const [x,y]=at(route,p),a=at(route,Math.max(0,p-.015)),b=at(route,Math.min(1,p+.015));
+      c.save();c.translate(x,y);c.rotate(Math.atan2(b[1]-a[1],b[0]-a[0]));
+      for(const dx of amplified?[0,-6]:[0]){c.beginPath();c.moveTo(dx,0);c.lineTo(dx-5.6,-3.9);c.lineTo(dx-5.6,3.9);c.closePath();c.fillStyle=signal.line;c.fill();c.lineWidth=.8;c.strokeStyle=signal.edge;c.stroke();}c.restore();
+    }
+    function sheet(x,y){c.save();c.translate(x,y);c.rotate(-.12);box(-7,-8.5,14,17,2,white,ink,1.4);for(let i=0;i<3;i++)stroke([-4,-4+i*4,i===2?1:4,-4+i*4],ink,1.1);c.restore();}
+    function label(s,x,y){txt(s,x,y,12.5,grey,400,'center');}
+    trace(g.residual,0,1,rail,1.4);trace(g.inlet,0,1,rail,1.7);trace(g.outlet,0,1,rail,1.7);
+    for(let i=0;i<3;i++)if(i!==2||!anchor){trace(g.left[i],0,1,rail,1.6);trace(g.right[i],0,1,rail,1.6);}
+    c.setLineDash([2,4]);trace(g.delivery,0,1,rail,1.4);c.setLineDash([]);
+    label('Residual connection',(g.fork+g.sum)/2,g.top-12);
+    if(kind&&!reduced){
+      if(t>=.12&&t<.55)dot(g.inlet,frac(t,.12,.55));
+      if(t>=.55&&t<2.85)dot(g.residual,frac(t,.55,2.85));
+      for(let i=0;i<3;i++)if(i!==2||!anchor){
+        if(t>=.55&&t<1.42)dot(g.left[i],frac(t,.55,1.42));
+        if(t>=1.84&&t<2.85)dot(g.right[i],1-frac(t,1.84,2.85));
+      }
+      if(t>=2.85&&t<3.24)dot(g.outlet,frac(t,2.85,3.24));
+      if(t>=3.24&&t<4.15)sheet(...at(g.delivery,ease(frac(t,3.24,4.15))));
+    }
+    if(grade){
+      const p=reduced?1:frac(t,start+.12,start+.6);trace(g.outlet,1-p,1,signal.line,2.8);
+      const q=reduced?1:frac(t,start+.6,start+1.65);
+      for(let i=1;i<3;i++)if(weights[i]&&q>0){trace(g.right[i],0,q,signal.line,weights[i]===2?4.8:2.8);arrow(g.right[i],q,weights[i]===2);}
+    }
+    for(let i=0;i<3;i++){
+      const y=g.ys[i],off=i===2&&anchor,received=grade&&weights[i]>0&&(reduced||t>=start+1.65);
+      if(i===0) {
+        box(g.l,y-21,g.r-g.l,42,7,frost.fill,frost.edge,1.6);
+        c.save();c.translate(g.l+17,y);
+        for(let arm=0;arm<6;arm++) {
+          stroke([0,0,0,-8.5],frost.ink,1.4);
+          stroke([-2.5,-6.3,0,-4,2.5,-6.3],frost.ink,1.3);
+          c.rotate(Math.PI/3);
+        }
+        c.restore();txt('Base MLP',g.l+32,y,g.w===360?15:16,ink,600);
+        continue;
+      }
+      const highlighted=stage==='forward'&&t>=1.42&&t<1.84&&!off;
+      if(off)c.setLineDash([3,4]);box(g.l,y-21,g.r-g.l,42,7,received?signal.tint:off?paper:white,received?signal.edge:highlighted?ink:rail,received?2:1.35);c.setLineDash([]);
+      for(let j=0;j<3;j++)for(let k=0;k<3;k++){const xx=g.l+10+j*4.3,yy=y-6+k*4.3;c.fillStyle=received?signal.line:off?'#d5d8dc':'#8b949f';c.fillRect(xx,yy,3,3);}
+      c.fillStyle=off?grey:ink;c.textAlign='left';c.textBaseline='middle';
+      adapterText(c,i===1?'RETAIN adapter':'FORGET adapter',g.l+32,y-6,g.w===360?15:16,sans,600);
+      const status=off?'switched off':grade?`${weights[i]}× gradient`:'enabled';
+      txt(status,g.l+32,y+10,g.w===360?11.5:12.5,received?signal.edge:grey,400,'left',mono);
+    }
+    circ(g.x0,g.cy,3.4,paper,ink,1.4);circ(g.fork,g.cy,2.5,ink);circ(g.sum,g.cy,7.2,paper,ink,1.4);
+    stroke([g.sum-3,g.cy,g.sum+3,g.cy],ink,1.3);stroke([g.sum,g.cy-3,g.sum,g.cy+3],ink,1.3);
+    circ(g.port,g.cy,3.4,grade?signal.tint:white,grade?signal.edge:ink,1.4);label('Input',g.x0+1,g.cy+16);label('Output',g.port-2,g.cy+16);
+    const [rx,ry]=g.robot;
+    if(anchor){
+      c.save();c.translate(rx,ry);box(-28,-27,53,55,7,pale,navy,1.8);box(-22,-32,51,54,6,white,navy,1.8);
+      stroke([-11,-16,15,-16],navy,2.2);stroke([-11,-7,9,-7],rail,2);stroke([-11,1,13,1],rail,2);stroke([-11,10,4,10],rail,2);
+      c.restore();txt('Anchor objective',rx,ry+46,15,navy,600,'center');
+    }else{
+      const thinking=stage==='thinking', verdict=stage==='verdict'||grade, flag=verdict&&kind==='flagged';
+      c.save();c.translate(rx,ry);
+      const sway=thinking&&!reduced?Math.sin((t-4.15)*5)*.045:0;
+      // Twin ear caps, enamel shell, dark visor and an antenna form a readable silhouette at article size.
+      const graphite='#41454b', metal='#d5d6d6';
+      box(-16,25,32,6,2,graphite);box(-25,30,50,5,3,metal,graphite,1.5);c.rotate(sway);
+      stroke([0,-28,0,-42],graphite,2.5);
+      if(verdict){c.save();c.globalAlpha=.16;circ(0,-44,10,signal.line);c.restore();}
+      circ(0,-44,verdict?5.4:4.2,verdict?signal.line:metal,verdict?signal.edge:graphite,1.5);
+      box(-42,-10,10,21,4,metal,graphite,1.7);box(32,-10,10,21,4,metal,graphite,1.7);
+      box(-36,-30,72,57,13,'#f0f0ef',graphite,2.3);box(-29,-21,58,31,9,graphite);
+      const gaze=thinking&&!reduced?Math.sin((t-4.15)*6)*3:-1;
+      for(const x of [-13,13]){
+        if(flag){stroke([x-4,-8+(x<0?-2:2),x+4,-8+(x<0?2:-2)],white,3.1);}
+        else if(verdict){c.beginPath();c.arc(x,-3,4.2,Math.PI,2*Math.PI);c.strokeStyle=white;c.lineWidth=2.7;c.stroke();}
+        else box(x-3.2+gaze,-12,6.4,thinking?10:8,2.8,white);
+      }
+      if(thinking){for(let i=0;i<3;i++)circ(-7+i*7,18,1.7,(reduced||Math.floor((t-4.15)*5)%3===i)?graphite:rail);}
+      else if(verdict&&!flag){c.beginPath();c.moveTo(-7,16);c.quadraticCurveTo(0,22,7,16);c.strokeStyle=graphite;c.lineWidth=1.7;c.stroke();}
+      else stroke([-6,17,6,17],graphite,1.8);
+      for(const x of [-25,25])circ(x,17,1.4,rail);
+      if(flag){const k=reduced?1:ease(frac(t,6.05,6.40));c.save();c.translate(27,-24);c.scale(1,k);stroke([0,0,0,-26],graphite,2.1);
+        c.beginPath();c.moveTo(1,-26);c.bezierCurveTo(8,-30,13,-21,20,-25);c.lineTo(19,-13);c.bezierCurveTo(11,-9,8,-19,1,-15);c.closePath();c.fillStyle=signal.line;c.fill();c.strokeStyle=signal.edge;c.lineWidth=1.3;c.stroke();c.restore();}
+      c.restore();
+      txt('Monitor',rx,ry+53,15,ink,600,'center');
+      const state=thinking?'Considering…':verdict?(flag?'Flag':'No flag'):'Waiting';
+      const y=ry+74; c.font=`600 13px ${sans}`;const bw=c.measureText(state).width+20;
+      box(rx-bw/2,y-10,bw,20,10,verdict?signal.tint:'#eef0f1',verdict?signal.edge:null,1);
+      txt(state,rx,y+.8,13,verdict?signal.edge:grey,600,'center');
+    }
+    c.restore();
+  }
+  const api={cases,phase,caption,layout,draw,adapterText};
+  if(typeof module==='object' && module.exports)module.exports=api;
+  else root.GraftDiagram=api;
+})(globalThis);
+
+</script>
+<script>
+(() => {
+  const widget = document.getElementById('graft-gradient-routing');
+  const {cases, caption, layout, draw} = window.GraftDiagram;
+  const canvas = widget.querySelector('canvas'), ctx = canvas.getContext('2d');
+  const choices = [...widget.querySelectorAll('[data-scenario]')];
+  const playback = widget.querySelector('#graft-playback');
+  const phase = widget.querySelector('#graft-phase'), explanation = widget.querySelector('#graft-explanation');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let kind = null, t = 0, frame = 0, previous = null, playing = false, narrow, compactCaption, scale;
+  function paint() {
+    ctx.setTransform(scale,0,0,scale,0,0);
+    draw(ctx,kind,t,{narrow,reduced:reducedMotion.matches});
+    const [heading, details] = caption(kind,t,compactCaption);
+    if(phase.textContent!==heading || explanation.textContent!==details) {
+      phase.textContent=heading;
+      explanation.replaceChildren(...details.split(/\b(RETAIN|FORGET)\b/).map(part => {
+        if(part !== 'RETAIN' && part !== 'FORGET') return part;
+        const name = document.createElement('span');
+        name.className='acronym'; name.textContent=part;
+        return name;
+      }));
+    }
+  }
+  function resize() {
+    const width = canvas.getBoundingClientRect().width;
+    narrow = width < 510;
+    compactCaption = width < 600;
+    const g=layout(narrow), ratio=Math.min(window.devicePixelRatio||1,3);
+    canvas.style.aspectRatio=`${g.w}/${g.h}`;
+    canvas.width=Math.max(1,Math.round(width*ratio));
+    scale=canvas.width/g.w; canvas.height=Math.round(scale*g.h);
+    paint();
+  }
+  function stop(label) {
+    cancelAnimationFrame(frame); playing=false; previous=null; playback.textContent=label;
+  }
+  function tick(now) {
+    if(!playing) return;
+    if(previous!==null) t=Math.min(cases[kind].duration,t+(now-previous)/1000);
+    previous=now; paint();
+    if(t>=cases[kind].duration) stop('Replay'); else frame=requestAnimationFrame(tick);
+  }
+  function play() {
+    previous=null;playing=true;playback.textContent='Pause';frame=requestAnimationFrame(tick);
+  }
+  function select(next) {
+    stop('Replay');kind=next;t=0;
+    for(const button of choices)button.setAttribute('aria-pressed',String(button.dataset.scenario===kind));
+    canvas.setAttribute('aria-label',kind==='anchor'?'Anchor task. FORGET is disconnected. The frozen base and RETAIN contribute to the output.':`${cases[kind].title} target trajectory. A robot monitor considers the completed output and determines the gradient route. The base stays frozen.`);
+    playback.hidden=false;paint();play();
+  }
+  for(const button of choices)button.addEventListener('click',()=>select(button.dataset.scenario));
+  playback.addEventListener('click',()=>{
+    if(playing)stop('Resume');else if(t>=cases[kind].duration) select(kind);else play();
+  });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)stop('Resume');});
+  new ResizeObserver(resize).observe(canvas.parentElement);
+  window.addEventListener('resize',resize);
+  reducedMotion.addEventListener('change',paint);resize();
+})();
+</script>
+</section>
+<p>Remarkably, removing the <span class="acronym">FORGET</span> adapter at inference time was shown to sharply reduce reward hacking in <span class="acronym">RL</span>, compared to a simple reward penalty, only sacrificing a little task performance on the paper’s “Countdown” arithmetic task. A hack that slipped past the monitor could earn reward and update both adapters, so we might expect the model to learn to repeat it more often. Yet in the original <span class="acronym">GRAFT</span> experiment, those hacks stayed rare even with both adapters active.</p>
 <p>The authors identify two limitations in their work that motivate this post. First, their <span class="acronym">RL</span> experiments used simple, rule-based monitors with known blind spots. Second, they chose environments and monitors where reward penalties lead to monitor-exploiting policies, but didn’t measure how often this happens in practice. Together, these limitations leave open two interesting and related questions:</p>
 <div class="research-questions">
 <ol type="i">
